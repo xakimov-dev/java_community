@@ -1,13 +1,11 @@
-package uz.community.java;
+package uz.community.javacommunity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JavaCommunityApplication {
-
+public class QadNodeRegistryApplication {
     public static void main(String[] args) {
-        SpringApplication.run(JavaCommunityApplication.class, args);
+        SpringApplication.run(QadNodeRegistryApplication.class, args);
     }
-
 }

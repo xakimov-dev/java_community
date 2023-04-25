@@ -1,0 +1,1 @@
+CREATE KEYSPACE IF NOT EXISTS node_registry WITH replication = {'class':'NetworkTopologyStrategy','datacenter1':1};
