@@ -106,6 +106,8 @@
             <groupId>com.datastax.jdbc</groupId>
             <artifactId>CassandraJDBC42</artifactId>
             <version>4.2</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CassandraJDBC42.jar</systemPath>
         </dependency>
 
 
