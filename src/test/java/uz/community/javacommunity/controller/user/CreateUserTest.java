@@ -20,7 +20,7 @@ class CreateUserTest  extends CommonIntegrationTest {
     void shouldCreateUser() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperUser.createUserRequest("test_name", "test_password", "test_tenant_id",
-                "test_tenant_name", Set.of("role1"));
+                10, Set.of("role1"));
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -28,8 +28,8 @@ class CreateUserTest  extends CommonIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("test_name"))
                 .andExpect(jsonPath("$.password").value("test_password"))
-                .andExpect(jsonPath("$.tenantId").value("test_tenant_id"))
-                .andExpect(jsonPath("$.tenantName").value("test_tenant_name"))
+                .andExpect(jsonPath("$.info").value("test_tenant_id"))
+                .andExpect(jsonPath("$.age").value(10))
                 .andExpect(jsonPath("$.roles").isArray())
                 .andExpect(jsonPath("$.roles", IsCollectionWithSize.hasSize(1)));
     }
@@ -39,21 +39,7 @@ class CreateUserTest  extends CommonIntegrationTest {
     void shouldFailIfUserExists() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperUser.createUserRequest("test_name", "test_password", "test_tenant_id",
-                "test_tenant_name", Set.of("role1"));
-        //WHEN
-        mockMvc.perform(request);
-        ResultActions resultActions = mockMvc.perform(request);
-        //THEN
-        resultActions
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Should fail if required field is blank")
-    void shouldFailIfRequiredFieldBlank() throws Exception {
-        //GIVEN
-        RequestBuilder request = testDataHelperUser.createUserRequest("test_name", "", "test_tenant_id",
-                "test_tenant_name", Set.of("role1"));
+                10, Set.of("role1"));
         //WHEN
         mockMvc.perform(request);
         ResultActions resultActions = mockMvc.perform(request);

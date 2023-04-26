@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
+import uz.community.javacommunity.controller.dto.UserResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class TestDataHelperUser {
 
     @SneakyThrows
     public UserResponse createUser(String username, String password) {
-        RequestBuilder request = createUserRequest(username, password, "tenant_id", "tenant_name", Set.of("role"));
+        RequestBuilder request = createUserRequest(username, password, "tenant_id", 10, Set.of("role"));
 
         String jsonResponse = mockMvc.perform(request)
                 .andExpect(status().isCreated())
