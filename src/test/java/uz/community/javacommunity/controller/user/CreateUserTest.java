@@ -47,4 +47,45 @@ class CreateUserTest  extends CommonIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("Should return 400 if one or more of required fields are empty")
+    void shouldFailIfEmptyRequiredField() throws Exception {
+        //GIVEN
+        RequestBuilder request = testDataHelperUser.createUserRequest("", "test_password", "test_tenant_id",
+                10, Set.of("role1"));
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+
+        //GIVEN
+        request = testDataHelperUser.createUserRequest("username", "", "test_tenant_id",
+                10, Set.of("role1"));
+        //WHEN
+        resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+
+        //GIVEN
+        request = testDataHelperUser.createUserRequest("username_1", "password", "",
+                10, Set.of("role1"));
+        //WHEN
+        resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+
+        //GIVEN
+        request = testDataHelperUser.createUserRequest("username_2", "password", "test_tenant_id",
+                10, Set.of());
+        //WHEN
+        resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+    }
 }
+
