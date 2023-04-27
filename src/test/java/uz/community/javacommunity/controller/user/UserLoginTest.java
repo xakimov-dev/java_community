@@ -1,6 +1,4 @@
 package uz.community.javacommunity.controller.user;
-
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +48,7 @@ class UserLoginTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should return 400 if login or password is empty")
+    @DisplayName("Should return 400 if login or password are empty")
     void shouldFailIfEmptyRequiredField() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperUser.loginRequest("", "password");
