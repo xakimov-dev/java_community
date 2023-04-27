@@ -1,5 +1,6 @@
 package uz.community.javacommunity.config;
 
+import com.datastax.oss.driver.api.core.CqlSession;
 import com.simba.cassandra.cassandra.core.CDBJDBCDriver;
 import com.simba.cassandra.dsi.core.impl.DSIDriverFactory;
 import liquibase.integration.spring.SpringLiquibase;
@@ -27,6 +28,8 @@ public class LiquibaseConfiguration {
         liquibase.setDataSource(dataSource(cassandraProperties));
         return liquibase;
     }
+
+
 
     private DataSource dataSource(CassandraProperties cassandraProperties) {
         DSIDriverFactory.setDriverClassName(CDBJDBCDriver.class.getName());

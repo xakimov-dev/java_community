@@ -1,17 +1,20 @@
 package uz.community.javacommunity.controller.dto;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import uz.community.javacommunity.controller.domain.Category;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryDTO {
+public class CategoryResponse implements Serializable {
 
     UUID id;
 
@@ -27,11 +30,12 @@ public class CategoryDTO {
 
     Instant modifiedDate;
 
-    public static CategoryDTO of(Category category) {
-        return CategoryDTO
+
+    public static CategoryResponse of(Category category) {
+        return CategoryResponse
                 .builder()
-                .id(category.getId())
-                .name(category.getName())
+                .id(category.getCategoryKey().getId())
+                .name(category.getCategoryKey().getName())
                 .createdBy(category.getCreatedBy())
                 .createdDate(category.getCreatedDate())
                 .parentId(category.getParentId())

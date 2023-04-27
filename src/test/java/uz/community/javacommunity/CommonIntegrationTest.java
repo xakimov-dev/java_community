@@ -19,6 +19,7 @@ import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.lifecycle.Startables;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.common.controller.handler.pojo.FieldErrorResponse;
+import uz.community.javacommunity.controller.category.data.TestDataHelperCategory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -33,6 +34,8 @@ public abstract class CommonIntegrationTest {
 
     @Autowired
     protected TestDataHelperUser testDataHelperUser;
+    @Autowired
+    protected TestDataHelperCategory testDataHelperCategory;
     private static final String IMAGE_NAME = "cassandra:3.11.2";
     private static final String KEYSPACE_NAME = "java_community";
     private static final CassandraContainer<?> cassandra;
@@ -64,6 +67,7 @@ public abstract class CommonIntegrationTest {
         Instant cleanUpStart = Instant.now();
         testCassandraScriptUtils.execute("truncate user");
         testCassandraScriptUtils.execute("truncate login");
+        testCassandraScriptUtils.execute("truncate category");
         Instant cleanUpEnd = Instant.now();
         long durationSecs = Duration.between(cleanUpStart, cleanUpEnd).toMillis();
         if (durationSecs > 1500) {

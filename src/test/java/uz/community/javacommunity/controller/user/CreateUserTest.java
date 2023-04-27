@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
+import uz.community.javacommunity.WithAuthentication;
 
 import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @DisplayName("Create a new user ( POST /user )")
 class CreateUserTest  extends CommonIntegrationTest {
