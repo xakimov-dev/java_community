@@ -31,6 +31,10 @@ class GetCurrentUserTest extends CommonIntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName").value(user.getUsername()))
+                .andExpect(jsonPath("$.age").value(user.getAge()))
+                .andExpect(jsonPath("$.roles").isArray())
+                .andExpect(jsonPath("$.roles", IsCollectionWithSize.hasSize(1)))
+                .andExpect(jsonPath("$.roles", IsCollectionWithSize.hasSize(user.getRoles().size())));
                 .andExpect(jsonPath("$.age").value(10));
     }
 
