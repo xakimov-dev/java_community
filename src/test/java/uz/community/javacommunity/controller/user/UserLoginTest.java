@@ -37,6 +37,7 @@ class UserLoginTest extends CommonIntegrationTest {
     @DisplayName("Should return 401 code if password is not correct")
     void shouldFailIfIncorrectPassword() throws Exception {
         //GIVEN
+
         String username = "test_username";
         testDataHelperUser.createUser(username, "password");
         RequestBuilder request = testDataHelperUser.loginRequest(username, "invalid_password");
