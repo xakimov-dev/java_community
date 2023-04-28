@@ -15,7 +15,7 @@ import uz.community.javacommunity.service.CategoryService;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("api/v1/category")
+@RequestMapping("/category")
 @RequiredArgsConstructor
 public class CategoryController {
 
