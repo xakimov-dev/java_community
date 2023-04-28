@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RequiredArgsConstructor
 public class TestDataHelperCategory {
 
-    private static final String BASE_PATH = "/api/v1/category";
+    private static final String BASE_PATH = "/category";
 
     private final JsonConverter jsonConverter;
 
