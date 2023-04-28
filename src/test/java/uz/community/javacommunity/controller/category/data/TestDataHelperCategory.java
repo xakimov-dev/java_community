@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 
@@ -25,13 +24,11 @@ public class TestDataHelperCategory {
 
     public RequestBuilder createCategoryRequest(
             String categoryName,
-            UUID parentId,
-            String createdBy
+            UUID parentId
     ) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", categoryName);
         payload.put("parentId", parentId);
-        payload.put("createdBy", createdBy);
 
         return post(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)

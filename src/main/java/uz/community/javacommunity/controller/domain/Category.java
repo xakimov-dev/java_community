@@ -1,10 +1,11 @@
 package uz.community.javacommunity.controller.domain;
 
-import com.simba.cassandra.shaded.datastax.driver.core.DataType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
-import org.springframework.data.cassandra.core.mapping.*;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 import uz.community.javacommunity.controller.domain.keys.CategoryKey;
 
 import java.time.Instant;

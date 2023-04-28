@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface CategoryRepository extends CassandraRepository<Category, CategoryKey> {
-    Optional<Category> findByCategoryKey(CategoryKey categoryKey);
     @Query(allowFiltering = true)
     Optional<Category> findByCategoryKey_Id(UUID id);
     @Query(allowFiltering = true)

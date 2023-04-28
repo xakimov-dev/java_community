@@ -7,14 +7,12 @@ import uz.community.javacommunity.controller.domain.Category;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryResponse implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoryResponse  {
 
     UUID id;
 

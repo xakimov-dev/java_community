@@ -25,11 +25,11 @@ public class CreateCategoryTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should create a parent category")
-    @WithAuthentication
+    @WithAuthentication(username = "owner")
     public void shouldCreateParentCategory() throws Exception {
 
         RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("test",null ,"owner");
+                .createCategoryRequest("test",null );
 
         ResultActions resultActions = mockMvc.perform(categoryRequest);
 
@@ -41,7 +41,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should create a child category")
-    @WithAuthentication
+    @WithAuthentication(username = "owner1")
     public void shouldCreateChildCategory() throws Exception {
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
@@ -49,7 +49,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
         mapper.registerModule(module);
 
         RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("test",null, "owner");
+                .createCategoryRequest("test",null);
 
         ResultActions resultActions = mockMvc.perform(categoryRequest);
 
@@ -59,7 +59,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
         UUID id = categoryResponse.getId();
 
         RequestBuilder categoryRequest1 = testDataHelperCategory
-                .createCategoryRequest("test1", id, "owner1");
+                .createCategoryRequest("test1", id);
 
         ResultActions perform = mockMvc.perform(categoryRequest1);
 
@@ -78,7 +78,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
     public void shouldThrowAuthenticationException() throws Exception {
 
         RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("test",null ,"owner");
+                .createCategoryRequest("test",null);
 
         ResultActions resultActions = mockMvc.perform(categoryRequest);
 
@@ -92,7 +92,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
     public void shouldThrowFieldValidationException() throws Exception {
 
         RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("",null, "owner");
+                .createCategoryRequest("",null);
 
         ResultActions resultActions = mockMvc.perform(categoryRequest);
 

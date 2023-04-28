@@ -1,10 +1,8 @@
 package uz.community.javacommunity.controller;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.service.CategoryService;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("api/v1/category")
@@ -23,8 +23,8 @@ public class CategoryController {
 
 
     @PostMapping
-    public ResponseEntity<?> saveCategory(@RequestBody @Validated CategoryRequest categoryRequest) {
-        CategoryResponse categoryResponse = categoryService.saveCategory(categoryRequest);
+    public ResponseEntity<?> saveCategory(@RequestBody @Validated CategoryRequest categoryRequest, Principal principal) {
+        CategoryResponse categoryResponse = categoryService.saveCategory(categoryRequest, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryResponse);
     }
 

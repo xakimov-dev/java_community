@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
-import uz.community.javacommunity.WithAuthentication;
 
 import java.util.Set;
 
