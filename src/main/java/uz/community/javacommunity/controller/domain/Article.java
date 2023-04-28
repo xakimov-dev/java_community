@@ -3,6 +3,7 @@ package uz.community.javacommunity.controller.domain;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.cassandra.core.mapping.*;
+import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,8 +21,8 @@ public class Article {
     @PrimaryKey
     ArticleKey articleKey;
     String name;
-    @Column("parent_id")
-    UUID parentId;
+//    @Column("parent_id")
+//    UUID parentId;
     @Column("created_by")
     String createdBy;
     @Column("created_date")
@@ -47,4 +48,16 @@ public class Article {
             return new ArticleKey(id, categoryId);
         }
     }
+
+    public static Article of(ArticleUpdateRequest articleUpdateRequest, Article articleById, String username){
+        return Article.builder()
+                .articleKey(articleUpdateRequest.articleKey())
+                .name(articleUpdateRequest.name())
+                .createdBy(articleById.createdBy)
+                .createdDate(articleById.createdDate)
+                .modifiedBy(username)
+                .modifiedDate(Instant.now())
+                .build();
+    }
+
 }
