@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author :Xojiakbar Abiyorov
  */
 
-@DisplayName("Create a new category ( POST /api/v1/category )")
+@DisplayName("Create a new category ( POST /category )")
 public class CreateCategoryTest extends CommonIntegrationTest {
 
 
