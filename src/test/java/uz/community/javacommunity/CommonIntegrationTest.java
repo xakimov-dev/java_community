@@ -2,6 +2,7 @@ package uz.community.javacommunity;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.lifecycle.Startables;
+
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.common.controller.handler.pojo.FieldErrorResponse;
 import uz.community.javacommunity.controller.category.data.TestDataHelperCategory;
@@ -39,6 +41,9 @@ public abstract class CommonIntegrationTest {
     private static final String IMAGE_NAME = "cassandra:3.11.2";
     private static final String KEYSPACE_NAME = "java_community";
     private static final CassandraContainer<?> cassandra;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     static {
         //noinspection rawtypes

@@ -36,17 +36,17 @@ public class CreateCategoryTest extends CommonIntegrationTest {
         resultActions
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("test"))
-                .andExpect(jsonPath("$.createdBy").value("owner"));
+                .andExpect(jsonPath("$.createdBy").value("owner"))
+                .andExpect(jsonPath("$.parentId").doesNotExist());
     }
 
     @Test
     @DisplayName(value = "Should create a child category")
     @WithAuthentication(username = "owner1")
     public void shouldCreateChildCategory() throws Exception {
-        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
         JavaTimeModule module = new JavaTimeModule();
-        mapper.registerModule(module);
+        objectMapper.registerModule(module);
 
         RequestBuilder categoryRequest = testDataHelperCategory
                 .createCategoryRequest("test",null);
@@ -55,7 +55,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
 
         String content = resultActions.andReturn().getResponse().getContentAsString();
 
-        CategoryResponse categoryResponse = mapper.readValue(content, CategoryResponse.class);
+        CategoryResponse categoryResponse = objectMapper.readValue(content, CategoryResponse.class);
         UUID id = categoryResponse.getId();
 
         RequestBuilder categoryRequest1 = testDataHelperCategory
@@ -66,7 +66,10 @@ public class CreateCategoryTest extends CommonIntegrationTest {
         perform.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.createdBy").value("owner1"))
                 .andExpect(jsonPath("$.name").value("test1"))
-                .andExpect(jsonPath("$.parentId").value(id.toString()));
+                .andExpect(jsonPath("$.parentId").value(id.toString()))
+                .andExpect(jsonPath("$.createdDate").exists())
+                .andExpect(jsonPath("$.modifiedDate").exists())
+                .andExpect(jsonPath("$.modifiedBy").value("owner1"));
 
     }
 

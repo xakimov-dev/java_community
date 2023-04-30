@@ -36,6 +36,8 @@ public class CategoryResponse  {
                 .name(category.getCategoryKey().getName())
                 .createdBy(category.getCreatedBy())
                 .createdDate(category.getCreatedDate())
+                .modifiedDate(category.getModifiedDate())
+                .modifiedBy(category.getModifiedBy())
                 .parentId(category.getParentId())
                 .build();
     }
