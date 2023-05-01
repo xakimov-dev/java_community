@@ -12,8 +12,11 @@ import uz.community.javacommunity.controller.dto.CategoryUpdateRequestDTO;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -58,5 +61,11 @@ public class CategoryService {
         }
         Category category1 = categoryRepository.save(category);
         return CategoryDTO.of(category1);
+    }
+
+
+    public List<CategoryDTO> getChildListByParentId(UUID id) {
+        List<Category> childList = categoryRepository.getCategoriesByParentId(id);
+     return childList.stream().map(CategoryDTO::of).collect(Collectors.toList());
     }
 }
