@@ -6,6 +6,7 @@ import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
+import uz.community.javacommunity.controller.domain.keys.CategoryKey;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -17,9 +18,9 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table("category")
 public class Category {
+
     @PrimaryKey
-    UUID id;
-    String name;
+    CategoryKey categoryKey;
     @Column("parent_id")
     UUID parentId;
     @Column("created_by")

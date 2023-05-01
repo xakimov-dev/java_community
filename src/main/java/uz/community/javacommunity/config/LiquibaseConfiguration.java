@@ -28,6 +28,8 @@ public class LiquibaseConfiguration {
         return liquibase;
     }
 
+
+
     private DataSource dataSource(CassandraProperties cassandraProperties) {
         DSIDriverFactory.setDriverClassName(CDBJDBCDriver.class.getName());
         com.simba.cassandra.jdbc42.DataSource dataSource = new com.simba.cassandra.jdbc42.DataSource();

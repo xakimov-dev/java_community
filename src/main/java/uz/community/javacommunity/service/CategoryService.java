@@ -1,62 +1,50 @@
 package uz.community.javacommunity.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Category;
-import uz.community.javacommunity.controller.domain.User;
-import uz.community.javacommunity.controller.dto.CategoryDTO;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
-import uz.community.javacommunity.controller.dto.CategoryUpdateRequestDTO;
+import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
-
-import java.security.Principal;
-import java.util.Optional;
+import static uz.community.javacommunity.common.constants.ExceptionMessageConstants.*;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    public CategoryResponse saveCategory(CategoryRequest categoryRequest, String createdBy) {
 
-    public CategoryDTO saveCategory(CategoryRequest categoryRequest,String username) {
         final String categoryName = categoryRequest.getName();
-        String MESSAGE = String.format("Category with name [%s] already exists", categoryName);
+        final UUID parentId = categoryRequest.getParentId();
+        checkCategoryByNameAndThrowIfExist(categoryName);
 
-        categoryRepository.findByName(categoryName).ifPresent((category) -> {
-            throw new AlreadyExistsException(MESSAGE);
-        });
+        Category category = CategoryRequest.from(categoryRequest, createdBy);
+        if (parentId == null) {
+           return saveParentCategory(category);
+        }
 
-        Category category = Category.builder()
-                .name(categoryRequest.getName())
-                .parentId(categoryRequest.getParentId())
-                .createdBy(username)
-                .build();
+        categoryRepository
+                .findByCategoryKey_Id(parentId)
+                .ifPresentOrElse((c) -> categoryRepository.save(category),
+                        () -> {throw new RecordNotFoundException(String.format(CATEGORY_WITH_ID_NOT_FOUND , parentId));});
 
-        categoryRepository.save(category);
-
-        return CategoryDTO.of(category);
+        return CategoryResponse.of(category);
     }
 
-    public CategoryDTO updateCategory(CategoryUpdateRequestDTO categoryDTO, UUID categoryId, String username) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new RecordNotFoundException(" Category not found "));
-        if (!category.getCreatedBy().equals(username)) {
-            throw new AlreadyExistsException(" You can not edit this category !!!");
-        }
+    private void checkCategoryByNameAndThrowIfExist(String categoryName) {
 
-        if (categoryDTO.getName() != null && !categoryDTO.getName().isBlank()) {
-            category.setName(categoryDTO.getName());
-        }
+        categoryRepository.findByCategoryKey_Name(categoryName).ifPresent((c) -> {
+            throw new AlreadyExistsException(String.format(CATEGORY_WITH_NAME_ALREADY_EXIST, categoryName));
+        });
+    }
 
-        if (category.getParentId() != null && categoryDTO.getParentId() == null ||
-                categoryDTO.getParentId() != null
-        ) {
-            category.setParentId(categoryDTO.getParentId());
-        }
-        Category category1 = categoryRepository.save(category);
-        return CategoryDTO.of(category1);
+    private CategoryResponse saveParentCategory(Category category) {
+            Category savedCategory = categoryRepository.save(category);
+            return CategoryResponse.of(savedCategory);
     }
 }
