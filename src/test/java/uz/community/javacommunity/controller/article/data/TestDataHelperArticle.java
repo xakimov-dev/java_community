@@ -1,4 +1,4 @@
-package uz.community.javacommunity;
+package uz.community.javacommunity.controller.article.data;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
+import uz.community.javacommunity.controller.dto.ArticleResponse;
+import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.dto.UserResponse;
 
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestDataHelperArticle {
     private static final String BASE_PATH = "/article";
     private final JsonConverter jsonConverter;
+    private final MockMvc mockMvc;
     public RequestBuilder createArticleRequest(String name, String categoryId) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name",name);
@@ -33,6 +36,16 @@ public class TestDataHelperArticle {
         return post(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
+    }
+
+    @SneakyThrows
+    public ArticleResponse createArticle(
+            String name,
+            String  categoryId
+    ){
+        RequestBuilder request = createArticleRequest(name, categoryId);
+        String contentAsString = mockMvc.perform(request).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        return jsonConverter.convertFromString(contentAsString, ArticleResponse.class);
     }
 
 }
