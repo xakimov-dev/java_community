@@ -16,11 +16,4 @@ import static uz.community.javacommunity.controller.domain.Article.ArticleKey;
 public interface ArticleRepository extends CassandraRepository<Article, ArticleKey> {
     @Query(allowFiltering = true)
     Optional<Article> findArticleByNameAndArticleKey_CategoryId(String name, String categoryId);
-    @Query(value = "INSERT INTO article (id, category_id, created_by, created_date, name) " +
-            "VALUES (:id, :categoryId, :createdBy, :createdDate, :name)")
-    void insertArticle(@Param("id") UUID id,
-                       @Param("categoryId") String categoryId,
-                       @Param("createdBy") String createdBy,
-                       @Param("createdDate") Instant createdDate,
-                       @Param("name") String name);
 }

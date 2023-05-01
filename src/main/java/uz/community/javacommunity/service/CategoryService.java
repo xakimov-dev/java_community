@@ -26,13 +26,15 @@ public class CategoryService {
 
         Category category = CategoryRequest.from(categoryRequest, createdBy);
         if (parentId == null) {
-           return saveParentCategory(category);
+            return saveParentCategory(category);
         }
 
         categoryRepository
                 .findByCategoryKey_Id(parentId)
                 .ifPresentOrElse((c) -> categoryRepository.save(category),
-                        () -> {throw new RecordNotFoundException(String.format(CATEGORY_WITH_ID_NOT_FOUND , parentId));});
+                        () -> {
+                            throw new RecordNotFoundException(String.format(CATEGORY_WITH_ID_NOT_FOUND, parentId));
+                        });
 
         return CategoryResponse.of(category);
     }
@@ -45,10 +47,8 @@ public class CategoryService {
     }
 
     private CategoryResponse saveParentCategory(Category category) {
-            Category savedCategory = categoryRepository.save(category);
-            return CategoryResponse.of(savedCategory);
-    private final CategoryRepository categoryRepository;
-    public boolean categoryExists(UUID categoryId){
-        return categoryRepository.existsById(categoryId);
+        Category savedCategory = categoryRepository.save(category);
+        return CategoryResponse.of(savedCategory);
+
     }
 }
