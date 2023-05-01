@@ -3,52 +3,45 @@ package uz.community.javacommunity.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
-import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
-import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
-import static uz.community.javacommunity.common.constants.ExceptionMessageConstants.*;
+import uz.community.javacommunity.validation.CommonSchemaValidator;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-
+    private final CommonSchemaValidator commonSchemaValidator;
     private final CategoryRepository categoryRepository;
 
-    public CategoryResponse saveCategory(CategoryRequest categoryRequest, String createdBy) {
+    public Category saveCategory(CategoryRequest categoryRequest, String createdBy) {
 
-        final String categoryName = categoryRequest.getName();
-        final UUID parentId = categoryRequest.getParentId();
-        checkCategoryByNameAndThrowIfExist(categoryName);
+        String categoryName = categoryRequest.getName();
+        UUID parentId = categoryRequest.getParentId();
+        throwIfCategoryExist(categoryName);
 
-        Category category = CategoryRequest.from(categoryRequest, createdBy);
-        if (parentId == null) {
-            return saveParentCategory(category);
+        if (parentId != null) {
+            commonSchemaValidator.validateCategory(parentId);
         }
+        Instant now = Instant.now();
+        Category category = Category.builder()
+                .parentId(parentId)
+                .categoryKey(Category.CategoryKey.of(UUID.randomUUID(), categoryName))
+                .createdBy(createdBy)
+                .modifiedBy(createdBy)
+                .createdDate(now)
+                .modifiedDate(now)
+                .build();
 
-        categoryRepository
-                .findByCategoryKey_Id(parentId)
-                .ifPresentOrElse((c) -> categoryRepository.save(category),
-                        () -> {
-                            throw new RecordNotFoundException(String.format(CATEGORY_WITH_ID_NOT_FOUND, parentId));
-                        });
-
-        return CategoryResponse.of(category);
+        return categoryRepository.save(category);
     }
 
-    private void checkCategoryByNameAndThrowIfExist(String categoryName) {
-
-        categoryRepository.findByCategoryKey_Name(categoryName).ifPresent((c) -> {
-            throw new AlreadyExistsException(String.format(CATEGORY_WITH_NAME_ALREADY_EXIST, categoryName));
-        });
-    }
-
-    private CategoryResponse saveParentCategory(Category category) {
-        Category savedCategory = categoryRepository.save(category);
-        return CategoryResponse.of(savedCategory);
-
+    private void throwIfCategoryExist(String name){
+        if (Boolean.TRUE.equals(categoryRepository.existsByCategoryKeyName(name))){
+            throw new AlreadyExistsException(String.format("Category already exist for name %s", name));
+        }
     }
 }
