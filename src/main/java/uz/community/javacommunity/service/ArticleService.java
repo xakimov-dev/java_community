@@ -4,17 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Article;
-import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
-
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
-import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
-import uz.community.javacommunity.controller.repository.ArticleRepository;
-
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Optional;
@@ -26,6 +21,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final CategoryService categoryService;
     private final JwtService jwtService;
+    private final CategoryRepository categoryRepository;
 
     public Article create(ArticleCreateRequest articleCreateRequest, HttpServletRequest request) {
         final String categoryId = articleCreateRequest.getCategoryId();
@@ -41,17 +37,19 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    private void throwIfArticleAlreadyExists(String name,String categoryId){
+    private void throwIfArticleAlreadyExists(String name,String categoryId) {
         Optional<Article> article = articleRepository
                 .findByNameAndAndArticleKeyId(name, categoryId);
-        if(article.isPresent()){
+        if (article.isPresent()) {
             throw new AlreadyExistsException("Article with name : '" +
                     name + "' already exists");
         }
-    private final CategoryRepository categoryRepository;
+    }
+
 
     public ArticleResponse update(UUID id, ArticleUpdateRequest articleUpdateRequest, String username){
-        categoryRepository.findById(articleUpdateRequest.articleKey().getCategoryId())
+
+        categoryRepository.findByCategoryKeyId(UUID.fromString(articleUpdateRequest.articleKey().getCategoryId()))
                 .orElseThrow(() -> new RecordNotFoundException("Category not found"));
 
         Article articleById = articleRepository.findArticleByArticleKeyId(id)
@@ -59,4 +57,5 @@ public class ArticleService {
 
         return ArticleResponse.from(articleRepository.save(Article.of(articleUpdateRequest, articleById, username)));
     }
+
 }
