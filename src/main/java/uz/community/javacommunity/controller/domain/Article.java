@@ -21,8 +21,6 @@ public class Article {
     @PrimaryKey
     ArticleKey articleKey;
     String name;
-//    @Column("parent_id")
-//    UUID parentId;
     @Column("created_by")
     String createdBy;
     @Column("created_date")
@@ -35,6 +33,7 @@ public class Article {
     Instant modifiedDate;
     @Data
     @Builder
+    @PrimaryKeyClass
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -42,9 +41,9 @@ public class Article {
         @PrimaryKeyColumn(name = "id", ordinal = 0, type = PARTITIONED)
         UUID id;
         @PrimaryKeyColumn(name = "category_id", ordinal = 1, type = CLUSTERED)
-        UUID categoryId;
+        String categoryId;
 
-        public static ArticleKey of(UUID id, UUID categoryId){
+        public static ArticleKey of(UUID id, String categoryId){
             return new ArticleKey(id, categoryId);
         }
     }
@@ -61,3 +60,4 @@ public class Article {
     }
 
 }
+

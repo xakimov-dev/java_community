@@ -1,32 +1,28 @@
 package uz.community.javacommunity.controller.dto;
 
 import lombok.Builder;
-import lombok.Data;
-import org.springframework.data.cassandra.core.mapping.CassandraType;
-import org.springframework.data.cassandra.core.mapping.Column;
+import lombok.Getter;
+import lombok.Setter;
 import uz.community.javacommunity.controller.domain.Article;
 
-import java.time.Instant;
 import java.util.UUID;
 
+@Getter
+@Setter
 @Builder
-@Data
 public class ArticleResponse {
-    Article.ArticleKey articleKey;
-    String name;
-    String createdBy;
-    Instant createdDate;
-    String modifiedBy;
-    Instant modifiedDate;
-
-    public static ArticleResponse from(Article article){
+    private String name;
+    private String categoryId;
+    private String articleId;
+    private String createdBy;
+    private String createdDate;
+    public static ArticleResponse from(Article article) {
         return ArticleResponse.builder()
-                .articleKey(article.getArticleKey())
                 .name(article.getName())
+                .articleId(article.getArticleKey().getId().toString())
+                .categoryId(article.getArticleKey().getCategoryId().toString())
                 .createdBy(article.getCreatedBy())
-                .createdDate(article.getCreatedDate())
-                .modifiedBy(article.getModifiedBy())
-                .modifiedDate(article.getModifiedDate())
+                .createdDate(article.getCreatedDate().toString())
                 .build();
     }
 }

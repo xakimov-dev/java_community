@@ -29,6 +29,7 @@ class CreateCategoryTest extends CommonIntegrationTest {
                 .createCategoryRequest("test",null );
 
         ResultActions resultActions = mockMvc.perform(categoryRequest);
+        resultActions.toString();
 
         resultActions
                 .andExpect(status().isCreated())
