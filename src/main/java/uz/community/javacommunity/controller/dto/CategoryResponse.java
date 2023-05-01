@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import uz.community.javacommunity.controller.domain.Category;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 @Data
@@ -29,7 +28,7 @@ public class CategoryResponse  {
     Instant modifiedDate;
 
 
-    public static CategoryResponse of(Category category) {
+    public static CategoryResponse from(Category category) {
         return CategoryResponse
                 .builder()
                 .id(category.getCategoryKey().getId())
