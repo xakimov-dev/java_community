@@ -3,12 +3,14 @@ package uz.community.javacommunity.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
+import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,9 +41,17 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    private void throwIfCategoryExist(String name){
-        if (Boolean.TRUE.equals(categoryRepository.existsByCategoryKeyName(name))){
+    private void throwIfCategoryExist(String name) {
+        if (Boolean.TRUE.equals(categoryRepository.existsByCategoryKeyName(name))) {
             throw new AlreadyExistsException(String.format("Category already exist for name %s", name));
+        }
+    }
+
+    public void throwIfCategoryCannotBeFound(UUID categoryId) {
+        Optional<Category> category = categoryRepository.findByCategoryKeyId(categoryId);
+        if (category.isEmpty()) {
+            throw new RecordNotFoundException("Category with id : '" +
+                    categoryId + "' cannot be found!");
         }
     }
 }
