@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @DisplayName("Create a new user ( POST /user )")
-class CreateUserTest  extends CommonIntegrationTest {
+class CreateUserTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName("Should create a user")

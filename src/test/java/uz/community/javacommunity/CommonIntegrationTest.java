@@ -38,6 +38,8 @@ public abstract class CommonIntegrationTest {
     @Autowired
     protected TestDataHelperUser testDataHelperUser;
     @Autowired
+    protected TestDataHelperArticle testDataHelperArticle;
+    @Autowired
     protected TestDataHelperCategory testDataHelperCategory;
     @Autowired
     protected TestDataHelperSubArticle testDataHelperSubArticle;
