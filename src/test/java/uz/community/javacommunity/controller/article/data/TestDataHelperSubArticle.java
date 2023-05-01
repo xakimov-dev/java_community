@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestDataHelperSubArticle {
 
     private static final String BASE_PATH = "/article/sub";
-
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
 

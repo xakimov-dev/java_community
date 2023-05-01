@@ -17,11 +17,13 @@ import static org.springframework.data.cassandra.core.cql.PrimaryKeyType.PARTITI
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table("article")
+@Table("sub_article")
 public class SubArticle {
     @PrimaryKey
     SubArticleKey subArticleKey;
     String name;
+    @Column("parent_sub_article_id")
+    UUID parentSubArticleId;
     @Column("created_by")
     String createdBy;
     @Column("created_date")
@@ -35,7 +37,8 @@ public class SubArticle {
 
     public static SubArticle of(SubArticleRequest dto) {
         return SubArticle.builder()
-                .subArticleKey(SubArticleKey.of(UUID.randomUUID(), dto.categoryId(), dto.articleId(), dto.parentSubArticleId()))
+                .subArticleKey(SubArticleKey.of(UUID.randomUUID(), dto.categoryId(), dto.articleId()))
+                .parentSubArticleId(dto.parentSubArticleId())
                 .name(dto.name())
                 .createdBy(SecurityContextHolder.getContext().getAuthentication().getName())
                 .createdDate(Instant.now())
@@ -47,6 +50,7 @@ public class SubArticle {
     @Data
     @Builder
     @AllArgsConstructor
+    @PrimaryKeyClass
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class SubArticleKey {
@@ -54,13 +58,11 @@ public class SubArticle {
         UUID id;
         @PrimaryKeyColumn(name = "category_id", ordinal = 1, type = CLUSTERED)
         UUID categoryId;
-        @PrimaryKeyColumn(name = "article_id", ordinal = 0, type = PARTITIONED)
+        @PrimaryKeyColumn(name = "article_id", ordinal = 2, type = CLUSTERED)
         UUID articleId;
-        @PrimaryKeyColumn(name = "parent_sub_article_id", ordinal = 0, type = PARTITIONED)
-        UUID parentSubArticleId;
 
-        public static SubArticleKey of(UUID id, UUID categoryId, UUID articleId, UUID parentSubArticleId) {
-            return new SubArticleKey(id, categoryId, articleId, parentSubArticleId);
+        public static SubArticleKey of(UUID id, UUID categoryId, UUID articleId) {
+            return new SubArticleKey(id, categoryId, articleId);
         }
     }
 }

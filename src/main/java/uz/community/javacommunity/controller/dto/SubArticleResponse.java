@@ -21,7 +21,7 @@ public record SubArticleResponse(
                 subArticle.getSubArticleKey().getId(),
                 subArticle.getSubArticleKey().getCategoryId(),
                 subArticle.getSubArticleKey().getArticleId(),
-                subArticle.getSubArticleKey().getParentSubArticleId(),
+                subArticle.getParentSubArticleId(),
                 subArticle.getName(),
                 subArticle.getCreatedBy(),
                 subArticle.getCreatedDate(),
