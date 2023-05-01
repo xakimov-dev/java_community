@@ -1,6 +1,5 @@
 package uz.community.javacommunity.controller.category;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -10,8 +9,6 @@ import uz.community.javacommunity.CommonIntegrationTest;
 import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
-import java.util.UUID;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,13 +17,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @DisplayName("Create a new category ( POST /category )")
-public class CreateCategoryTest extends CommonIntegrationTest {
+class CreateCategoryTest extends CommonIntegrationTest {
 
 
     @Test
     @DisplayName(value = "Should create a parent category")
     @WithAuthentication(username = "owner")
-    public void shouldCreateParentCategory() throws Exception {
+    void shouldCreateParentCategory() throws Exception {
 
         RequestBuilder categoryRequest = testDataHelperCategory
                 .createCategoryRequest("test",null );
@@ -43,30 +40,19 @@ public class CreateCategoryTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should create a child category")
     @WithAuthentication(username = "owner1")
-    public void shouldCreateChildCategory() throws Exception {
+    void shouldCreateChildCategory() throws Exception {
 
-        JavaTimeModule module = new JavaTimeModule();
-        objectMapper.registerModule(module);
+        CategoryResponse categoryResponse = testDataHelperCategory.createCategory("test", null);
 
         RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("test",null);
+                .createCategoryRequest("test1", categoryResponse.getId());
 
-        ResultActions resultActions = mockMvc.perform(categoryRequest);
-
-        String content = resultActions.andReturn().getResponse().getContentAsString();
-
-        CategoryResponse categoryResponse = objectMapper.readValue(content, CategoryResponse.class);
-        UUID id = categoryResponse.getId();
-
-        RequestBuilder categoryRequest1 = testDataHelperCategory
-                .createCategoryRequest("test1", id);
-
-        ResultActions perform = mockMvc.perform(categoryRequest1);
+        ResultActions perform = mockMvc.perform(categoryRequest);
 
         perform.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.createdBy").value("owner1"))
                 .andExpect(jsonPath("$.name").value("test1"))
-                .andExpect(jsonPath("$.parentId").value(id.toString()))
+                .andExpect(jsonPath("$.parentId").value(categoryResponse.getId().toString()))
                 .andExpect(jsonPath("$.createdDate").exists())
                 .andExpect(jsonPath("$.modifiedDate").exists())
                 .andExpect(jsonPath("$.modifiedBy").value("owner1"));
@@ -78,7 +64,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should get unauthorized ")
     @WithAnonymousUser
-    public void shouldThrowAuthenticationException() throws Exception {
+    void shouldThrowAuthenticationException() throws Exception {
 
         RequestBuilder categoryRequest = testDataHelperCategory
                 .createCategoryRequest("test",null);
@@ -92,7 +78,7 @@ public class CreateCategoryTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should get 4xx status if fields Blank ")
     @WithAuthentication
-    public void shouldThrowFieldValidationException() throws Exception {
+    void shouldThrowFieldValidationException() throws Exception {
 
         RequestBuilder categoryRequest = testDataHelperCategory
                 .createCategoryRequest("",null);
@@ -102,7 +88,4 @@ public class CreateCategoryTest extends CommonIntegrationTest {
         resultActions
                 .andExpect(status().is4xxClientError());
     }
-
-
-
 }
