@@ -11,6 +11,7 @@ import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.service.ArticleService;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @Tag(name = "article")
 @RestController
@@ -18,15 +19,15 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class ArticleController {
     private final ArticleService articleService;
-    @PostMapping(value = "/{articleKey}")
+    @PutMapping(value = "/{id}")
     @Operation(summary = "Update article")
     public ResponseEntity<?> update(
             @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
-            @PathVariable Article.ArticleKey articleKey,
+            @PathVariable UUID id,
             Principal principal
             ) {
         String username = principal.getName();
-        return ResponseEntity.ok(articleService.update(articleKey, articleUpdateRequest, username));
+        return ResponseEntity.ok(articleService.update(id, articleUpdateRequest, username));
     }
 
 }

@@ -10,17 +10,19 @@ import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final CategoryRepository categoryRepository;
 
-    public ArticleResponse update(Article.ArticleKey articleKey, ArticleUpdateRequest articleUpdateRequest, String username){
-        categoryRepository.findById(articleKey.getCategoryId())
+    public ArticleResponse update(UUID id, ArticleUpdateRequest articleUpdateRequest, String username){
+        categoryRepository.findById(articleUpdateRequest.articleKey().getCategoryId())
                 .orElseThrow(() -> new RecordNotFoundException("Category not found"));
 
-        Article articleById = articleRepository.findById(articleKey)
+        Article articleById = articleRepository.findArticleByArticleKeyId(id)
                 .orElseThrow(() -> new RecordNotFoundException("Article not found"));
 
         return ArticleResponse.from(articleRepository.save(Article.of(articleUpdateRequest, articleById, username)));
