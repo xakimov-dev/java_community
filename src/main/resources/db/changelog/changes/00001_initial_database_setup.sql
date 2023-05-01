@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS category
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id, name)
 );
 -- rollback DROP TABLE category
 

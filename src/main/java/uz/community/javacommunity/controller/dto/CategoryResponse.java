@@ -1,8 +1,6 @@
 package uz.community.javacommunity.controller.dto;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import uz.community.javacommunity.controller.domain.Category;
 
@@ -11,7 +9,9 @@ import java.util.UUID;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoryResponse  {
 
     UUID id;
 
@@ -27,13 +27,16 @@ public class CategoryDTO {
 
     Instant modifiedDate;
 
-    public static CategoryDTO of(Category category) {
-        return CategoryDTO
+
+    public static CategoryResponse from(Category category) {
+        return CategoryResponse
                 .builder()
-                .id(category.getId())
-                .name(category.getName())
+                .id(category.getCategoryKey().getId())
+                .name(category.getCategoryKey().getName())
                 .createdBy(category.getCreatedBy())
                 .createdDate(category.getCreatedDate())
+                .modifiedDate(category.getModifiedDate())
+                .modifiedBy(category.getModifiedBy())
                 .parentId(category.getParentId())
                 .build();
     }

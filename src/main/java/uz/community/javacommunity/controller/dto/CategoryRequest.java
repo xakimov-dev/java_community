@@ -13,12 +13,8 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryRequest {
 
-    @NotBlank
+    @NotBlank(message = "Category name must not blank")
     String name;
 
     UUID parentId;
-
-    @NotBlank
-    String createdBy;
-
 }
