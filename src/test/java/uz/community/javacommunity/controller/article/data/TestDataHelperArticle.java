@@ -1,4 +1,4 @@
-package uz.community.javacommunity.controller.article.data;
+package uz.community.javacommunity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -11,6 +11,7 @@ import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.dto.UserResponse;
+import uz.community.javacommunity.controller.dto.ArticleResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class TestDataHelperArticle {
     private static final String BASE_PATH = "/article";
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
-    public RequestBuilder createArticleRequest(String name, String categoryId) {
+    public RequestBuilder createArticleRequest(String name, UUID categoryId) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name",name);
         payload.put("categoryId",categoryId);
@@ -38,11 +39,10 @@ public class TestDataHelperArticle {
                 .content(jsonConverter.convertToString(payload));
     }
 
-    @SneakyThrows
     public ArticleResponse createArticle(
             String name,
-            String  categoryId
-    ){
+            UUID categoryId
+    ) throws Exception {
         RequestBuilder request = createArticleRequest(name, categoryId);
         String contentAsString = mockMvc.perform(request).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         return jsonConverter.convertFromString(contentAsString, ArticleResponse.class);

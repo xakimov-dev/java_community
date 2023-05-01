@@ -15,5 +15,5 @@ public interface ArticleRepository extends CassandraRepository<Article, ArticleK
     boolean existsByArticleKey_Id(UUID id);
 
     @Query(allowFiltering = true)
-    Optional<Article> findByNameAndAndArticleKeyId(String name, String categoryId);
+    Optional<Article> findByNameAndArticleKey_CategoryId(String name, UUID categoryId);
 }

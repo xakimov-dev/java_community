@@ -12,15 +12,15 @@ import java.util.UUID;
 @Builder
 public class ArticleResponse {
     private String name;
-    private String categoryId;
-    private String articleId;
+    private UUID categoryId;
+    private UUID articleId;
     private String createdBy;
     private String createdDate;
     public static ArticleResponse from(Article article) {
         return ArticleResponse.builder()
                 .name(article.getName())
-                .articleId(article.getArticleKey().getId().toString())
-                .categoryId(article.getArticleKey().getCategoryId().toString())
+                .articleId(article.getArticleKey().getId())
+                .categoryId(article.getArticleKey().getCategoryId())
                 .createdBy(article.getCreatedBy())
                 .createdDate(article.getCreatedDate().toString())
                 .build();
