@@ -12,11 +12,15 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import uz.community.javacommunity.common.constants.JwtConstants;
 import uz.community.javacommunity.security.CustomJwtDecoder;
 import uz.community.javacommunity.service.JwtService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -68,7 +72,16 @@ public class SecurityConfig {
     public JwtDecoder jwtDecoder(JwtService jwtService) {
         return new CustomJwtDecoder(jwtService);
     }
-
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
