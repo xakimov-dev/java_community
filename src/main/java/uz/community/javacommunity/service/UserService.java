@@ -50,7 +50,7 @@ public class UserService {
     public String login(String username, String password) {
         Login login = loginRepository.findById(username).orElseThrow(AuthenticationException::new);
         validatePassword(login, password);
-        User user = userRepository.findById(username).orElseThrow(AuthenticationException::new);
+        User user = userRepository.findById(username).orElseThrow(()-> new RecordNotFoundException("User with username [%s] not found ".formatted(username)));
         return jwtService.generateToken(user);
     }
 

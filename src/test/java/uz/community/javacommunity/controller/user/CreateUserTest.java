@@ -12,6 +12,7 @@ import java.util.Set;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @DisplayName("Create a new user ( POST /user )")
 class CreateUserTest extends CommonIntegrationTest {
 
