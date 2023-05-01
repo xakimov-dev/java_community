@@ -4,12 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class ArticleCreateRequest {
     @NotBlank
     private String name;
-    @NotBlank
-    private String categoryId;
+    @NotNull
+    private UUID categoryId;
 }

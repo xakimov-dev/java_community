@@ -6,11 +6,12 @@ import org.springframework.stereotype.Repository;
 import uz.community.javacommunity.controller.domain.Article;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static uz.community.javacommunity.controller.domain.Article.ArticleKey;
 
 @Repository
 public interface ArticleRepository extends CassandraRepository<Article, ArticleKey> {
     @Query(allowFiltering = true)
-    Optional<Article> findByNameAndAndArticleKeyId(String name, String categoryId);
+    Optional<Article> findByNameAndArticleKey_CategoryId(String name, UUID categoryId);
 }

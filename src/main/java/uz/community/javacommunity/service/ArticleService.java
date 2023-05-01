@@ -20,8 +20,8 @@ public class ArticleService {
     private final JwtService jwtService;
 
     public Article create(ArticleCreateRequest articleCreateRequest, HttpServletRequest request) {
-        final String categoryId = articleCreateRequest.getCategoryId();
-        categoryService.throwIfCategoryCannotBeFound(UUID.fromString(categoryId));
+        final UUID categoryId = articleCreateRequest.getCategoryId();
+        categoryService.throwIfCategoryCannotBeFound(categoryId);
         throwIfArticleAlreadyExists(articleCreateRequest.getName(), categoryId);
         String username = jwtService.getUsernameFromToken(request);
         Article article = Article.builder()
@@ -33,9 +33,9 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    private void throwIfArticleAlreadyExists(String name,String categoryId){
+    private void throwIfArticleAlreadyExists(String name,UUID categoryId){
         Optional<Article> article = articleRepository
-                .findByNameAndAndArticleKeyId(name, categoryId);
+                .findByNameAndArticleKey_CategoryId(name, categoryId);
         if(article.isPresent()){
             throw new AlreadyExistsException("Article with name : '" +
                     name + "' already exists");

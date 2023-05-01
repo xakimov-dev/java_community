@@ -22,7 +22,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId.toString());
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -41,7 +41,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId.toString());
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
         //WHEN
         mockMvc.perform(request);
         ResultActions resultActions = mockMvc.perform(request);
@@ -56,7 +56,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
     void shouldFailCategoryNotFound() throws Exception{
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
-                "56587e05-8911-4009-885a-98e2c7d51c87");
+                UUID.fromString("56587e05-8911-4009-885a-98e2c7d51c87"));
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -70,7 +70,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
     void shouldFailIfEmptyRequiredField() throws Exception{
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
-                "");
+                null);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -79,7 +79,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
 
         //GIVEN
         RequestBuilder request2 = testDataHelperArticle.createArticleRequest("",
-                "56587e05-8911-4009-885a-98e2c7d51c87");
+                UUID.fromString("56587e05-8911-4009-885a-98e2c7d51c87"));
         //WHEN
         ResultActions resultActions2 = mockMvc.perform(request2);
         //THEN
@@ -88,7 +88,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
 
         //GIVEN
         RequestBuilder request3 = testDataHelperArticle.createArticleRequest("",
-                "");
+                null);
         //WHEN
         ResultActions resultActions3 = mockMvc.perform(request3);
         //THEN
@@ -103,7 +103,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId.toString());
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
