@@ -33,6 +33,8 @@ public abstract class CommonIntegrationTest {
 
     @Autowired
     protected TestDataHelperUser testDataHelperUser;
+    @Autowired
+    protected TestDataHelperArticle testDataHelperArticle;
     private static final String IMAGE_NAME = "cassandra:3.11.2";
     private static final String KEYSPACE_NAME = "java_community";
     private static final CassandraContainer<?> cassandra;
