@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS category
 CREATE TABLE IF NOT EXISTS article
 (
     id uuid,
-    category_id text,
+    category_id uuid,
     name text,
     created_by    text,
     created_date  timestamp,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS sub_article
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id, category_id, article_id,parent_sub_article_id)
+    PRIMARY KEY (id, category_id, article_id)
 );
 -- rollback DROP TABLE sub_article
 
