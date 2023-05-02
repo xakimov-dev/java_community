@@ -26,7 +26,8 @@ public class CategoryController {
     }
 
     @GetMapping()
-    public List<CategoryResponse> getAllParent2(){
-        return categoryService.getAllParent();
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryResponse> getAllCategory(){
+        return categoryService.getAllCategory();
     }
 }

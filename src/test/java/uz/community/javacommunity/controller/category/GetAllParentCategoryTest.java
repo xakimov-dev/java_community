@@ -28,5 +28,6 @@ class GetAllParentCategoryTest extends CommonIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(3)));
+
     }
 }
