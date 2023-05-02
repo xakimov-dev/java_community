@@ -6,10 +6,13 @@ import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
+import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,5 +56,23 @@ public class CategoryService {
             throw new RecordNotFoundException("Category with id : '" +
                     categoryId + "' cannot be found!");
         }
+    }
+
+    public List<CategoryResponse> getAllParent() {
+        List<Category> categoryAll = categoryRepository.findAllBy();
+        return getAllParentIdIsNull(categoryAll);
+    }
+
+    private  List<CategoryResponse> getAllParentIdIsNull(List<Category> categoryAll) {
+        List<Category> parentIdIsNull = new ArrayList<>();
+        categoryAll.forEach(category -> {
+                    if (category.getParentId() == null) parentIdIsNull.add(category);}
+                );
+        List<CategoryResponse> parentCategory = new ArrayList<>();
+        parentIdIsNull.forEach(parentId -> {
+            parentCategory.add(CategoryResponse.from(parentId));
+        }
+        );
+        return parentCategory;
     }
 }
