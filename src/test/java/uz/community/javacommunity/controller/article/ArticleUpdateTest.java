@@ -31,20 +31,20 @@ public class ArticleUpdateTest extends CommonIntegrationTest {
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
         shouldFailCategoryNotFound(categoryId);
-        RequestBuilder article = testDataHelperArticle.createArticleRequest("java",categoryId.toString());
+        RequestBuilder article = testDataHelperArticle.createArticleRequest("java",categoryId);
         //WHEN
         String contentAsString = mockMvc.perform(article).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         ArticleResponse articleResponse = jsonConverter.convertFromString(contentAsString, ArticleResponse.class);
 
 
-        Article.ArticleKey articleKey = Article.ArticleKey.of(UUID.fromString(articleResponse.getArticleId()), articleResponse.getCategoryId());
+        Article.ArticleKey articleKey = Article.ArticleKey.of(articleResponse.getArticleId(), articleResponse.getCategoryId());
         ArticleUpdateRequest articleUpdateRequest = new ArticleUpdateRequest(
                 articleKey,
                 "new article name"
         );
 
 
-        RequestBuilder requestBuilder = testDataHelperArticle.updateArticleRequest(UUID.fromString(articleResponse.getArticleId()), articleUpdateRequest);
+        RequestBuilder requestBuilder = testDataHelperArticle.updateArticleRequest(articleResponse.getArticleId(), articleUpdateRequest);
 
         ResultActions resultActions = mockMvc.perform(requestBuilder);
 
@@ -65,7 +65,7 @@ public class ArticleUpdateTest extends CommonIntegrationTest {
     void shouldFailCategoryNotFound(UUID id) throws Exception{
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
-                String.valueOf(id));
+              (id));
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -80,7 +80,7 @@ public class ArticleUpdateTest extends CommonIntegrationTest {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId.toString());
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN

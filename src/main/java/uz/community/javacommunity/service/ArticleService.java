@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
+import uz.community.javacommunity.controller.dto.ArticleResponse;
+import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
+import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
