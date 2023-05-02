@@ -18,6 +18,7 @@ import java.security.Principal;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.UPGRADE_REQUIRED;
 
 @Tag(name = "article")
 @RestController
@@ -41,6 +42,7 @@ public class ArticleController {
 
     @PutMapping(value = "/{id}")
     @Operation(summary = "Update article")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(
             @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
             @PathVariable UUID id,
