@@ -15,13 +15,13 @@ import uz.community.javacommunity.controller.dto.CategoryResponse;
 
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @DisplayName("Update an article ( PUT /article/{id} )")
 @RequiredArgsConstructor
-public class ArticleUpdateTest extends CommonIntegrationTest {
+class ArticleUpdateTest extends CommonIntegrationTest {
     private final JsonConverter jsonConverter;
     @Test
     @DisplayName(value = "Should be success, update a Article")

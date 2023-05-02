@@ -3,9 +3,9 @@ package uz.community.javacommunity.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
+import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
-import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
@@ -39,20 +39,25 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    private void throwIfArticleAlreadyExists(String name,UUID categoryId){
+    private void throwIfArticleAlreadyExists(String name, UUID categoryId) {
         Optional<Article> article = articleRepository
                 .findByNameAndArticleKey_CategoryId(name, categoryId);
-        if(article.isPresent()){
+        if (article.isPresent()) {
             throw new AlreadyExistsException("Article with name : '" +
                     name + "' already exists");
         }
     }
 
+    public Article update(UUID id, ArticleUpdateRequest articleUpdateRequest, String username) {
+        UUID categoryId = articleUpdateRequest.getCategoryId();
+        commonSchemaValidator.validateCategory(categoryId);
+        Article article = articleRepository.findArticleByArticleKeyId(id).orElseThrow(() -> new RecordNotFoundException(String.format("Article not found for id %s", id)));
 
-    public ArticleResponse update(UUID id, ArticleUpdateRequest articleUpdateRequest, String username){
-        commonSchemaValidator.validateCategory(articleUpdateRequest.articleKey().getCategoryId());
-        Article article = commonSchemaValidator.validateArticle(id);
-        return ArticleResponse.from(articleRepository.save(Article.of(articleUpdateRequest, article, username)));
+        article.setArticleKey(Article.ArticleKey.of(id, categoryId));
+        article.setName(articleUpdateRequest.getName());
+        article.setModifiedBy(username);
+        article.setModifiedDate(Instant.now());
+
+        return articleRepository.save(article);
     }
-
 }

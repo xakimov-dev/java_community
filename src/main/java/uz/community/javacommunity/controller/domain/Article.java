@@ -47,17 +47,5 @@ public class Article {
             return new ArticleKey(id, categoryId);
         }
     }
-
-    public static Article of(ArticleUpdateRequest articleUpdateRequest, Article articleById, String username){
-        return Article.builder()
-                .articleKey(articleUpdateRequest.articleKey())
-                .name(articleUpdateRequest.name())
-                .createdBy(articleById.createdBy)
-                .createdDate(articleById.createdDate)
-                .modifiedBy(username)
-                .modifiedDate(Instant.now())
-                .build();
-    }
-
 }
 
