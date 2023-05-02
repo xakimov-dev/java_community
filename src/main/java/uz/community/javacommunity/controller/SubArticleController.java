@@ -12,7 +12,7 @@ import uz.community.javacommunity.service.SubArticleService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/article/sub")
-public class SubArticleCategory {
+public class SubArticleController {
 
     private final SubArticleService service;
 

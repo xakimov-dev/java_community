@@ -2,7 +2,6 @@ package uz.community.javacommunity.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.controller.domain.SubArticle;
 import uz.community.javacommunity.controller.dto.SubArticleRequest;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
@@ -28,5 +27,4 @@ public class SubArticleService {
 
         return SubArticleResponse.of(savedSubArticle);
     }
-
 }

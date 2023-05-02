@@ -79,6 +79,8 @@ public abstract class CommonIntegrationTest {
         testCassandraScriptUtils.execute("truncate user");
         testCassandraScriptUtils.execute("truncate login");
         testCassandraScriptUtils.execute("truncate category");
+        testCassandraScriptUtils.execute("truncate article");
+        testCassandraScriptUtils.execute("truncate sub_article");
         Instant cleanUpEnd = Instant.now();
         long durationSecs = Duration.between(cleanUpStart, cleanUpEnd).toMillis();
         if (durationSecs > 1500) {
