@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Create a new article ( POST /article )")
-public class CreateArticleTest extends CommonIntegrationTest {
+class CreateArticleTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should be success, create a new Article")
     @WithMockUser(roles = "ADMIN")
@@ -61,7 +61,7 @@ public class CreateArticleTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

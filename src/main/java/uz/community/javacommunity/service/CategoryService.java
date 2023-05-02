@@ -6,10 +6,12 @@ import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
+import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,5 +55,15 @@ public class CategoryService {
             throw new RecordNotFoundException("Category with id : '" +
                     categoryId + "' cannot be found!");
         }
+    }
+
+    public List<CategoryResponse> getAllParent() {
+         return getAllParentIdIsNull(categoryRepository.findAllBy());
+    }
+
+    private  List<CategoryResponse> getAllParentIdIsNull(List<Category> categoryAll) {
+        return categoryAll.stream().filter(category -> category.getParentId() == null)
+                .map(CategoryResponse::from)
+                .toList();
     }
 }
