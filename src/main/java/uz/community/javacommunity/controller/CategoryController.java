@@ -2,7 +2,6 @@ package uz.community.javacommunity.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.community.javacommunity.controller.domain.Category;
@@ -26,9 +25,8 @@ public class CategoryController {
         return CategoryResponse.from(category);
     }
 
-    @GetMapping("/get-all-parent")
+    @GetMapping()
     public List<CategoryResponse> getAllParent2(){
         return categoryService.getAllParent();
     }
-
 }

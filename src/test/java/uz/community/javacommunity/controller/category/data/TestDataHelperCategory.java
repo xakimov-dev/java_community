@@ -9,20 +9,19 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.IntStream;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @Component
 @Profile("functionalTest")
 @RequiredArgsConstructor
 public class TestDataHelperCategory {
-
     private static final String BASE_PATH = "/category";
     private static final String GET_ALL_PARENT_ID_IS_NULL = "/get-all-Parent";
-
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
 
@@ -46,5 +45,37 @@ public class TestDataHelperCategory {
         RequestBuilder request = createCategoryRequest(categoryName, parentId);
         String contentAsString = mockMvc.perform(request).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         return jsonConverter.convertFromString(contentAsString, CategoryResponse.class);
+    }
+
+    public List<CategoryResponse> createCategory(
+            String categoryName,
+            UUID parentId,
+            int amount
+    ) throws Exception {
+        return IntStream.range(0, amount).mapToObj((i)-> {
+            try {
+                return createCategory(categoryName + i,  parentId);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+    }
+
+    public List<CategoryResponse> createCategory(
+            String categoryName,
+            int amount
+    ) throws Exception {
+        return IntStream.range(0, amount).mapToObj((i)-> {
+            try {
+                return createCategory(categoryName + i,  null);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+    }
+
+    public RequestBuilder listAllParentCategories() {
+        return get(BASE_PATH)
+                .contentType(MediaType.APPLICATION_JSON);
     }
 }

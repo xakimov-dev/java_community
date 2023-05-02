@@ -18,6 +18,7 @@ public interface CategoryRepository extends CassandraRepository<Category, Catego
 
     Optional<Category> findByCategoryKeyId(UUID id);
 
+//    @Query("SELECT * FROM category WHERE parent_id IS NULL")
     List<Category> findAllBy();
 
 }

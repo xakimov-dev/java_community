@@ -11,7 +11,6 @@ import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,20 +58,12 @@ public class CategoryService {
     }
 
     public List<CategoryResponse> getAllParent() {
-        List<Category> categoryAll = categoryRepository.findAllBy();
-        return getAllParentIdIsNull(categoryAll);
+         return getAllParentIdIsNull(categoryRepository.findAllBy());
     }
 
     private  List<CategoryResponse> getAllParentIdIsNull(List<Category> categoryAll) {
-        List<Category> parentIdIsNull = new ArrayList<>();
-        categoryAll.forEach(category -> {
-                    if (category.getParentId() == null) parentIdIsNull.add(category);}
-                );
-        List<CategoryResponse> parentCategory = new ArrayList<>();
-        parentIdIsNull.forEach(parentId -> {
-            parentCategory.add(CategoryResponse.from(parentId));
-        }
-        );
-        return parentCategory;
+        return categoryAll.stream().filter(category -> category.getParentId() == null)
+                .map(CategoryResponse::from)
+                .toList();
     }
 }
