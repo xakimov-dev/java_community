@@ -7,11 +7,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.community.javacommunity.controller.domain.Article;
-import uz.community.javacommunity.controller.dto.*;
+import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
+import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.service.ArticleService;
 
-
-import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -28,8 +28,9 @@ public class ArticleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse createArticle(
             @RequestBody @Validated ArticleCreateRequest request,
-            HttpServletRequest httpServletRequest) {
-        Article savedArticle = articleService.create(request,httpServletRequest);
+            Principal principal
+    ) {
+        Article savedArticle = articleService.create(request, principal.getName());
         return ArticleResponse.from(savedArticle);
     }
 }

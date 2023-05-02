@@ -6,8 +6,8 @@ import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
+import uz.community.javacommunity.validation.CommonSchemaValidator;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,19 +16,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
-    private final CategoryService categoryService;
-    private final JwtService jwtService;
+    private final CommonSchemaValidator commonSchemaValidator;
 
-    public Article create(ArticleCreateRequest articleCreateRequest, HttpServletRequest request) {
-        final UUID categoryId = articleCreateRequest.getCategoryId();
-        categoryService.throwIfCategoryCannotBeFound(categoryId);
+    public Article create(ArticleCreateRequest articleCreateRequest, String currentUser) {
+        UUID categoryId = articleCreateRequest.getCategoryId();
+        commonSchemaValidator.validateCategory(categoryId);
         throwIfArticleAlreadyExists(articleCreateRequest.getName(), categoryId);
-        String username = jwtService.getUsernameFromToken(request);
+
+        Instant now = Instant.now();
         Article article = Article.builder()
                 .articleKey(Article.ArticleKey.of(UUID.randomUUID(), categoryId))
                 .name(articleCreateRequest.getName())
-                .createdBy(username)
-                .createdDate(Instant.now())
+                .createdBy(currentUser)
+                .modifiedBy(currentUser)
+                .createdDate(now)
+                .modifiedDate(now)
                 .build();
         return articleRepository.save(article);
     }

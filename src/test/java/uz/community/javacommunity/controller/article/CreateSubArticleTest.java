@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Create a new sub article ( POST /article/sub )")
-public class CreateSubArticleTest extends CommonIntegrationTest {
+class CreateSubArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should create a parent sub article")
@@ -66,7 +66,7 @@ public class CreateSubArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should not create a sub article")
+    @DisplayName(value = "Should not create a sub article when article name is duplicate")
     @WithAuthentication(username = "owner")
     void shouldNotCreateSubArticle() throws Exception {
 
