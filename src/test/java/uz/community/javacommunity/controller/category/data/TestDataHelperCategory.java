@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestDataHelperCategory {
 
     private static final String BASE_PATH = "/category";
+    private static final String GET_ALL_PARENT_ID_IS_NULL = "/get-all-Parent";
 
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
