@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS category
 CREATE TABLE IF NOT EXISTS article
 (
     id uuid,
-    category_id text,
+    category_id uuid,
     name text,
     created_by    text,
     created_date  timestamp,
