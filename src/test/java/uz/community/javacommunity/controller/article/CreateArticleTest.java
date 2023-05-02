@@ -61,7 +61,7 @@ class CreateArticleTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
