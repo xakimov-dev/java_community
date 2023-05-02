@@ -7,14 +7,20 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.community.javacommunity.controller.domain.Article;
-import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
-import uz.community.javacommunity.controller.dto.ArticleResponse;
+import uz.community.javacommunity.controller.dto.*;
 import uz.community.javacommunity.service.ArticleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+
+import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 
 import java.security.Principal;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.UPGRADE_REQUIRED;
 
+@Tag(name = "article")
 @RestController
 @RequestMapping("/article")
 @RequiredArgsConstructor
@@ -33,4 +39,17 @@ public class ArticleController {
         Article savedArticle = articleService.create(request, principal.getName());
         return ArticleResponse.from(savedArticle);
     }
+
+    @PutMapping(value = "/{id}")
+    @Operation(summary = "Update article")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> update(
+            @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
+            @PathVariable UUID id,
+            Principal principal
+    ) {
+        String username = principal.getName();
+        return ResponseEntity.ok(articleService.update(id, articleUpdateRequest, username));
+    }
+
 }

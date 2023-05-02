@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
+import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,17 @@ public class TestDataHelperArticle {
         payload.put("categoryId",categoryId);
 
         return post(BASE_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(payload));
+    }
+
+    public RequestBuilder updateArticleRequest(UUID id, ArticleUpdateRequest articleUpdateRequest){
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id);
+        payload.put("categoryId", articleUpdateRequest.articleKey().getCategoryId());
+        payload.put("name", articleUpdateRequest.name());
+
+        return post("/article/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
     }

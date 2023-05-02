@@ -28,6 +28,7 @@ class GetCurrentUserTest extends CommonIntegrationTest {
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
+
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName").value(user.getUsername()))
