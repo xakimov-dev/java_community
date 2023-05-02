@@ -22,6 +22,7 @@ import org.testcontainers.lifecycle.Startables;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.common.controller.handler.pojo.FieldErrorResponse;
 import uz.community.javacommunity.controller.article.data.TestDataHelperArticle;
+import uz.community.javacommunity.controller.article.data.TestDataHelperSubArticle;
 import uz.community.javacommunity.controller.category.data.TestDataHelperCategory;
 
 import java.time.Duration;
@@ -41,6 +42,8 @@ public abstract class CommonIntegrationTest {
     protected TestDataHelperArticle testDataHelperArticle;
     @Autowired
     protected TestDataHelperCategory testDataHelperCategory;
+    @Autowired
+    protected TestDataHelperSubArticle testDataHelperSubArticle;
     private static final String IMAGE_NAME = "cassandra:3.11.2";
     private static final String KEYSPACE_NAME = "java_community";
     private static final CassandraContainer<?> cassandra;

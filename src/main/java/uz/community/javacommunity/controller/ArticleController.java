@@ -17,8 +17,6 @@ import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import java.security.Principal;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Tag(name = "article")
@@ -35,8 +33,9 @@ public class ArticleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse createArticle(
             @RequestBody @Validated ArticleCreateRequest request,
-            HttpServletRequest httpServletRequest) {
-        Article savedArticle = articleService.create(request, httpServletRequest);
+            Principal principal
+    ) {
+        Article savedArticle = articleService.create(request, principal.getName());
         return ArticleResponse.from(savedArticle);
     }
 

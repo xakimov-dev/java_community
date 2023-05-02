@@ -15,14 +15,9 @@ public class CommonSchemaValidator {
 
     private final CategoryRepository categoryRepository;
     private final ArticleRepository articleRepository;
-    public void validateCategory(String name){
-        if (!categoryRepository.existsByCategoryKeyName(name)){
-            throw new IllegalArgumentException(String.format("category not found for name %s", name));
-        }
-    }
 
-    public void validateCategory(UUID id){
-        if (categoryRepository.findByCategoryKeyId(id).isEmpty()){
+    public void validateCategory(UUID id) {
+        if (categoryRepository.findByCategoryKeyId(id).isEmpty()) {
             throw new IllegalArgumentException(String.format("category not found for id %s", id));
         }
     }
