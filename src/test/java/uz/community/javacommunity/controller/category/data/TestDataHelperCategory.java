@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @Component
@@ -21,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestDataHelperCategory {
 
     private static final String BASE_PATH = "/category";
+    private static final String BASE_PATH_child = "/category/child/";
 
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
@@ -36,6 +39,11 @@ public class TestDataHelperCategory {
         return post(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
+    }
+    public RequestBuilder getChild(UUID id){
+        return get(BASE_PATH_child+id);
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(jsonConverter.convertToString(id));
     }
 
     public CategoryResponse createCategory(

@@ -3,22 +3,16 @@ package uz.community.javacommunity.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
-import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Category;
-import uz.community.javacommunity.controller.domain.User;
-import uz.community.javacommunity.controller.dto.CategoryDTO;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
-import uz.community.javacommunity.controller.dto.CategoryUpdateRequestDTO;
+import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -55,8 +49,8 @@ public class CategoryService {
     }
 
 
-    public List<CategoryDTO> getChildListByParentId(UUID id) {
-        List<Category> childList = categoryRepository.getCategoriesByParentId(id);
-     return childList.stream().map(CategoryDTO::of).collect(Collectors.toList());
+    public List<CategoryResponse> getChildListByParentId(UUID id) {
+        List<Category> childList = categoryRepository.getCategoryByParentId(id);
+     return childList.stream().map(CategoryResponse::from).toList();
     }
 }
