@@ -1,5 +1,6 @@
 package uz.community.javacommunity.controller;
 
+import com.simba.cassandra.shaded.datastax.driver.core.querybuilder.Update;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.security.Principal;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @Tag(name = "article")
 @RestController
@@ -39,6 +41,7 @@ public class ArticleController {
     }
 
     @PutMapping(value = "/{id}")
+    @ResponseStatus(OK)
     @Operation(summary = "Update article")
     @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse update(
