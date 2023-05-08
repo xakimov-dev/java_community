@@ -47,6 +47,14 @@ public class SubArticle {
                 .build();
     }
 
+    public void update(SubArticleRequest dto, UUID id) {
+        setSubArticleKey(SubArticleKey.of(id, dto.categoryId(), dto.articleId()));
+        setName(dto.name());
+        setParentSubArticleId(dto.parentSubArticleId());
+        setModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        setModifiedDate(Instant.now());
+    }
+
     @Data
     @Builder
     @AllArgsConstructor

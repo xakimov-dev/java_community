@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
@@ -38,6 +39,24 @@ public class TestDataHelperSubArticle {
         payload.put("name", name);
 
         return post(BASE_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(payload));
+    }
+
+    public RequestBuilder updateSubArticleRequest(
+            UUID id,
+            UUID categoryId,
+            UUID articleId,
+            UUID parentSubArticleId,
+            String name
+    ) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("categoryId", categoryId);
+        payload.put("articleId", articleId);
+        payload.put("parentSubArticleId", parentSubArticleId);
+        payload.put("name", name);
+
+        return put(BASE_PATH + "/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
     }
