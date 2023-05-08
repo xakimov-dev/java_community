@@ -38,17 +38,6 @@ public class CommonSchemaValidator {
         }
     }
 
-    public void validateSubArticleExistForUpdate(String name, UUID id) {
-
-        Optional<SubArticle> optionalSubArticle = subArticleRepository.findByName(name);
-        if (optionalSubArticle.isPresent()) {
-            SubArticle subArticle = optionalSubArticle.get();
-            if (!subArticle.getSubArticleKey().getId().equals(id)) {
-                throw new IllegalArgumentException(String.format("sub article duplicate for name %s", name));
-            }
-        }
-    }
-
     public void validateSubArticle(UUID id) {
 
         if (id == null) {

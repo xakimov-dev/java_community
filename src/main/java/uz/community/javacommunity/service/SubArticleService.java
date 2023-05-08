@@ -32,15 +32,16 @@ public class SubArticleService {
     }
 
     public void update(SubArticleRequest dto, UUID id) {
-        validator.validateSubArticleExistForUpdate(dto.name(), id);
 
         validator.validateCategory(dto.categoryId());
 
         validator.validateArticle(dto.articleId());
 
-        validator.validateSubArticle(dto.parentSubArticleId());
+        if (dto.parentSubArticleId() != null) {
+            validator.validateSubArticle(dto.parentSubArticleId());
+        }
 
-        SubArticle subArticle = repository.findBySubArticleKeyId(id).orElseThrow(() -> new RecordNotFoundException("Sub article not found by id: " + id));
+        SubArticle subArticle = getById(id);
 
         subArticle.update(dto, id);
 
@@ -52,4 +53,8 @@ public class SubArticleService {
         repository.delete(subArticle);
     }
 
+
+    public SubArticle getById(UUID id) {
+        return repository.findBySubArticleKeyId(id).orElseThrow(() -> new RecordNotFoundException("Sub article not found by id: " + id));
+    }
 }

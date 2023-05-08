@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 import uz.community.javacommunity.controller.domain.Category;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 @Data
 @Builder
@@ -26,6 +27,8 @@ public class CategoryResponse  {
     String modifiedBy;
 
     Instant modifiedDate;
+    List<ArticleResponse> articleResponseList;
+    List<CategoryResponse> childCategoryResponseList;
 
 
     public static CategoryResponse from(Category category) {
