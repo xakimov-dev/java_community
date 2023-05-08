@@ -52,7 +52,7 @@ class CreateSubArticleTest extends CommonIntegrationTest {
         SubArticleResponse parentsubArticle1 = testDataHelperSubArticle.createSubArticle(category.getId(), article.getArticleId(), null, "parentsubArticle1");
 
         RequestBuilder subArticleRequest = testDataHelperSubArticle
-                .createSubArticleRequest(category.getId(), article.getArticleId(), parentsubArticle1.id(), "subArticle12");
+                .createSubArticleRequest(category.getId(), article.getArticleId(), parentsubArticle1.getId(), "subArticle12");
 
         ResultActions resultActions = mockMvc.perform(subArticleRequest);
 
@@ -60,7 +60,7 @@ class CreateSubArticleTest extends CommonIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("subArticle12"))
                 .andExpect(jsonPath("$.createdBy").value("owner"))
-                .andExpect(jsonPath("$.parentSubArticleId").value(parentsubArticle1.id().toString()))
+                .andExpect(jsonPath("$.parentSubArticleId").value(parentsubArticle1.getId().toString()))
                 .andExpect(jsonPath("$.categoryId").value(category.getId().toString()))
                 .andExpect(jsonPath("$.articleId").value(article.getArticleId().toString()));
     }
@@ -77,7 +77,7 @@ class CreateSubArticleTest extends CommonIntegrationTest {
         SubArticleResponse parentsubArticle1 = testDataHelperSubArticle.createSubArticle(category.getId(), article.getArticleId(), null, "art");
 
         RequestBuilder subArticleRequest = testDataHelperSubArticle
-                .createSubArticleRequest(category.getId(), article.getArticleId(), parentsubArticle1.id(), "art");
+                .createSubArticleRequest(category.getId(), article.getArticleId(), parentsubArticle1.getId(), "art");
 
         ResultActions resultActions = mockMvc.perform(subArticleRequest);
 

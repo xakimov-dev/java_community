@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import uz.community.javacommunity.controller.domain.Article;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,6 +17,7 @@ public class ArticleResponse {
     private UUID articleId;
     private String createdBy;
     private String createdDate;
+    private List<SubArticleResponse> subArticleResponseList;
     public static ArticleResponse from(Article article) {
         return ArticleResponse.builder()
                 .name(article.getName())

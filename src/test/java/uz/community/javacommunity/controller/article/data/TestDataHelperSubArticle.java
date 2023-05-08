@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,5 +52,9 @@ public class TestDataHelperSubArticle {
         RequestBuilder request = createSubArticleRequest(categoryId, articleId, parentSubArticleId, name);
         String contentAsString = mockMvc.perform(request).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         return jsonConverter.convertFromString(contentAsString, SubArticleResponse.class);
+    }
+    public RequestBuilder getSubArticles(UUID id) {
+        return get("/article/"+ id)
+                .contentType(MediaType.APPLICATION_JSON);
     }
 }
