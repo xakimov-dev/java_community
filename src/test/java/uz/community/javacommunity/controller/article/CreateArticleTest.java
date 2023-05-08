@@ -6,6 +6,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
+import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
 import java.util.UUID;
@@ -17,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CreateArticleTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should be success, create a new Article")
-    @WithMockUser(roles = "ADMIN")
+    @WithAuthentication(username = "xakimov")
     void shouldCreateArticle() throws Exception{
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
@@ -36,7 +37,7 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the article already exists")
-    @WithMockUser(roles = "ADMIN")
+    @WithAuthentication(username = "xakimov")
     void shouldFailArticleExists() throws Exception{
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
@@ -52,7 +53,7 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the category cannot be found")
-    @WithMockUser(roles = "ADMIN")
+    @WithAuthentication(username = "xakimov")
     void shouldFailCategoryNotFound() throws Exception{
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
@@ -66,7 +67,7 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the category cannot be found")
-    @WithMockUser(roles = "ADMIN")
+    @WithAuthentication(username = "xakimov")
     void shouldFailIfEmptyRequiredField() throws Exception{
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
@@ -98,12 +99,11 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if user does not have authority")
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "xakimov",roles = "USER")
     void shouldFailUserIsNotAdmin() throws Exception{
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
-        UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",category.getId());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN

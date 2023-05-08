@@ -9,7 +9,6 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.IntStream;
 

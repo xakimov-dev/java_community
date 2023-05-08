@@ -8,7 +8,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
-import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +49,8 @@ public class TestDataHelperArticle {
             UUID categoryId
     ) throws Exception {
         RequestBuilder request = createArticleRequest(name, categoryId);
-        String contentAsString = mockMvc.perform(request).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        String contentAsString = mockMvc.perform(request).andExpect(status()
+                .isCreated()).andReturn().getResponse().getContentAsString();
         return jsonConverter.convertFromString(contentAsString, ArticleResponse.class);
     }
 

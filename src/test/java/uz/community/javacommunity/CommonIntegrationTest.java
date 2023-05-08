@@ -3,6 +3,9 @@ package uz.community.javacommunity;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -20,14 +23,21 @@ import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.lifecycle.Startables;
 
 import uz.community.javacommunity.common.JsonConverter;
+import uz.community.javacommunity.common.constants.JwtConstants;
 import uz.community.javacommunity.common.controller.handler.pojo.FieldErrorResponse;
 import uz.community.javacommunity.controller.article.data.TestDataHelperArticle;
 import uz.community.javacommunity.controller.article.data.TestDataHelperSubArticle;
 import uz.community.javacommunity.controller.category.data.TestDataHelperCategory;
+import uz.community.javacommunity.controller.domain.User;
 
+import java.sql.Date;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static uz.community.javacommunity.service.JwtService.JWT_TOKEN_VALIDITY;
 
 @Slf4j
 @WithAuthentication
@@ -103,5 +113,19 @@ public abstract class CommonIntegrationTest {
     protected List<FieldErrorResponse> readErrors(MvcResult mvcResult) {
         return jsonConverter.convertFromString(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
         });
+    }
+
+    public String generateToken(Set<String> ROLES, boolean isExpired) {
+        final String SECRET_KEY = "EFBEF594651CB99ABDAE372F52C22GDSLSADDSSDF";
+        User user = User.builder().username("username").roles(ROLES).build();
+        Instant now = Instant.now();
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date(now.toEpochMilli()))
+                .setExpiration(new Date(((isExpired) ? now.minus(JWT_TOKEN_VALIDITY) :
+                        now.plus(JWT_TOKEN_VALIDITY)).toEpochMilli()))
+                .addClaims(Map.of(JwtConstants.ROLES_CLAIM, user.getRoles()))
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+                .compact();
     }
 }

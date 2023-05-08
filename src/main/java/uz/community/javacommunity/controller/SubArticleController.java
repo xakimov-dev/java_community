@@ -2,6 +2,8 @@ package uz.community.javacommunity.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.community.javacommunity.controller.dto.SubArticleRequest;
@@ -14,6 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/article/sub")
+@EnableMethodSecurity
 public class SubArticleController {
 
     private final SubArticleService service;
@@ -30,4 +33,10 @@ public class SubArticleController {
         service.update(dto, id);
     }
 
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
+    public void delete(@PathVariable UUID id){
+        service.delete(id);
+    }
 }
