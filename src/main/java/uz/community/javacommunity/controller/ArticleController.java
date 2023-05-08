@@ -29,7 +29,7 @@ public class ArticleController {
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an article.")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse createArticle(
             @RequestBody @Validated ArticleCreateRequest request,
             Principal principal
