@@ -10,7 +10,6 @@ import uz.community.javacommunity.controller.dto.SubArticleResponse;
 
 import uz.community.javacommunity.service.SubArticleService;
 
-import java.util.List;
 import java.util.UUID;
 
 
@@ -27,9 +26,10 @@ public class SubArticleController {
         return service.create(dto);
     }
 
-
-
-
-
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@RequestBody @Validated SubArticleRequest dto, @PathVariable UUID id) {
+        service.update(dto, id);
+    }
 
 }
