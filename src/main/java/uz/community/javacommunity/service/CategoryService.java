@@ -61,17 +61,17 @@ public class CategoryService {
         }
     }
 
-    public List<CategoryResponse> getAllCategory() {
+    public List<CategoryResponse> listCategoriesWithChildArticlesAndCategories() {
         List<CategoryResponse> allParentIdIsNull = getAllParentIdIsNull(categoryRepository.findAllBy());
         allParentIdIsNull.forEach(this::getContentOfCategory);
         return allParentIdIsNull;
     }
     public void getContentOfCategory(CategoryResponse categoryResponse){
-        List<Article> allByArticleKeyCategoryId = articleRepository.findAllByArticleKey_CategoryId(categoryResponse.getId()).get();
+        List<Article> allByArticleKeyCategoryId = articleRepository.findAllByArticleKey_CategoryId(categoryResponse.getId());
         if (!allByArticleKeyCategoryId.isEmpty()) {
             categoryResponse.setArticleResponseList(allByArticleKeyCategoryId.stream().map(ArticleResponse::from).toList());
         }
-        List<Category> allByParentId = categoryRepository.findAllByParentId(categoryResponse.getId()).get();
+        List<Category> allByParentId = categoryRepository.findAllByParentId(categoryResponse.getId());
         if (!allByParentId.isEmpty()) {
             List<CategoryResponse> list = allByParentId.stream().map(CategoryResponse::from).toList();
             list.forEach(this::getContentOfCategory);

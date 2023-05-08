@@ -28,6 +28,6 @@ public class CategoryController {
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public List<CategoryResponse> getAllCategory(){
-        return categoryService.getAllCategory();
+        return categoryService.listCategoriesWithChildArticlesAndCategories();
     }
 }

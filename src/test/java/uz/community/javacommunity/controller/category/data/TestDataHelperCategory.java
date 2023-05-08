@@ -9,8 +9,10 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
-import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,7 +63,7 @@ public class TestDataHelperCategory {
         }).toList();
     }
 
-    public List<CategoryResponse> createCategory(
+    public List<CategoryResponse> createMainCategory(
             String categoryName,
             int amount
     ) throws Exception {
