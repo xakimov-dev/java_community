@@ -42,8 +42,6 @@ public class TestDataHelperCategory {
     }
     public RequestBuilder getChild(UUID id){
         return get(BASE_PATH_child+id);
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(jsonConverter.convertToString(id));
     }
 
     public CategoryResponse createCategory(
