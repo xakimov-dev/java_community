@@ -31,4 +31,12 @@ class CategoryControllerTest extends CommonIntegrationTest {
                 .andExpect(jsonPath("$").isArray());
 
     }
+    @Test
+    @DisplayName(value = "if id is null")
+    @WithAuthentication
+    void shouldThrowFieldValidationException() throws Exception {
+        RequestBuilder child = testDataHelperCategory.getChild(null);
+        ResultActions resultActions = mockMvc.perform(child);
+        resultActions.andExpect(status().is4xxClientError());
+    }
 }

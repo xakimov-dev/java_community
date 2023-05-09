@@ -26,7 +26,7 @@ public class TestDataHelperCategory {
 
     private static final String BASE_PATH = "/category";
     private static final String GET_ALL_PARENT_ID_IS_NULL = "/get-all-Parent";
-    private static final String BASE_PATH_child = "/category/child/";
+    private static final String BASE_PATH_child = "/category/child/{id}";
 
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
@@ -44,7 +44,7 @@ public class TestDataHelperCategory {
                 .content(jsonConverter.convertToString(payload));
     }
     public RequestBuilder getChild(UUID id){
-        return get(BASE_PATH_child+id);
+        return get(BASE_PATH_child,id);
     }
 
     public CategoryResponse createCategory(

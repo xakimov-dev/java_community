@@ -29,6 +29,7 @@ public class CategoryController {
     public List<CategoryResponse>getChildList(
             @PathVariable UUID id
             ){
-      return   categoryService.getChildListByParentId(id);
+        List<Category> childListByParentId = categoryService.getChildListByParentId(id);
+        return  CategoryResponse.getChildList(childListByParentId);
     }
 }

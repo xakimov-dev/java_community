@@ -55,9 +55,12 @@ public class CategoryService {
     }
 
 
-    public List<CategoryResponse> getChildListByParentId(UUID id) {
-        List<Category> childList = categoryRepository.getCategoryByParentId(id);
-     return childList.stream().map(CategoryResponse::from).toList();
+    public List<Category> getChildListByParentId(UUID id) {
+        List<Category> categoryByParentId = categoryRepository.getCategoryByParentId(id);
+        if (categoryByParentId.isEmpty()){
+            throw new IllegalArgumentException();
+        }
+        return categoryByParentId;
     }
 
     public void throwIfCategoryCannotBeFound(UUID categoryId) {
