@@ -40,7 +40,6 @@ public class TestDataHelperArticle {
         payload.put("categoryId", categoryId);
         payload.put("name", name);
 
-
         return put("/article/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
