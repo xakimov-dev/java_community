@@ -1,11 +1,12 @@
 package uz.community.javacommunity.controller.article;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
+import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
 import java.util.UUID;
@@ -17,12 +18,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CreateArticleTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should be success, create a new Article")
-    @WithMockUser(roles = "ADMIN")
-    void shouldCreateArticle() throws Exception{
+    @WithAuthentication(username = "owner")
+    void shouldCreateArticle() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", categoryId);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -36,12 +37,12 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the article already exists")
-    @WithMockUser(roles = "ADMIN")
-    void shouldFailArticleExists() throws Exception{
+    @WithAuthentication(username = "owner")
+    void shouldFailArticleExists() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", categoryId);
         //WHEN
         mockMvc.perform(request);
         ResultActions resultActions = mockMvc.perform(request);
@@ -52,11 +53,11 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the category cannot be found")
-    @WithMockUser(roles = "ADMIN")
-    void shouldFailCategoryNotFound() throws Exception{
+    @WithAuthentication(username = "owner")
+    void shouldFailCategoryNotFound() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
-                UUID.fromString("56587e05-8911-4009-885a-98e2c7d51c87"));
+                UUID.randomUUID());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -65,9 +66,9 @@ class CreateArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should fail if the category cannot be found")
-    @WithMockUser(roles = "ADMIN")
-    void shouldFailIfEmptyRequiredField() throws Exception{
+    @DisplayName(value = "Should fail if required fields are empty")
+    @WithAuthentication(username = "owner")
+    void shouldFailIfEmptyRequiredField() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
                 null);
@@ -98,16 +99,29 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if user does not have authority")
-    @WithMockUser(roles = "USER")
-    void shouldFailUserIsNotAdmin() throws Exception{
+    @WithAuthentication(username = "owner", roles = "USER")
+    void shouldFailUserIsNotAdmin() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
-        UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",categoryId);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", category.getId());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @DisplayName(value = "Should fail with 401 error code if not authorized")
+    @SneakyThrows
+    void shouldFailIfUnauthorized() {
+        //GIVEN
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", UUID.randomUUID());
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isUnauthorized());
+    }
+
 }

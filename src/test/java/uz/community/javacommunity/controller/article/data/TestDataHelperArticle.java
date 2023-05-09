@@ -51,7 +51,8 @@ public class TestDataHelperArticle {
             UUID categoryId
     ) throws Exception {
         RequestBuilder request = createArticleRequest(name, categoryId);
-        String contentAsString = mockMvc.perform(request).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        String contentAsString = mockMvc.perform(request).andExpect(status()
+                .isCreated()).andReturn().getResponse().getContentAsString();
         return jsonConverter.convertFromString(contentAsString, ArticleResponse.class);
     }
 

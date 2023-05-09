@@ -16,6 +16,7 @@ import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
@@ -60,6 +61,10 @@ public class TestDataHelperSubArticle {
         return put(BASE_PATH + "/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
+    }
+
+    public RequestBuilder deleteSubArticleRequest(UUID id){
+        return delete(BASE_PATH + "/delete/" + id);
     }
 
     public SubArticleResponse createSubArticle(
