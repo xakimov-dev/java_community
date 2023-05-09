@@ -22,6 +22,7 @@ public class SubArticleContent {
     @PrimaryKey
     SubArticleContentKey subArticleContentKey;
     String content;
+    @Column("is_paragraph")
     boolean isParagraph;
     @Column("created_by")
     String createdBy;
