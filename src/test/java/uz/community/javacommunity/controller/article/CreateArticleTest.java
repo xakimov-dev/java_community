@@ -3,6 +3,7 @@ package uz.community.javacommunity.controller.article;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
@@ -114,6 +115,7 @@ class CreateArticleTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should fail with 401 error code if not authorized")
     @SneakyThrows
+    @WithAnonymousUser
     void shouldFailIfUnauthorized() {
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java", UUID.randomUUID());

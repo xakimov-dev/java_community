@@ -65,10 +65,6 @@ public class ArticleService {
     }
 
     public List<Article> getAllByCategoryId(UUID categoryId) {
-        List<Article> articles = articleRepository.findAllByArticleKey_CategoryId(categoryId);
-        if (!articles.isEmpty()) {
-            return articles;
-        }
-        return null;
+        return articleRepository.findAllByArticleKey_CategoryId(categoryId);
     }
 }
