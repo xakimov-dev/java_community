@@ -54,12 +54,6 @@ public class ArticleController {
         Article article = articleService.update(id, articleUpdateRequest, username);
         return ArticleResponse.from(article);
     }
-    @GetMapping("/{id}")
-    public ArticleResponse getArticle(
-            @PathVariable UUID id
-    ){
-        return articleService.getArticleById(id);
-    }
 
     @GetMapping("/{categoryId}")
     @Operation(summary = "get articles by categoryId")
@@ -67,6 +61,6 @@ public class ArticleController {
     public List<ArticleResponse> getAllByCategoryId(
             @PathVariable UUID categoryId
     ){
-        return articleService.getAllByCategoryId(categoryId);
+        return ArticleResponse.fromList(articleService.getAllByCategoryId(categoryId));
     }
 }
