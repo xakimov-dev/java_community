@@ -67,6 +67,14 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
+    public List<ArticleResponse> getAllByCategoryId(UUID categoryId) {
+        List<Article> articles = articleRepository.findAllByArticleKey_CategoryId(categoryId);
+        if (!articles.isEmpty()) {
+            return articles.stream().map(ArticleResponse::from).toList();
+        }
+        return null;
+    }
+
     public ArticleResponse getArticleById(UUID id) {
         Optional<Article> optionalArticle = articleRepository.findByArticleKey_Id(id);
         if (optionalArticle.isPresent()) {

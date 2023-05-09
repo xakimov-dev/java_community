@@ -15,6 +15,7 @@ import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.service.ArticleService;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -58,5 +59,14 @@ public class ArticleController {
             @PathVariable UUID id
     ){
         return articleService.getArticleById(id);
+    }
+
+    @GetMapping("/{categoryId}")
+    @Operation(summary = "get articles by categoryId")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public List<ArticleResponse> getAllByCategoryId(
+            @PathVariable UUID categoryId
+    ){
+        return articleService.getAllByCategoryId(categoryId);
     }
 }
