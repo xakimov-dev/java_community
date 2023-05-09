@@ -61,5 +61,4 @@ class ArticleUpdateTest extends CommonIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest());
     }
-
 }
