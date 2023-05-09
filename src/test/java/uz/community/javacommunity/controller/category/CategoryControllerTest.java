@@ -8,6 +8,8 @@ import uz.community.javacommunity.CommonIntegrationTest;
 import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
+import java.util.Set;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,11 +34,20 @@ class CategoryControllerTest extends CommonIntegrationTest {
 
     }
     @Test
-    @DisplayName(value = "if id is null")
+    @DisplayName(value = "if parent id is null")
     @WithAuthentication
-    void shouldThrowFieldValidationException() throws Exception {
-        RequestBuilder child = testDataHelperCategory.getChild(null);
+    void parentIdIsNull() throws Exception {
+        CategoryResponse tt = testDataHelperCategory.createCategory("tt", null);
+        RequestBuilder child = testDataHelperCategory.getChild(tt.getId());
         ResultActions resultActions = mockMvc.perform(child);
-        resultActions.andExpect(status().is4xxClientError());
+        resultActions.andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName(value = "Is Empty")
+    @WithAuthentication
+    void isNull() throws Exception {
+        RequestBuilder categoryRequest = testDataHelperCategory.createCategoryRequest("", null);
+        ResultActions resultActions = mockMvc.perform(categoryRequest);
+        resultActions.andExpect(status().isBadRequest());
     }
 }
