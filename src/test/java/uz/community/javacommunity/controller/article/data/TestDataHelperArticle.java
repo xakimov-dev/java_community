@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 
@@ -24,7 +23,7 @@ public class TestDataHelperArticle {
     private static final String BASE_PATH = "/article";
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
-    public MockHttpServletRequestBuilder createArticleRequest(String name, UUID categoryId) {
+    public RequestBuilder createArticleRequest(String name, UUID categoryId) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name",name);
         payload.put("categoryId",categoryId);

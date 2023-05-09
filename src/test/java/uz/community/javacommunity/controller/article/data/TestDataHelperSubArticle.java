@@ -6,13 +6,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -62,7 +60,7 @@ public class TestDataHelperSubArticle {
                 .content(jsonConverter.convertToString(payload));
     }
 
-    public MockHttpServletRequestBuilder deleteSubArticleRequest(UUID id){
+    public RequestBuilder deleteSubArticleRequest(UUID id){
         return delete(BASE_PATH + "/delete/" + id);
     }
 

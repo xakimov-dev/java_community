@@ -9,7 +9,6 @@ import uz.community.javacommunity.CommonIntegrationTest;
 import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
-import java.util.Set;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CreateArticleTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should be success, create a new Article")
-    @WithAuthentication(username = "xakimov")
+    @WithAuthentication(username = "owner")
     void shouldCreateArticle() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
@@ -38,7 +37,7 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the article already exists")
-    @WithAuthentication(username = "xakimov")
+    @WithAuthentication(username = "owner")
     void shouldFailArticleExists() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
@@ -54,7 +53,7 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the category cannot be found")
-    @WithAuthentication(username = "xakimov")
+    @WithAuthentication(username = "owner")
     void shouldFailCategoryNotFound() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
@@ -68,7 +67,7 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if required fields are empty")
-    @WithAuthentication(username = "xakimov")
+    @WithAuthentication(username = "owner")
     void shouldFailIfEmptyRequiredField() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
@@ -100,7 +99,7 @@ class CreateArticleTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if user does not have authority")
-    @WithAuthentication(username = "xakimov", roles = "USER")
+    @WithAuthentication(username = "owner", roles = "USER")
     void shouldFailUserIsNotAdmin() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
@@ -117,11 +116,7 @@ class CreateArticleTest extends CommonIntegrationTest {
     @SneakyThrows
     void shouldFailIfUnauthorized() {
         //GIVEN
-        String token = generateToken(Set.of("ADMIN"), true);
-        CategoryResponse category = testDataHelperCategory.createCategory("category", null);
-        UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", categoryId)
-                .header("Authorization", "Bearer " + token);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", UUID.randomUUID());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
