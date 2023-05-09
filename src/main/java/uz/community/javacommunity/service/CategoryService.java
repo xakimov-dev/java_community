@@ -54,11 +54,7 @@ public class CategoryService {
 
 
     public List<Category> getChildListByParentId(UUID id) {
-        List<Category> categoryByParentId = categoryRepository.getCategoryByParentId(id);
-        if (categoryByParentId.isEmpty()){
-            return new ArrayList<>();
-        }
-        return categoryByParentId;
+        return categoryRepository.getCategoryByParentId(id);
     }
 
     public void throwIfCategoryCannotBeFound(UUID categoryId) {

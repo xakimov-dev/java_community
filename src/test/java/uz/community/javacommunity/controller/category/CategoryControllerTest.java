@@ -20,7 +20,6 @@ class CategoryControllerTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should get Child List by parent Id")
-    @WithAuthentication()
     void getChildList() throws Exception {
         CategoryResponse test = testDataHelperCategory.createCategory("test", null);
         testDataHelperCategory.createCategory("test1",test.getId());
@@ -35,7 +34,6 @@ class CategoryControllerTest extends CommonIntegrationTest {
     }
     @Test
     @DisplayName(value = "if parent id is null")
-    @WithAuthentication
     void parentIdIsNull() throws Exception {
         CategoryResponse tt = testDataHelperCategory.createCategory("tt", null);
         RequestBuilder child = testDataHelperCategory.getChild(tt.getId());
@@ -44,7 +42,6 @@ class CategoryControllerTest extends CommonIntegrationTest {
     }
     @Test
     @DisplayName(value = "Is Empty")
-    @WithAuthentication
     void isNull() throws Exception {
         RequestBuilder categoryRequest = testDataHelperCategory.createCategoryRequest("", null);
         ResultActions resultActions = mockMvc.perform(categoryRequest);
