@@ -11,6 +11,7 @@ import uz.community.javacommunity.service.CategoryService;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/category")
@@ -24,10 +25,11 @@ public class CategoryController {
         Category category = categoryService.saveCategory(categoryRequest, principal.getName());
         return CategoryResponse.from(category);
     }
-
-    @GetMapping()
-    @ResponseStatus(HttpStatus.OK)
-    public List<CategoryResponse> getAllCategory(){
-        return categoryService.listCategoriesWithChildArticlesAndCategories();
+    @GetMapping("/child/{id}")
+    public List<CategoryResponse>getChildList(
+            @PathVariable UUID id
+            ){
+        List<Category> childListByParentId = categoryService.getChildListByParentId(id);
+        return  CategoryResponse.getChildList(childListByParentId);
     }
 }
