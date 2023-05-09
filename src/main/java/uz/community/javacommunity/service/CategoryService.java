@@ -9,6 +9,7 @@ import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
+import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
