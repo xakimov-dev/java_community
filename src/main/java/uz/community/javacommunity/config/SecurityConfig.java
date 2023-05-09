@@ -20,6 +20,7 @@ import uz.community.javacommunity.security.CustomJwtDecoder;
 import uz.community.javacommunity.service.JwtService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 
 @EnableWebSecurity
@@ -74,11 +75,11 @@ public class SecurityConfig {
         return new CustomJwtDecoder(jwtService);
     }
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -87,4 +88,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }

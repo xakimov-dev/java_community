@@ -14,7 +14,7 @@ public class UserCreateRequest {
     private String username;
     @NotBlank
     private String password;
-    @NotEmpty
+@NotEmpty
     private Set<String> roles;
     private int age;
     @NotBlank
