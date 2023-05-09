@@ -28,7 +28,7 @@ class DeleteSubArticleTest extends CommonIntegrationTest {
         ArticleResponse article = testDataHelperArticle.createArticle("article", category.getId());
         SubArticleResponse subArticle = testDataHelperSubArticle.createSubArticle(category.getId(),
                 article.getArticleId(), null, "sub_article");
-        RequestBuilder request = testDataHelperSubArticle.deleteSubArticleRequest(subArticle.id());
+        RequestBuilder request = testDataHelperSubArticle.deleteSubArticleRequest(subArticle.getId());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN

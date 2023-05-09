@@ -54,6 +54,7 @@ public class SubArticleService {
 
 
     public SubArticle getById(UUID id) {
-        return repository.findBySubArticleKeyId(id).orElseThrow(() -> new RecordNotFoundException("Sub article not found by id: " + id));
+        return repository.findBySubArticleKeyId(id).orElseThrow(() ->
+                new RecordNotFoundException("Sub article not found by id: " + id));
     }
 }
