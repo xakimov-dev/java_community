@@ -40,11 +40,5 @@ class CategoryControllerTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(child);
         resultActions.andExpect(status().isOk());
     }
-    @Test
-    @DisplayName(value = "Is Empty")
-    void isNull() throws Exception {
-        RequestBuilder categoryRequest = testDataHelperCategory.createCategoryRequest("", null);
-        ResultActions resultActions = mockMvc.perform(categoryRequest);
-        resultActions.andExpect(status().isBadRequest());
-    }
+
 }

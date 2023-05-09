@@ -57,7 +57,7 @@ public class TestDataHelperCategory {
     }
 
     public List<CategoryResponse> createCategory(
-            String categoryName,
+            String  categoryName,
             UUID parentId,
             int amount
     ) throws Exception {
