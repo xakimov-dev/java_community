@@ -5,7 +5,6 @@ import org.springframework.data.cassandra.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.community.javacommunity.controller.domain.Category;
 
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,6 +16,12 @@ public interface CategoryRepository extends CassandraRepository<Category, Catego
     @Query(allowFiltering = true)
     boolean existsByCategoryKeyName(String name);
     Optional<Category> findByCategoryKeyId(UUID id);
+    @Query(allowFiltering = true)
+    List<Category> findAllByParentId(UUID id);
+
+//    @Query("SELECT * FROM category WHERE parent_id IS NULL")
+    List<Category> findAllBy();
+
     @Query(allowFiltering = true)
     List<Category>getCategoryByParentId(UUID parentId);
 }
