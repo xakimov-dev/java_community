@@ -50,4 +50,10 @@ public class ArticleController {
         Article article = articleService.update(id, articleUpdateRequest, username);
         return ArticleResponse.from(article);
     }
+    @GetMapping("/{id}")
+    public ArticleResponse getArticle(
+            @PathVariable UUID id
+    ){
+        return articleService.getArticleById(id);
+    }
 }

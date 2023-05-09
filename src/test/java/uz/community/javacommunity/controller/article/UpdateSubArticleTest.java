@@ -34,7 +34,7 @@ class UpdateSubArticleTest extends CommonIntegrationTest {
                 .createSubArticle(category2.getId(), article2.getArticleId(), null, "subArticle2");
 
 
-        RequestBuilder requestBuilder = testDataHelperSubArticle.updateSubArticleRequest(subArticle2.id(), category1.getId(), article1.getArticleId(), subArticle1.id(), "SUB-ARTICLE");
+        RequestBuilder requestBuilder = testDataHelperSubArticle.updateSubArticleRequest(subArticle2.getId(), category1.getId(), article1.getArticleId(), subArticle1.getId(), "SUB-ARTICLE");
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk());
@@ -60,7 +60,7 @@ class UpdateSubArticleTest extends CommonIntegrationTest {
                 .createSubArticle(category2.getId(), article2.getArticleId(), null, "subArticle2");
 
 
-        RequestBuilder requestBuilder = testDataHelperSubArticle.updateSubArticleRequest(subArticle2.id(), null, article1.getArticleId(), subArticle1.id(), "SUB-ARTICLE");
+        RequestBuilder requestBuilder = testDataHelperSubArticle.updateSubArticleRequest(subArticle2.getId(),  null, article1.getArticleId(), subArticle1.getId(), "SUB-ARTICLE");
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());

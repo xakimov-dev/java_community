@@ -30,7 +30,6 @@ public class SubArticleService {
 
         return SubArticleResponse.of(savedSubArticle);
     }
-
     public void update(SubArticleRequest dto, UUID id) {
 
         validator.validateCategory(dto.categoryId());

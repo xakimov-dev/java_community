@@ -5,12 +5,17 @@ import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Article;
+import uz.community.javacommunity.controller.domain.SubArticle;
 import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
+import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
+import uz.community.javacommunity.controller.dto.SubArticleResponse;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
+import uz.community.javacommunity.controller.repository.SubArticleRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
+    private final SubArticleRepository subArticleRepository;
     private final CategoryService categoryService;
     private final JwtService jwtService;
     private final CommonSchemaValidator commonSchemaValidator;
@@ -59,5 +65,33 @@ public class ArticleService {
         article.setModifiedDate(Instant.now());
 
         return articleRepository.save(article);
+    }
+
+    public ArticleResponse getArticleById(UUID id) {
+        Optional<Article> optionalArticle = articleRepository.findByArticleKey_Id(id);
+        if (optionalArticle.isPresent()) {
+            ArticleResponse articleResponse = ArticleResponse.from(optionalArticle.get());
+           getSubArticlesContentByArticle(articleResponse);
+           return articleResponse;
+        }
+        return  null;
+    }
+
+    private void getSubArticlesContentByArticle(ArticleResponse article) {
+        List<SubArticle> subArticles = subArticleRepository.findAllBySubArticleKey_ArticleId(article.getArticleId());
+        if (!subArticles.isEmpty()) {
+            List<SubArticleResponse> list = subArticles.stream().map(SubArticleResponse::of).toList();
+            list.forEach(this::getSubArticlesContentBySubArticle);
+            article.setSubArticleResponseList(list);
+        }
+    }
+
+    private void getSubArticlesContentBySubArticle(SubArticleResponse subArticleResponse) {
+        List<SubArticle> subArticles = subArticleRepository.findAllByParentSubArticleId(subArticleResponse.getId());
+        if (!subArticles.isEmpty()) {
+            List<SubArticleResponse> list = subArticles.stream().map(SubArticleResponse::of).toList();
+            list.forEach(this::getSubArticlesContentBySubArticle);
+            subArticleResponse.setChildSubArticleList(list);
+        }
     }
 }
