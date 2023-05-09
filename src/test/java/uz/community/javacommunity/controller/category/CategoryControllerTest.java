@@ -39,6 +39,8 @@ class CategoryControllerTest extends CommonIntegrationTest {
         RequestBuilder child = testDataHelperCategory.getChild(tt.getId());
         ResultActions resultActions = mockMvc.perform(child);
         resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$").isArray());
+        resultActions.andExpect(jsonPath("$").isEmpty());
     }
 
 }
