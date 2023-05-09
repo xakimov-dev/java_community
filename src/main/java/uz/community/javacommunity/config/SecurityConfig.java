@@ -44,7 +44,7 @@ public class SecurityConfig {
                         (request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage())
                 ).and()
                 .authorizeHttpRequests(authorizer ->
-                        authorizer.antMatchers("/user", "/user/login")
+                        authorizer.antMatchers("/**", "/user/login")
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer()
