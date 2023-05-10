@@ -90,7 +90,7 @@ public class CategoryService {
                 .toList();
     }
 
-    public Category updateCategory(UUID id, CategoryUpdateRequest categoryUpdateRequest, String updatedBy){
+    public Category update(UUID id, CategoryUpdateRequest categoryUpdateRequest, String updatedBy){
         UUID parentId = categoryUpdateRequest.getParentId();
         if (parentId!= null) {
             commonSchemaValidator.validateCategory(parentId);

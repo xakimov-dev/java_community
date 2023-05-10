@@ -56,7 +56,7 @@ public class CategoryController {
             Principal principal
     ) {
         String updatedBy = principal.getName();
-        Category category = categoryService.updateCategory(id, categoryUpdateRequest, updatedBy);
+        Category category = categoryService.update(id, categoryUpdateRequest, updatedBy);
         return CategoryResponse.from(category);
     }
 
