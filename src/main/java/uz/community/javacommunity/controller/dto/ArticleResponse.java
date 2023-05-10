@@ -27,4 +27,7 @@ public class ArticleResponse {
                 .createdDate(article.getCreatedDate().toString())
                 .build();
     }
+    public static List<ArticleResponse> fromList(List<Article> articles) {
+        return articles.stream().map(ArticleResponse::from).toList();
+    }
 }

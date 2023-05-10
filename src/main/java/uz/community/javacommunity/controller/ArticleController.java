@@ -16,6 +16,7 @@ import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.service.ArticleService;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -54,21 +55,14 @@ public class ArticleController {
         Article article = articleService.update(id, articleUpdateRequest, username);
         return ArticleResponse.from(article);
     }
-    @GetMapping("/{id}")
-    public ArticleResponse getArticle(
-            @PathVariable UUID id
-    ){
-        return articleService.getArticleById(id);
-    }
 
-    @DeleteMapping(value = "/{id}")
-    @ResponseStatus(OK)
-    @Operation(summary = "Delete article")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteArticle(
-            @PathVariable("id") UUID id
-    ) {
-        articleService.delete(id);
+    @GetMapping("/{categoryId}")
+    @Operation(summary = "get articles by categoryId")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public List<ArticleResponse> getAllByCategoryId(
+            @PathVariable UUID categoryId
+    ){
+        return ArticleResponse.fromList(articleService.getAllByCategoryId(categoryId));
     }
 
 }
