@@ -21,7 +21,6 @@ import uz.community.javacommunity.service.JwtService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -33,7 +32,8 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/user/login"
     };
 
     @Bean
@@ -45,7 +45,7 @@ public class SecurityConfig {
                         (request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage())
                 ).and()
                 .authorizeHttpRequests(authorizer ->
-                        authorizer.antMatchers("/**", "/user/login")
+                        authorizer.antMatchers(WHITELIST)
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer()

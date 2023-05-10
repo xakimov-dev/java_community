@@ -1,4 +1,4 @@
-package uz.community.javacommunity.controller.article;
+package uz.community.javacommunity.controller.article.subArticle;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,15 +6,10 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.controller.dto.*;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import uz.community.javacommunity.CommonIntegrationTest;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
-
-import static org.hamcrest.Matchers.nullValue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @DisplayName("Get all subarticles category ( GET /article/sub )")
 public class GetAllSubArticlesTest extends CommonIntegrationTest {

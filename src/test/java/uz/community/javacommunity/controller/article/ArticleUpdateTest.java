@@ -2,10 +2,10 @@ package uz.community.javacommunity.controller.article;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
+import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ArticleUpdateTest extends CommonIntegrationTest {
     @Test
     @DisplayName(value = "Should be success, update an Article")
-    @WithMockUser(roles = "ADMIN")
+    @WithAuthentication(username = "owner")
     void shouldUpdateArticle() throws Exception{
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         UUID categoryId = category.getId();
@@ -34,7 +34,7 @@ class ArticleUpdateTest extends CommonIntegrationTest {
 
     @Test
     @DisplayName(value = "Should fail if the article not found")
-    @WithMockUser(roles = "ADMIN")
+    @WithAuthentication(username = "owner")
     void shouldFailArticleNotFound() throws Exception{
         //WHEN
         RequestBuilder request = testDataHelperArticle.updateArticleRequest(UUID.randomUUID(),UUID.randomUUID(),"java");
@@ -42,12 +42,12 @@ class ArticleUpdateTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName(value = "Should fail if the category cannot be found")
-    @WithMockUser(roles = "ADMIN")
+    @WithAuthentication(username = "owner")
     void shouldFailCategoryNotFound() throws Exception{
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
@@ -59,6 +59,6 @@ class ArticleUpdateTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(updateArticleRequest);
         //THEN
         resultActions
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 }

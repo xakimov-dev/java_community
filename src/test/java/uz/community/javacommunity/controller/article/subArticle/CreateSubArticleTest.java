@@ -1,4 +1,4 @@
-package uz.community.javacommunity.controller.article;
+package uz.community.javacommunity.controller.article.subArticle;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,7 +82,7 @@ class CreateSubArticleTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(subArticleRequest);
 
         resultActions
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test

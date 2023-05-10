@@ -25,6 +25,7 @@ import uz.community.javacommunity.controller.article.data.TestDataHelperArticle;
 import uz.community.javacommunity.controller.article.data.TestDataHelperSubArticle;
 import uz.community.javacommunity.controller.article.data.TestDataHelperSubArticleContent;
 import uz.community.javacommunity.controller.category.data.TestDataHelperCategory;
+import uz.community.javacommunity.controller.user.data.TestDataHelperUser;
 
 import java.time.Duration;
 import java.time.Instant;

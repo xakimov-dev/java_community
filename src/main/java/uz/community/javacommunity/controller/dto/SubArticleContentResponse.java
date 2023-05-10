@@ -3,6 +3,7 @@ package uz.community.javacommunity.controller.dto;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record SubArticleContentResponse(
@@ -30,5 +31,8 @@ public record SubArticleContentResponse(
                 subArticleContent.getModifiedBy(),
                 subArticleContent.getModifiedDate()
         );
+    }
+    public static List<SubArticleContentResponse> of(List<SubArticleContent> subArticleContent) {
+        return subArticleContent.stream().map(SubArticleContentResponse::of).toList();
     }
 }

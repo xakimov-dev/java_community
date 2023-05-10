@@ -1,4 +1,4 @@
-package uz.community.javacommunity;
+package uz.community.javacommunity.controller.user.data;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

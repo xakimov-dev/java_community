@@ -4,10 +4,10 @@ import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.Query;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 public interface SubArticleContentRepository extends CassandraRepository<SubArticleContent, SubArticleContent.SubArticleContentKey> {
     @Query(allowFiltering = true)
-    Optional<SubArticleContent> findBySubArticleContentKeySubArticleId(UUID uuid);
+    List<SubArticleContent> findAllBySubArticleContentKeySubArticleId(UUID uuid);
 }
