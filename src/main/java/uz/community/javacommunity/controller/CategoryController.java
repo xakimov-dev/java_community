@@ -7,7 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import uz.community.javacommunity.controller.domain.Article;
+
 import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.*;
 import uz.community.javacommunity.service.CategoryService;
@@ -44,6 +44,20 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.OK)
     public List<CategoryResponse> getAllCategory(){
         return categoryService.listCategoriesWithChildArticlesAndCategories();
+    }
+
+    @PutMapping(value = "/{id}")
+    @ResponseStatus(OK)
+    @Operation(summary = "Update category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryResponse update(
+            @RequestBody @Validated CategoryUpdateRequest categoryUpdateRequest,
+            @PathVariable UUID id,
+            Principal principal
+    ) {
+        String updatedBy = principal.getName();
+        Category category = categoryService.updateCategory(id, categoryUpdateRequest, updatedBy);
+        return CategoryResponse.from(category);
     }
 
 }
