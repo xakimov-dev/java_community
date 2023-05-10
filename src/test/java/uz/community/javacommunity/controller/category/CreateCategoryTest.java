@@ -58,6 +58,7 @@ class CreateCategoryTest extends CommonIntegrationTest {
                 .andExpect(jsonPath("$.modifiedDate").exists())
                 .andExpect(jsonPath("$.modifiedBy").value("owner1"));
 
+
     }
 
 
