@@ -8,9 +8,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
 import uz.community.javacommunity.WithAuthentication;
-import uz.community.javacommunity.controller.dto.ArticleResponse;
-import uz.community.javacommunity.controller.dto.CategoryResponse;
-import uz.community.javacommunity.controller.dto.SubArticleResponse;
+import uz.community.javacommunity.controller.dto.*;
 
 import java.util.UUID;
 
@@ -31,11 +29,11 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
         SubArticleResponse subArticle = testDataHelperSubArticle
                 .createSubArticle(category.getId(), article.getArticleId(),
                         null, "sub-article");
-        String subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(category.getId(), article.getArticleId(),
-                        subArticle.getId(), null, false);
-        RequestBuilder request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                testDataHelperSubArticleContent.getImage(), subArticleContentRequest);
+        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+                category.getId(), article.getArticleId(),
+                subArticle.getId(), "test-text", true);
+        RequestBuilder request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
@@ -46,14 +44,15 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(jsonPath("$.categoryId").value(category.getId().toString()))
                 .andExpect(jsonPath("$.articleId").value(article.getArticleId().toString()))
                 .andExpect(jsonPath("$.subArticleId").value(subArticle.getId().toString()))
-                .andExpect(jsonPath("$.isParagraph").value(false));
+                .andExpect(jsonPath("$.content").value("test-text"))
+                .andExpect(jsonPath("$.isParagraph").value(true));
 
         //GIVEN
-        subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(category.getId(), article.getArticleId(),
-                        subArticle.getId(), "test-text", true);
-        request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                null, subArticleContentRequest);
+        SubArticleContentImageUrl imageUrl = testDataHelperSubArticleContent.subArticleContentImage(
+                testDataHelperSubArticleContent.getImage());
+        subArticleContent.setParagraph(false);
+        subArticleContent.setContent(imageUrl.getImageUrl());
+        request = testDataHelperSubArticleContent.createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         resultActions = mockMvc.perform(request);
@@ -64,8 +63,8 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(jsonPath("$.categoryId").value(category.getId().toString()))
                 .andExpect(jsonPath("$.articleId").value(article.getArticleId().toString()))
                 .andExpect(jsonPath("$.subArticleId").value(subArticle.getId().toString()))
-                .andExpect(jsonPath("$.content").value("test-text"))
-                .andExpect(jsonPath("$.isParagraph").value(true));
+                .andExpect(jsonPath("$.content").value(imageUrl.getImageUrl()))
+                .andExpect(jsonPath("$.isParagraph").value(false));
     }
 
     @Test
@@ -80,25 +79,37 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
         SubArticleResponse subArticle = testDataHelperSubArticle
                 .createSubArticle(category.getId(), article.getArticleId(),
                         null, "sub-article");
-        String subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(category.getId(), article.getArticleId(),
-                        subArticle.getId(), null,true);
-        RequestBuilder request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                testDataHelperSubArticleContent.getImage(), subArticleContentRequest);
+        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+                category.getId(), article.getArticleId(),
+                subArticle.getId(), null, true);
+        RequestBuilder request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
+
+        //THEN
+
+        //WHEN
+        resultActions
+                .andExpect(status().isBadRequest());
+
+        //GIVEN
+        request = testDataHelperSubArticleContent.createSubArticleContentImageRequest(
+                        new MockMultipartFile("photo", new byte[0]));
+        resultActions = mockMvc.perform(request);
 
         //THEN
         resultActions
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(category.getId(), article.getArticleId(),
-                        subArticle.getId(), null,false);
-        request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                null, subArticleContentRequest);
+        subArticleContent = new SubArticleContentRequest(
+                null, article.getArticleId(),
+                subArticle.getId(), "test-text", true);
+        request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
+
         //WHEN
         resultActions = mockMvc.perform(request);
 
@@ -107,11 +118,26 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(category.getId(), article.getArticleId(),
-                        subArticle.getId(), null,false);
-        request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                new MockMultipartFile("photo",new byte[0]), subArticleContentRequest);
+        subArticleContent = new SubArticleContentRequest(
+                category.getId(), null,
+                subArticle.getId(), "test-text", true);
+        request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
+
+        //WHEN
+        resultActions = mockMvc.perform(request);
+
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+
+        //GIVEN
+        subArticleContent = new SubArticleContentRequest(
+                category.getId(), article.getArticleId(),
+                null, "test-text", true);
+        request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
+
         //WHEN
         resultActions = mockMvc.perform(request);
 
@@ -130,13 +156,12 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
         ArticleResponse article = testDataHelperArticle
                 .createArticle("article", category.getId());
         SubArticleResponse subArticle = testDataHelperSubArticle
-                .createSubArticle(category.getId(), article.getArticleId(),
-                        null, "sub-article");
-        String subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(UUID.randomUUID(), article.getArticleId(),
-                        subArticle.getId(), null, false);
-        RequestBuilder request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                testDataHelperSubArticleContent.getImage(), subArticleContentRequest);
+                .createSubArticle(category.getId(), article.getArticleId(), null, "sub-article");
+        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+                UUID.randomUUID(), article.getArticleId(),
+                subArticle.getId(), "test-text", true);
+        RequestBuilder request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
@@ -146,11 +171,11 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isNotFound());
 
         //GIVEN
-        subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(category.getId(), UUID.randomUUID(),
-                        subArticle.getId(), null, false);
-        request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                testDataHelperSubArticleContent.getImage(), subArticleContentRequest);
+        subArticleContent = new SubArticleContentRequest(
+                category.getId(), UUID.randomUUID(),
+                subArticle.getId(), "test-text", true);
+        request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         resultActions = mockMvc.perform(request);
@@ -160,11 +185,11 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isNotFound());
 
         //GIVEN
-        subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(category.getId(), article.getArticleId(),
-                        UUID.randomUUID(), null, false);
-        request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                testDataHelperSubArticleContent.getImage(), subArticleContentRequest);
+        subArticleContent = new SubArticleContentRequest(
+                category.getId(), article.getArticleId(),
+                UUID.randomUUID(), "test-text", true);
+        request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         resultActions = mockMvc.perform(request);
@@ -173,33 +198,20 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
         resultActions
                 .andExpect(status().isNotFound());
     }
+
     @Test
     @DisplayName(value = "Should fail if user is not admin")
-    @WithAuthentication(username = "owner",roles = "ROLE_USER")
+    @WithAuthentication(username = "owner", roles = "ROLE_USER")
     void shouldFailIfNotAdmin() throws Exception {
         //GIVEN
-        String subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(UUID.randomUUID(), UUID.randomUUID(),
-                        UUID.randomUUID(), null, false);
-        RequestBuilder request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                testDataHelperSubArticleContent.getImage(), subArticleContentRequest);
+        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "test-text", true);
+        RequestBuilder request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
-
-        //THEN
-        resultActions
-                .andExpect(status().isForbidden());
-
-        //GIVEN
-        subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(UUID.randomUUID(), UUID.randomUUID(),
-                        UUID.randomUUID(), "test-text", true);
-        request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                null, subArticleContentRequest);
-
-        //WHEN
-        resultActions = mockMvc.perform(request);
 
         //THEN
         resultActions
@@ -211,11 +223,11 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
     @WithAnonymousUser
     void shouldFailIfUnauthorized() throws Exception {
         //GIVEN
-        String subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(UUID.randomUUID(), UUID.randomUUID(),
-                        UUID.randomUUID(), null, false);
-        RequestBuilder request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                testDataHelperSubArticleContent.getImage(), subArticleContentRequest);
+        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "test-text", true);
+        RequestBuilder request = testDataHelperSubArticleContent
+                .createSubArticleContentTextRequest(subArticleContent);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
@@ -223,20 +235,24 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
         //THEN
         resultActions
                 .andExpect(status().isUnauthorized());
+    }
 
+    @Test
+    @DisplayName(value = "Should delete or not sub article content image with status 200")
+    @WithAuthentication(username = "owner")
+    void shouldDeleteImage() throws Exception {
         //GIVEN
-        subArticleContentRequest = testDataHelperSubArticleContent
-                .subArticleContentRequest(UUID.randomUUID(), UUID.randomUUID(),
-                        UUID.randomUUID(), "test-text", true);
-        request = testDataHelperSubArticleContent.createSubArticleContentRequest(
-                null, subArticleContentRequest);
+        SubArticleContentImageUrl imageUrl = testDataHelperSubArticleContent
+                .subArticleContentImage(testDataHelperSubArticleContent.getImage());
+        RequestBuilder request = testDataHelperSubArticleContent
+                .deleteSubArticleImageRequest(imageUrl);
 
         //WHEN
-        resultActions = mockMvc.perform(request);
+        ResultActions resultActions = mockMvc.perform(request);
 
         //THEN
         resultActions
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 
 }

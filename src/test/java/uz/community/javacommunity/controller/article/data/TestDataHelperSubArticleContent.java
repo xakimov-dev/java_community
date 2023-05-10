@@ -12,14 +12,15 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uz.community.javacommunity.common.JsonConverter;
+import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
+import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
 import uz.community.javacommunity.controller.dto.SubArticleContentResponse;
 
 import java.util.Objects;
 import java.util.UUID;
 
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @Component
 @Profile("functionalTest")
@@ -31,17 +32,43 @@ public class TestDataHelperSubArticleContent {
     private final MockMvc mockMvc;
 
     @SneakyThrows
-    public RequestBuilder createSubArticleContentRequest(MockMultipartFile multipartFile, String subArticleContentRequest) {
+    public RequestBuilder createSubArticleContentTextRequest(SubArticleContentRequest request) {
+        return post(BASE_PATH + "text")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(request));
+    }
+
+    @SneakyThrows
+    public RequestBuilder createSubArticleContentImageRequest(MockMultipartFile photo) {
         MockMultipartHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .multipart(BASE_PATH);
-        request = (Objects.isNull(multipartFile))?request:request.file(multipartFile);
-        return request
-                .param("text", subArticleContentRequest);
+                .multipart(BASE_PATH + "image");
+        return Objects.nonNull(photo)?request.file(photo):request;
     }
 
     public RequestBuilder getSubArticleContentRequest(UUID id) {
-        return get(BASE_PATH + id)
-                .contentType(MediaType.APPLICATION_JSON);
+        return get(BASE_PATH + id);
+    }
+
+    public RequestBuilder deleteSubArticleImageRequest(SubArticleContentImageUrl imageUrl) {
+        return delete(BASE_PATH + "image")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(imageUrl));
+    }
+
+    @SneakyThrows
+    public SubArticleContentResponse createSubArticleContent(SubArticleContentRequest subArticle) {
+        RequestBuilder request = createSubArticleContentTextRequest(subArticle);
+        String subArticleContentImage = mockMvc.perform(request).andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        return jsonConverter.convertFromString(subArticleContentImage, SubArticleContentResponse.class);
+    }
+
+    @SneakyThrows
+    public SubArticleContentImageUrl subArticleContentImage(MockMultipartFile photo) {
+        RequestBuilder request = createSubArticleContentImageRequest(photo);
+        String imageUrl = mockMvc.perform(request).andExpect(status()
+                .isCreated()).andReturn().getResponse().getContentAsString();
+        return jsonConverter.convertFromString(imageUrl, SubArticleContentImageUrl.class);
     }
 
     @SneakyThrows
@@ -51,30 +78,5 @@ public class TestDataHelperSubArticleContent {
                 imageResource.getFilename(),
                 MediaType.IMAGE_JPEG_VALUE,
                 imageResource.getInputStream());
-    }
-
-    public String subArticleContentRequest(
-            UUID categoryId, UUID articleId,
-            UUID subArticleId, String content, boolean isParagraph) {
-        StringBuilder subArticleContentRequest = new StringBuilder();
-        subArticleContentRequest.append("{\"categoryId\":\"")
-                .append(categoryId)
-                .append("\",\"articleId\":\"")
-                .append(articleId)
-                .append("\",\"subArticleId\":\"")
-                .append(subArticleId)
-                .append("\",\"content\":")
-                .append((Objects.isNull(content)) ? null : ('"' + content + '"'))
-                .append(",\"isParagraph\":")
-                .append(isParagraph).append('}');
-        return subArticleContentRequest.toString();
-    }
-
-    @SneakyThrows
-    public SubArticleContentResponse createSubArticleContent(MockMultipartFile photo, String subArticleContentRequest) {
-        RequestBuilder request = createSubArticleContentRequest(photo, subArticleContentRequest);
-        String string = mockMvc.perform(request).andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-        return jsonConverter.convertFromString(string, SubArticleContentResponse.class);
     }
 }

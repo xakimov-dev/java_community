@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
@@ -15,15 +16,19 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @Component
 @Profile("functionalTest")
 @RequiredArgsConstructor
 public class TestDataHelperCategory {
+
     private static final String BASE_PATH = "/category";
     private static final String GET_ALL_PARENT_ID_IS_NULL = "/get-all-Parent";
+    private static final String BASE_PATH_child = "/category/child/{id}";
+
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
 
@@ -39,6 +44,20 @@ public class TestDataHelperCategory {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
     }
+    public RequestBuilder getChild(UUID id){
+        return get(BASE_PATH_child,id);
+    }
+
+    public RequestBuilder updateCategoryRequest(UUID id, String categoryName, UUID parentId) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id);
+        payload.put("parentId", parentId);
+        payload.put("name", categoryName);
+
+        return put("/category/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(payload));
+    }
 
     public CategoryResponse createCategory(
             String categoryName,
@@ -50,7 +69,7 @@ public class TestDataHelperCategory {
     }
 
     public List<CategoryResponse> createCategory(
-            String categoryName,
+            String  categoryName,
             UUID parentId,
             int amount
     ) throws Exception {

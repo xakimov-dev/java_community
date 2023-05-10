@@ -9,14 +9,14 @@ import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.CategoryRequest;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
+import uz.community.javacommunity.controller.dto.CategoryUpdateRequest;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +53,11 @@ public class CategoryService {
         }
     }
 
+
+    public List<Category> getChildListByParentId(UUID id) {
+        return categoryRepository.getCategoryByParentId(id);
+    }
+
     public void throwIfCategoryCannotBeFound(UUID categoryId) {
         Optional<Category> category = categoryRepository.findByCategoryKeyId(categoryId);
         if (category.isEmpty()) {
@@ -83,5 +88,19 @@ public class CategoryService {
         return categoryAll.stream().filter(category -> category.getParentId() == null)
                 .map(CategoryResponse::from)
                 .toList();
+    }
+
+    public Category updateCategory(UUID id, CategoryUpdateRequest categoryUpdateRequest, String updatedBy){
+        UUID parentId = categoryUpdateRequest.getParentId();
+        if (parentId!= null) {
+            commonSchemaValidator.validateCategory(parentId);
+        }
+        commonSchemaValidator.validateCategory(id);
+        Category category = categoryRepository.findByCategoryKeyId(id).orElseThrow(() -> new RecordNotFoundException(String.format("Category not found for id %s", id)));
+
+        category.setCategoryKey(Category.CategoryKey.of(id,categoryUpdateRequest.getName()));
+        category.setModifiedDate(Instant.now());
+        category.setModifiedBy(updatedBy);
+        return categoryRepository.save(category);
     }
 }

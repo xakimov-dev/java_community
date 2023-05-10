@@ -43,4 +43,7 @@ public class CategoryResponse  {
                 .parentId(category.getParentId())
                 .build();
     }
+    public static List<CategoryResponse>getChildList(List<Category> categoryList){
+        return categoryList.stream().map(CategoryResponse::from).toList();
+    }
 }

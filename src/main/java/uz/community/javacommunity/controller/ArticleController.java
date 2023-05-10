@@ -4,6 +4,7 @@ import com.simba.cassandra.shaded.datastax.driver.core.querybuilder.Update;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +16,7 @@ import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.service.ArticleService;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -44,7 +46,7 @@ public class ArticleController {
     @ResponseStatus(OK)
     @Operation(summary = "Update article")
     @PreAuthorize("hasRole('ADMIN')")
-    public ArticleResponse update(
+    public ArticleResponse updateArticle(
             @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
             @PathVariable UUID id,
             Principal principal
@@ -53,10 +55,25 @@ public class ArticleController {
         Article article = articleService.update(id, articleUpdateRequest, username);
         return ArticleResponse.from(article);
     }
-    @GetMapping("/{id}")
-    public ArticleResponse getArticle(
-            @PathVariable UUID id
+
+    @GetMapping("/{categoryId}")
+    @Operation(summary = "get articles by categoryId")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public List<ArticleResponse> getAllByCategoryId(
+            @PathVariable UUID categoryId
     ){
-        return articleService.getArticleById(id);
+        return ArticleResponse.fromList(articleService.getAllByCategoryId(categoryId));
     }
+
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(OK)
+    @Operation(summary = "Delete article")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteArticle(
+            @PathVariable("id") UUID id
+    ) {
+        articleService.delete(id);
+    }
+
+
 }

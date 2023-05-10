@@ -35,22 +35,12 @@ public class SubArticleContent {
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
     Instant modifiedDate;
 
-    public static SubArticleContent of(SubArticleContentRequest dto) {
+    public static SubArticleContent of(SubArticleContentRequest request) {
         return SubArticleContent.builder()
-                .subArticleContentKey(SubArticleContentKey.of(UUID.randomUUID(), dto.categoryId(), dto.articleId(), dto.subArticleId()))
-                .content(dto.content())
-                .isParagraph(dto.isParagraph())
-                .createdBy(SecurityContextHolder.getContext().getAuthentication().getName())
-                .createdDate(Instant.now())
-                .modifiedBy(SecurityContextHolder.getContext().getAuthentication().getName())
-                .modifiedDate(Instant.now())
-                .build();
-    }
-    public static SubArticleContent of(SubArticleContentRequest dto, String content) {
-        return SubArticleContent.builder()
-                .subArticleContentKey(SubArticleContentKey.of(UUID.randomUUID(), dto.categoryId(), dto.articleId(), dto.subArticleId()))
-                .content(content)
-                .isParagraph(dto.isParagraph())
+                .subArticleContentKey(SubArticleContentKey.of(UUID.randomUUID(),
+                        request.getCategoryId(), request.getArticleId(), request.getSubArticleId()))
+                .content(request.getContent())
+                .isParagraph(request.isParagraph())
                 .createdBy(SecurityContextHolder.getContext().getAuthentication().getName())
                 .createdDate(Instant.now())
                 .modifiedBy(SecurityContextHolder.getContext().getAuthentication().getName())

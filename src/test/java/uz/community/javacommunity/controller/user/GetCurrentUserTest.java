@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Get current user ( GET /user/current )")
-class GetCurrentUserTest extends CommonIntegrationTest {
+class  GetCurrentUserTest extends CommonIntegrationTest {
 
     private static final String USERNAME = "test_username";
 
