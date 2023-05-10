@@ -39,4 +39,11 @@ public class CategoryController {
         List<Category> childListByParentId = categoryService.getChildListByParentId(id);
         return  CategoryResponse.getChildList(childListByParentId);
     }
+
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryResponse> getAllCategory(){
+        return categoryService.listCategoriesWithChildArticlesAndCategories();
+    }
+
 }

@@ -65,14 +65,4 @@ public class ArticleController {
         return ArticleResponse.fromList(articleService.getAllByCategoryId(categoryId));
     }
 
-    @DeleteMapping(value = "/{id}")
-    @ResponseStatus(OK)
-    @Operation(summary = "Delete article")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteArticle(
-            @PathVariable("id") UUID id
-    ) {
-        articleService.delete(id);
-    }
-
 }
