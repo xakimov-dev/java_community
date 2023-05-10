@@ -65,7 +65,7 @@ public class CategoryUpdateTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should be success, update a Category")
+    @DisplayName(value = "Should fail category not found with parent id")
     @WithMockUser(roles = "ADMIN")
     void shouldFailCategoryNotFoundWithParentId() throws Exception{
         //GIVEN

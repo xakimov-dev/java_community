@@ -4,6 +4,7 @@ import com.simba.cassandra.shaded.datastax.driver.core.querybuilder.Update;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
@@ -44,7 +45,7 @@ public class ArticleController {
     @ResponseStatus(OK)
     @Operation(summary = "Update article")
     @PreAuthorize("hasRole('ADMIN')")
-    public ArticleResponse update(
+    public ArticleResponse updateArticle(
             @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
             @PathVariable UUID id,
             Principal principal
@@ -59,4 +60,15 @@ public class ArticleController {
     ){
         return articleService.getArticleById(id);
     }
+
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(OK)
+    @Operation(summary = "Delete article")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteArticle(
+            @PathVariable("id") UUID id
+    ) {
+        articleService.delete(id);
+    }
+
 }

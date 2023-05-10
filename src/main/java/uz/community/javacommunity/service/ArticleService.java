@@ -94,4 +94,10 @@ public class ArticleService {
             subArticleResponse.setChildSubArticleList(list);
         }
     }
+
+    public void delete(UUID id) {
+        Article articleByArticleKeyId = articleRepository.findArticleByArticleKeyId(id).orElseThrow(
+                ()->new RecordNotFoundException(String.format("Article not found for id %s",id)));
+        articleRepository.delete(articleByArticleKeyId);
+    }
 }
