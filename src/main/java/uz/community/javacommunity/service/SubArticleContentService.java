@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
 import uz.community.javacommunity.controller.dto.SubArticleContentResponse;
@@ -57,4 +58,8 @@ public class SubArticleContentService {
         return imageUrl;
     }
 
+    public SubArticleContent get(UUID id) {
+        return repository.findBySubArticleContentKeySubArticleId(id).orElseThrow(()->
+                new RecordNotFoundException(String.format("SubArticleContent with id %s cannot be found",id)));
+    }
 }
