@@ -1,5 +1,6 @@
 package uz.community.javacommunity.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,10 +24,10 @@ public class SubArticleContentController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public SubArticleContentResponse create(
-            @RequestParam("file") MultipartFile photo,
-            @RequestBody SubArticleContentRequest dto
-    ) {
-        return service.create(dto, null);
+            @RequestParam("photo") MultipartFile photo,
+            @RequestParam("text") String dto
+    ) throws JsonProcessingException {
+        return service.create(dto, photo);
     }
 
     @GetMapping("/{id}")
