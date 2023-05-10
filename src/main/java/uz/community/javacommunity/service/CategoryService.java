@@ -58,10 +58,10 @@ public class CategoryService {
         if (parentId!= null) {
             commonSchemaValidator.validateCategory(parentId);
         }
-        commonSchemaValidator.validateCategory(id);
         Category category = categoryRepository.findByCategoryKeyId(id).orElseThrow(() -> new RecordNotFoundException(String.format("Category not found for id %s", id)));
 
         category.setCategoryKey(Category.CategoryKey.of(id,categoryUpdateRequest.getName()));
+        category.setParentId(categoryUpdateRequest.getParentId());
         category.setModifiedDate(Instant.now());
         category.setModifiedBy(updatedBy);
         return categoryRepository.save(category);
