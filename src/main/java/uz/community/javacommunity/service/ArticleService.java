@@ -86,6 +86,7 @@ public class ArticleService {
         }
     }
 
+
     private void getSubArticlesContentBySubArticle(SubArticleResponse subArticleResponse) {
         List<SubArticle> subArticles = subArticleRepository.findAllByParentSubArticleId(subArticleResponse.getId());
         if (!subArticles.isEmpty()) {
