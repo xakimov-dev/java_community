@@ -16,8 +16,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @Component
 @Profile("functionalTest")
@@ -45,6 +46,17 @@ public class TestDataHelperCategory {
     }
     public RequestBuilder getChild(UUID id){
         return get(BASE_PATH_child,id);
+    }
+
+    public RequestBuilder updateCategoryRequest(UUID id, String categoryName, UUID parentId) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id);
+        payload.put("parentId", parentId);
+        payload.put("name", categoryName);
+
+        return put("/category/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(payload));
     }
 
     public CategoryResponse createCategory(
