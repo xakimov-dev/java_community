@@ -13,9 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
@@ -51,6 +49,16 @@ public class TestDataHelperArticle {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
     }
+
+    public RequestBuilder deleteArticleRequest(UUID id){
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id);
+
+        return delete("/article/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(payload));
+    }
+
 
     public ArticleResponse createArticle(
             String name,
