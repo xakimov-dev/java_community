@@ -15,7 +15,6 @@ import static uz.community.javacommunity.controller.domain.Category.CategoryKey;
 public interface CategoryRepository extends CassandraRepository<Category, CategoryKey> {
     @Query(allowFiltering = true)
     boolean existsByCategoryKeyName(String name);
-
     Optional<Category> findByCategoryKeyId(UUID id);
     @Query(allowFiltering = true)
     List<Category> findAllByParentId(UUID id);
@@ -23,4 +22,6 @@ public interface CategoryRepository extends CassandraRepository<Category, Catego
 //    @Query("SELECT * FROM category WHERE parent_id IS NULL")
     List<Category> findAllBy();
 
+    @Query(allowFiltering = true)
+    List<Category>getCategoryByParentId(UUID parentId);
 }

@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
@@ -23,8 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Profile("functionalTest")
 @RequiredArgsConstructor
 public class TestDataHelperCategory {
+
     private static final String BASE_PATH = "/category";
     private static final String GET_ALL_PARENT_ID_IS_NULL = "/get-all-Parent";
+    private static final String BASE_PATH_child = "/category/child/{id}";
+
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
 
@@ -39,6 +43,9 @@ public class TestDataHelperCategory {
         return post(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
+    }
+    public RequestBuilder getChild(UUID id){
+        return get(BASE_PATH_child,id);
     }
 
     public RequestBuilder updateCategoryRequest(UUID id, String categoryName, UUID parentId) {
@@ -62,7 +69,7 @@ public class TestDataHelperCategory {
     }
 
     public List<CategoryResponse> createCategory(
-            String categoryName,
+            String  categoryName,
             UUID parentId,
             int amount
     ) throws Exception {

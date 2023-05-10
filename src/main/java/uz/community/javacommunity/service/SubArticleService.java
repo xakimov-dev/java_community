@@ -46,8 +46,15 @@ public class SubArticleService {
 
         repository.save(subArticle);
     }
+    public void delete(UUID subArticleId){
+        SubArticle subArticle = repository.findBySubArticleKeyId(subArticleId).orElseThrow(() -> {
+            throw new RecordNotFoundException(String.format("SubArticle with id %s cannot be found",subArticleId));});
+        repository.delete(subArticle);
+    }
+
 
     public SubArticle getById(UUID id) {
-        return repository.findBySubArticleKeyId(id).orElseThrow(() -> new RecordNotFoundException("Sub article not found by id: " + id));
+        return repository.findBySubArticleKeyId(id).orElseThrow(() ->
+                new RecordNotFoundException("Sub article not found by id: " + id));
     }
 }

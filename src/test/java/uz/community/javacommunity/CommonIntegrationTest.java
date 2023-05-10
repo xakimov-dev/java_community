@@ -104,4 +104,5 @@ public abstract class CommonIntegrationTest {
         return jsonConverter.convertFromString(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
         });
     }
+
 }

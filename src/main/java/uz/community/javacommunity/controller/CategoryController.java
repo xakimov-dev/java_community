@@ -16,6 +16,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
+
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -31,24 +32,11 @@ public class CategoryController {
         Category category = categoryService.saveCategory(categoryRequest, principal.getName());
         return CategoryResponse.from(category);
     }
-
-    @GetMapping()
-    @ResponseStatus(HttpStatus.OK)
-    public List<CategoryResponse> getAllCategory(){
-        return categoryService.listCategoriesWithChildArticlesAndCategories();
-    }
-
-    @PutMapping(value = "/{id}")
-    @ResponseStatus(OK)
-    @Operation(summary = "Update category")
-    @PreAuthorize("hasRole('ADMIN')")
-    public CategoryResponse update(
-            @RequestBody @Validated CategoryUpdateRequest categoryUpdateRequest,
-            @PathVariable UUID id,
-            Principal principal
-    ) {
-        String updatedBy = principal.getName();
-        Category category = categoryService.updateCategory(id, categoryUpdateRequest, updatedBy);
-        return CategoryResponse.from(category);
+    @GetMapping("/child/{id}")
+    public List<CategoryResponse>getChildList(
+            @PathVariable UUID id
+            ){
+        List<Category> childListByParentId = categoryService.getChildListByParentId(id);
+        return  CategoryResponse.getChildList(childListByParentId);
     }
 }

@@ -94,11 +94,9 @@ public class ArticleService {
             list.forEach(this::getSubArticlesContentBySubArticle);
             subArticleResponse.setChildSubArticleList(list);
         }
-    }
 
-    public void delete(UUID id) {
-        Article articleByArticleKeyId = articleRepository.findArticleByArticleKeyId(id).orElseThrow(
-                ()->new RecordNotFoundException(String.format("Article not found for id %s",id)));
-        articleRepository.delete(articleByArticleKeyId);
+    }
+    public List<Article> getAllByCategoryId(UUID categoryId) {
+        return articleRepository.findAllByArticleKey_CategoryId(categoryId);
     }
 }

@@ -15,9 +15,8 @@ import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +51,11 @@ public class CategoryService {
         if (Boolean.TRUE.equals(categoryRepository.existsByCategoryKeyName(name))) {
             throw new AlreadyExistsException(String.format("Category already exist for name %s", name));
         }
+    }
+
+
+    public List<Category> getChildListByParentId(UUID id) {
+        return categoryRepository.getCategoryByParentId(id);
     }
 
     public void throwIfCategoryCannotBeFound(UUID categoryId) {

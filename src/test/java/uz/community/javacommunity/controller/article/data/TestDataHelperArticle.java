@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
@@ -21,8 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RequiredArgsConstructor
 public class TestDataHelperArticle {
     private static final String BASE_PATH = "/article";
+    private static final String GET_ALL_ARTICLES_BY_CATEGORY_ID_PATH = "/article/{categoryId}";
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
+    public RequestBuilder getArticlesByCategoryIdRequest(UUID categoryId){
+        return get(GET_ALL_ARTICLES_BY_CATEGORY_ID_PATH, categoryId)
+                .contentType(MediaType.APPLICATION_JSON);
+    }
     public RequestBuilder createArticleRequest(String name, UUID categoryId) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name",name);
@@ -39,16 +46,8 @@ public class TestDataHelperArticle {
         payload.put("categoryId", categoryId);
         payload.put("name", name);
 
+
         return put("/article/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonConverter.convertToString(payload));
-    }
-
-    public RequestBuilder deleteArticleRequest(UUID id){
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", id);
-
-        return delete("/article/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(payload));
     }
@@ -58,7 +57,8 @@ public class TestDataHelperArticle {
             UUID categoryId
     ) throws Exception {
         RequestBuilder request = createArticleRequest(name, categoryId);
-        String contentAsString = mockMvc.perform(request).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        String contentAsString = mockMvc.perform(request).andExpect(status()
+                .isCreated()).andReturn().getResponse().getContentAsString();
         return jsonConverter.convertFromString(contentAsString, ArticleResponse.class);
     }
 
