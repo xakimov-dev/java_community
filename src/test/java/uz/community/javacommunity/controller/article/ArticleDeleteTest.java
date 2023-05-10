@@ -40,7 +40,6 @@ class ArticleDeleteTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(requestBuilder);
         resultActions
                 .andExpect(status().isNotFound());
-
     }
 
     @Test
