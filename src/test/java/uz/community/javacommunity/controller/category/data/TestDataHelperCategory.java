@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
@@ -48,17 +47,6 @@ public class TestDataHelperCategory {
         return get(BASE_PATH_child,id);
     }
 
-    public RequestBuilder updateCategoryRequest(UUID id, String categoryName, UUID parentId) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", id);
-        payload.put("parentId", parentId);
-        payload.put("name", categoryName);
-
-        return put("/category/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonConverter.convertToString(payload));
-    }
-
     public CategoryResponse createCategory(
             String categoryName,
             UUID parentId
@@ -80,6 +68,18 @@ public class TestDataHelperCategory {
                 throw new RuntimeException(e);
             }
         }).toList();
+    }
+
+
+    public RequestBuilder updateCategoryRequest(UUID id, String categoryName, UUID parentId) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", id);
+        payload.put("parentId", parentId);
+        payload.put("name", categoryName);
+
+        return put("/category/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonConverter.convertToString(payload));
     }
 
     public List<CategoryResponse> createMainCategory(
