@@ -72,7 +72,7 @@ public class CategoryUpdateTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(updateCategoryRequest);
 
         resultActions
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
     }
 
@@ -91,7 +91,7 @@ public class CategoryUpdateTest extends CommonIntegrationTest {
         ResultActions resultActions = mockMvc.perform(updateCategoryRequest);
 
         resultActions
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test

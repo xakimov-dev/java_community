@@ -36,7 +36,7 @@ public class SubArticleContentController {
 
     @DeleteMapping(value = "/image")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Create an image (NOTE : can be used for any purpose to save image)")
+    @Operation(summary = "Delete an unsubbited image (NOTE : can be used for any purpose to delete an image)")
     public void deleteImage(
             @RequestBody SubArticleContentImageUrl subArticleContentImageUrl) {
         service.deleteImage(subArticleContentImageUrl);
