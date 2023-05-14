@@ -14,10 +14,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class SubArticleService {
-
     private final SubArticleRepository repository;
     private final CommonSchemaValidator validator;
-
     public SubArticleResponse create(SubArticleRequest dto) {
 
         validator.validateSubArticleExist(dto.name());
@@ -30,6 +28,7 @@ public class SubArticleService {
 
         return SubArticleResponse.of(savedSubArticle);
     }
+
     public void update(SubArticleRequest dto, UUID id) {
 
         validator.validateCategory(dto.categoryId());
@@ -46,12 +45,12 @@ public class SubArticleService {
 
         repository.save(subArticle);
     }
+
     public void delete(UUID subArticleId){
         SubArticle subArticle = repository.findBySubArticleKeyId(subArticleId).orElseThrow(() -> {
             throw new RecordNotFoundException(String.format("SubArticle with id %s cannot be found",subArticleId));});
         repository.delete(subArticle);
     }
-
 
     public SubArticle getById(UUID id) {
         return repository.findBySubArticleKeyId(id).orElseThrow(() ->

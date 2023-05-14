@@ -12,9 +12,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uz.community.javacommunity.common.constants.JwtConstants;
@@ -22,8 +19,6 @@ import uz.community.javacommunity.security.CustomJwtDecoder;
 import uz.community.javacommunity.service.JwtService;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -35,7 +30,10 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/user/login",
+            "/user",
+            "/user/"
     };
 
     @Bean
@@ -47,7 +45,7 @@ public class SecurityConfig {
                         (request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage())
                 ).and()
                 .authorizeHttpRequests(authorizer ->
-                        authorizer.antMatchers("/user", "/user/login")
+                        authorizer.antMatchers(WHITELIST)
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer()
@@ -76,16 +74,7 @@ public class SecurityConfig {
     public JwtDecoder jwtDecoder(JwtService jwtService) {
         return new CustomJwtDecoder(jwtService);
     }
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-//        configuration.setAllowedHeaders(Arrays.asList("*"));
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

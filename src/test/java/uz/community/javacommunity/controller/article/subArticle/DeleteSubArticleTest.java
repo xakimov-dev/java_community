@@ -1,4 +1,4 @@
-package uz.community.javacommunity.controller.article;
+package uz.community.javacommunity.controller.article.subArticle;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
