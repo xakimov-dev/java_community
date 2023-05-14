@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Profile("functionalTest")
 @RequiredArgsConstructor
 public class TestDataHelperArticle {
-    private static final String BASE_PATH = "/article";
+    private static final String BASE_PATH = "/article/{categoryId}";
     private static final String GET_ALL_ARTICLES_BY_CATEGORY_ID_PATH = "/article/{categoryId}";
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;

@@ -34,19 +34,10 @@ public class SubArticleContent {
     @Column("modified_date")
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
     Instant modifiedDate;
-
-    public static SubArticleContent of(SubArticleContentRequest request) {
-        return SubArticleContent.builder()
-                .subArticleContentKey(SubArticleContentKey.of(UUID.randomUUID(),
-                        request.getCategoryId(), request.getArticleId(), request.getSubArticleId()))
-                .content(request.getContent())
-                .isParagraph(request.isParagraph())
-                .createdBy(SecurityContextHolder.getContext().getAuthentication().getName())
-                .createdDate(Instant.now())
-                .modifiedBy(SecurityContextHolder.getContext().getAuthentication().getName())
-                .modifiedDate(Instant.now())
-                .build();
-    }
+    @Column("category_id")
+    UUID categoryId;
+    @Column("article_id")
+    UUID articleId;
 
     @Data
     @Builder
@@ -57,15 +48,11 @@ public class SubArticleContent {
     public static class SubArticleContentKey {
         @PrimaryKeyColumn(name = "id", ordinal = 0, type = PARTITIONED)
         UUID id;
-        @PrimaryKeyColumn(name = "category_id", ordinal = 1, type = CLUSTERED)
-        UUID categoryId;
-        @PrimaryKeyColumn(name = "article_id", ordinal = 2, type = CLUSTERED)
-        UUID articleId;
         @PrimaryKeyColumn(name = "sub_article_id", ordinal = 3, type = CLUSTERED)
         UUID subArticleId;
 
-        public static SubArticleContentKey of(UUID id, UUID categoryId, UUID articleId, UUID subArticleId) {
-            return new SubArticleContentKey(id, categoryId, articleId, subArticleId);
+        public static SubArticleContentKey of(UUID id, UUID subArticleId) {
+            return new SubArticleContentKey(id, subArticleId);
         }
     }
 
