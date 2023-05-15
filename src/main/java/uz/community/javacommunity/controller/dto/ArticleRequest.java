@@ -1,7 +1,10 @@
 package uz.community.javacommunity.controller.dto;
 
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -9,9 +12,8 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ArticleCreateRequest {
-    @NotBlank
-    private String name;
-    @NotNull
-    private UUID categoryId;
+public record ArticleRequest(
+        @NotBlank String name,
+        @NotNull UUID categoryId
+) {
 }

@@ -49,10 +49,10 @@ public class SubArticleContentController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new Sub Article Content")
     public SubArticleContentResponse create(
-            @RequestBody @Validated SubArticleContentRequest request,
+            @RequestBody @Validated SubArticleContentRequest subArticleContentRequest,
             Principal principal
     ) {
-        SubArticleContent subArticleContent = subArticleContentConverter.convertRequestToEntity(request, principal.getName());
+        SubArticleContent subArticleContent = subArticleContentConverter.convertRequestToEntity(subArticleContentRequest, principal.getName());
         SubArticleContent response = service.create(subArticleContent);
         return subArticleContentConverter.convertEntityToResponse(response);
     }

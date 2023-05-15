@@ -5,10 +5,13 @@
 CREATE TABLE IF NOT EXISTS user
 (
     username    text,
+    password    text,
     roles       frozen<set<text>>,
     age         int,
     info        text,
     image_url    text,
+    created_date  timestamp,
+    modified_date  timestamp,
     PRIMARY KEY (username)
 );
 -- rollback DROP TABLE user

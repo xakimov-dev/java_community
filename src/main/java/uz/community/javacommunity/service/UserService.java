@@ -9,9 +9,10 @@ import uz.community.javacommunity.common.exception.AuthenticationException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Login;
 import uz.community.javacommunity.controller.domain.User;
-import uz.community.javacommunity.controller.dto.UserCreateRequest;
+import uz.community.javacommunity.controller.dto.UserRequest;
 import uz.community.javacommunity.controller.repository.LoginRepository;
 import uz.community.javacommunity.controller.repository.UserRepository;
+import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 @Service
 @RequiredArgsConstructor
@@ -21,26 +22,15 @@ public class UserService {
     private final LoginRepository loginRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final CommonSchemaValidator commonSchemaValidator;
 
-    public User create(UserCreateRequest request) {
-        if (loginRepository.existsById(request.getUsername())) {
-            throw new IllegalArgumentException(String.format("user with username %s already exists", request.getUsername()));
-        }
-
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
-
+    public User create(User user) {
+        commonSchemaValidator.validateUsername(user.getUsername());
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
         Login login = Login.builder()
-                .username(request.getUsername())
+                .username(user.getUsername())
                 .password(hashedPassword)
                 .build();
-
-        User user = User.builder()
-                .username(request.getUsername())
-                .roles(request.getRoles())
-                .age(request.getAge())
-                .info(request.getInfo())
-                .build();
-
         CassandraBatchOperations batchOps = cassandraTemplate.batchOps();
         batchOps.insert(login, user);
         batchOps.execute();

@@ -1,8 +1,10 @@
 package uz.community.javacommunity.controller.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import uz.community.javacommunity.controller.domain.SubArticle;
 
 import java.time.Instant;
@@ -11,15 +13,17 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubArticleResponse {
-    private UUID id;
-    private UUID categoryId;
-    private UUID articleId;
-    private UUID parentSubArticleId;
-    private String name;
-    private String createdBy;
-    private Instant createdDate;
-    private String modifiedBy;
-    private Instant modifiedDate;
-    private List<SubArticleResponse> childSubArticleList;
+    UUID id;
+    UUID categoryId;
+    UUID articleId;
+    UUID parentSubArticleId;
+    String name;
+    String createdBy;
+    Instant createdDate;
+    String modifiedBy;
+    Instant modifiedDate;
+    List<SubArticleContentResponse> subArticleContentResponses;
+    List<SubArticleResponse> childSubArticleList;
 }

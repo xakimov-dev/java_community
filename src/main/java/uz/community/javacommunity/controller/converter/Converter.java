@@ -1,7 +1,7 @@
 package uz.community.javacommunity.controller.converter;
 
-import org.springframework.context.annotation.Bean;
 
+import javax.validation.groups.Default;
 import java.util.List;
 import java.util.UUID;
 public interface Converter <Entity, Request, Response>{

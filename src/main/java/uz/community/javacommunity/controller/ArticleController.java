@@ -1,18 +1,16 @@
 package uz.community.javacommunity.controller;
 
-import com.simba.cassandra.shaded.datastax.driver.core.querybuilder.Update;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import uz.community.javacommunity.controller.converter.ArticleConverter;
 import uz.community.javacommunity.controller.domain.Article;
-import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
+import uz.community.javacommunity.controller.dto.ArticleRequest;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
-import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.service.ArticleService;
 
 import java.security.Principal;
@@ -29,17 +27,18 @@ import static org.springframework.http.HttpStatus.OK;
 @EnableMethodSecurity
 public class ArticleController {
     private final ArticleService articleService;
+    private final ArticleConverter articleConverter;
 
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an article.")
     @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse createArticle(
-            @RequestBody @Validated ArticleCreateRequest request,
+            @RequestBody @Validated ArticleRequest articleRequest,
             Principal principal
     ) {
-        Article savedArticle = articleService.create(request, principal.getName());
-        return ArticleResponse.from(savedArticle);
+        Article article = articleConverter.convertRequestToEntity(articleRequest, principal.getName());
+        return articleConverter.convertEntityToResponse(articleService.create(article));
     }
 
     @PutMapping(value = "/{id}")
@@ -47,13 +46,12 @@ public class ArticleController {
     @Operation(summary = "Update article")
     @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse updateArticle(
-            @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
+            @RequestBody @Validated ArticleRequest articleRequest,
             @PathVariable UUID id,
             Principal principal
     ) {
-        String username = principal.getName();
-        Article article = articleService.update(id, articleUpdateRequest, username);
-        return ArticleResponse.from(article);
+        Article article = articleConverter.convertRequestToEntity(articleRequest, principal.getName());
+        return articleConverter.convertEntityToResponse(articleService.update(article));
     }
 
     @GetMapping("/{categoryId}")
@@ -62,7 +60,16 @@ public class ArticleController {
     public List<ArticleResponse> getAllByCategoryId(
             @PathVariable UUID categoryId
     ){
-        return ArticleResponse.fromList(articleService.getAllByCategoryId(categoryId));
+        return articleConverter.convertEntitiesToResponse(articleService.getAllByCategoryId(categoryId));
+    }
+
+    @GetMapping("/{articleId}")
+    @Operation(summary = "get articles by id")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ArticleResponse getArticleById(
+            @PathVariable UUID articleId
+    ){
+        return articleService.getArticleById(articleId);
     }
 
     @DeleteMapping(value = "/{id}")

@@ -15,11 +15,8 @@ import static uz.community.javacommunity.controller.domain.Article.ArticleKey;
 public interface ArticleRepository extends CassandraRepository<Article, ArticleKey> {
     boolean existsByArticleKey_Id(UUID id);
     @Query(allowFiltering = true)
-    Optional<Article> findArticleByArticleKeyId(UUID id);
-    @Query(allowFiltering = true)
     Optional<Article> findByNameAndArticleKey_CategoryId(String name, UUID categoryId);
-    @Query(allowFiltering = true)
-    Optional<Article> findByArticleKey_Id(UUID articleId);
+    Optional<Article> findByArticleKey_Id(UUID id);
     @Query(allowFiltering = true)
     List<Article> findAllByArticleKey_CategoryId(UUID id);
 }

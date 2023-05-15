@@ -16,7 +16,7 @@ public interface SubArticleRepository extends CassandraRepository<SubArticle, Su
     List<SubArticle> findAllBySubArticleKey_ArticleId(UUID articleId);
 
     @Query(allowFiltering = true)
-    List<SubArticle> findAllByParentSubArticleId(UUID ParentSubArticleId);
+    List<SubArticle> findAllBySubArticleKeyParentSubArticleId(UUID ParentSubArticleId);
 
     Optional<SubArticle> findBySubArticleKeyId(UUID id);
 

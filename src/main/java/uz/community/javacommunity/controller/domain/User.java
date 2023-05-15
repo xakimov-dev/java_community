@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.cassandra.core.mapping.Column;
-import org.springframework.data.cassandra.core.mapping.Frozen;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.data.cassandra.core.mapping.*;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -19,9 +17,15 @@ import java.util.Set;
 public class User {
     @PrimaryKey
     private String username;
+    private String password;
     @Frozen
     private Set<String> roles;
-
+    @Column("created_date")
+    @CassandraType(type = CassandraType.Name.TIMESTAMP)
+    private Instant createdDate;
+    @Column("modified_date")
+    @CassandraType(type = CassandraType.Name.TIMESTAMP)
+    private Instant modifiedDate;
     private int age;
     private String info;
     @Column("image_url")

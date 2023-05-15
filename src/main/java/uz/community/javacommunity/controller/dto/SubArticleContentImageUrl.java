@@ -1,6 +1,7 @@
 package uz.community.javacommunity.controller.dto;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 
@@ -8,9 +9,10 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubArticleContentImageUrl {
     @NotBlank
-    private String imageUrl;
+    String imageUrl;
 
     public static SubArticleContentImageUrl of(String imageUrl) {
         return new SubArticleContentImageUrl(imageUrl);

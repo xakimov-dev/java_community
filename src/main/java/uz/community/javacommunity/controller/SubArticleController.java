@@ -28,20 +28,20 @@ public class SubArticleController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubArticleResponse create(
-            @RequestBody @Validated SubArticleRequest dto,
+            @RequestBody @Validated SubArticleRequest subArticleRequest,
             Principal principle
     ) {
-        SubArticle subArticle = subArticleConverter.convertRequestToEntity(dto,principle.getName());
+        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleRequest,principle.getName());
         return subArticleConverter.convertEntityToResponse(service.create(subArticle));
     }
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void update(
-            @RequestBody @Validated SubArticleRequest dto,
+            @RequestBody @Validated SubArticleRequest subArticleRequest,
             @PathVariable UUID id,
             Principal principal
     ) {
-        SubArticle subArticle = subArticleConverter.convertRequestToEntity(dto, principal.getName(), id);
+        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleRequest, principal.getName(), id);
         service.update(subArticle);
     }
     @DeleteMapping("/delete/{id}")

@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Article;
-import uz.community.javacommunity.controller.repository.ArticleRepository;
-import uz.community.javacommunity.controller.repository.CategoryRepository;
-import uz.community.javacommunity.controller.repository.SubArticleRepository;
+import uz.community.javacommunity.controller.repository.*;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,6 +16,8 @@ public class CommonSchemaValidator {
     private final CategoryRepository categoryRepository;
     private final ArticleRepository articleRepository;
     private final SubArticleRepository subArticleRepository;
+    private final UserRepository userRepository;
+    private final LoginRepository loginRepository;
 
     public void validateCategory(UUID id) {
         validateUUID(id,"category");
@@ -28,7 +28,7 @@ public class CommonSchemaValidator {
 
     public void validateArticle(UUID id) {
         validateUUID(id,"article");
-        Optional<Article> articleByArticleKeyId = articleRepository.findArticleByArticleKeyId(id);
+        Optional<Article> articleByArticleKeyId = articleRepository.findByArticleKey_Id(id);
         if (articleByArticleKeyId.isEmpty()) {
             throw new RecordNotFoundException(String.format("article not found for id %s", id));
         }
@@ -44,6 +44,12 @@ public class CommonSchemaValidator {
         validateUUID(id,"subArticle");
         if (!subArticleRepository.existsBySubArticleKeyId(id)) {
             throw new RecordNotFoundException(String.format("sub article not found for id %s", id));
+        }
+    }
+
+    public void validateUsername(String username) {
+        if (loginRepository.existsById(username)) {
+            throw new IllegalArgumentException(String.format("user with username %s already exists", username));
         }
     }
     

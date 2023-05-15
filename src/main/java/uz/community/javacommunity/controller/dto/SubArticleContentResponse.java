@@ -1,9 +1,7 @@
 package uz.community.javacommunity.controller.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 
 import java.time.Instant;
@@ -12,8 +10,10 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubArticleContentResponse{
         UUID id;
         UUID categoryId;
@@ -25,5 +25,4 @@ public class SubArticleContentResponse{
         Instant createdDate;
         String modifiedBy;
         Instant modifiedDate;
-
 }

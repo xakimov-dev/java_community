@@ -1,6 +1,5 @@
 package uz.community.javacommunity.controller.converter;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import uz.community.javacommunity.controller.domain.SubArticle;
 import uz.community.javacommunity.controller.dto.SubArticleRequest;

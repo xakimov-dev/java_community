@@ -1,6 +1,5 @@
 package uz.community.javacommunity.controller.converter;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
@@ -45,18 +44,18 @@ public class SubArticleContentConverter implements Converter<SubArticleContent, 
 
     @Override
     public SubArticleContentResponse convertEntityToResponse(SubArticleContent subArticleContent) {
-        return new SubArticleContentResponse(
-                subArticleContent.getSubArticleContentKey().getId(),
-                subArticleContent.getCategoryId(),
-                subArticleContent.getArticleId(),
-                subArticleContent.getSubArticleContentKey().getSubArticleId(),
-                subArticleContent.getContent(),
-                subArticleContent.isParagraph(),
-                subArticleContent.getCreatedBy(),
-                subArticleContent.getCreatedDate(),
-                subArticleContent.getModifiedBy(),
-                subArticleContent.getModifiedDate()
-        );
+        return SubArticleContentResponse.builder()
+                .id(subArticleContent.getSubArticleContentKey().getId())
+                .categoryId(subArticleContent.getCategoryId())
+                .articleId(subArticleContent.getArticleId())
+                .subArticleId(subArticleContent.getSubArticleContentKey().getSubArticleId())
+                .content(subArticleContent.getContent())
+                .isParagraph(subArticleContent.isParagraph())
+                .createdBy(subArticleContent.getCreatedBy())
+                .modifiedBy(subArticleContent.getModifiedBy())
+                .createdDate(subArticleContent.getCreatedDate())
+                .modifiedDate(subArticleContent.getModifiedDate())
+                .build();
     }
 
     @Override

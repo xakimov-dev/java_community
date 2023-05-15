@@ -1,13 +1,17 @@
 package uz.community.javacommunity.controller.dto;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 
-@Data
-public class JwtTokenRequest {
-    @NotBlank
-    private String username;
-    @NotBlank
-    private String password;
+@Getter
+@Setter
+public record JwtTokenRequest(
+        @NotBlank String username,
+        @NotBlank String password
+) {
 }
