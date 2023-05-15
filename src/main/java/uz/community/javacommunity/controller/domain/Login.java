@@ -11,6 +11,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("login")
+
 public class Login {
     @PrimaryKey
     private String username;

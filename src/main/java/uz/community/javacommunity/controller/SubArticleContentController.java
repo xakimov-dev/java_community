@@ -9,12 +9,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import uz.community.javacommunity.controller.converter.SubArticleContentConverter;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
 import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
 import uz.community.javacommunity.controller.dto.SubArticleContentResponse;
 import uz.community.javacommunity.service.SubArticleContentService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +27,7 @@ import java.util.UUID;
 @PreAuthorize("hasRole('ADMIN')")
 public class SubArticleContentController {
     private final SubArticleContentService service;
+    private final SubArticleContentConverter subArticleContentConverter;
 
     @PostMapping(value = "/image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -46,9 +49,12 @@ public class SubArticleContentController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new Sub Article Content")
     public SubArticleContentResponse create(
-            @RequestBody @Validated SubArticleContentRequest request) {
-        SubArticleContent response = service.create(request);
-        return SubArticleContentResponse.of(response);
+            @RequestBody @Validated SubArticleContentRequest request,
+            Principal principal
+    ) {
+        SubArticleContent subArticleContent = subArticleContentConverter.convertRequestToEntity(request, principal.getName());
+        SubArticleContent response = service.create(subArticleContent);
+        return subArticleContentConverter.convertEntityToResponse(response);
     }
 
     @GetMapping("/{id}")
@@ -58,6 +64,6 @@ public class SubArticleContentController {
     public List<SubArticleContentResponse> getSubArticle(
             @PathVariable UUID id){
         List<SubArticleContent> subArticleContents = service.get(id);
-        return SubArticleContentResponse.of(subArticleContents);
+        return subArticleContentConverter.convertEntitiesToResponse(subArticleContents);
     }
 }

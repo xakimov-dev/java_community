@@ -25,21 +25,5 @@ public class SubArticleContentResponse{
         Instant createdDate;
         String modifiedBy;
         Instant modifiedDate;
-    public static SubArticleContentResponse of(SubArticleContent subArticleContent) {
-        return new SubArticleContentResponse(
-                subArticleContent.getSubArticleContentKey().getId(),
-                subArticleContent.getSubArticleContentKey().getCategoryId(),
-                subArticleContent.getSubArticleContentKey().getArticleId(),
-                subArticleContent.getSubArticleContentKey().getSubArticleId(),
-                subArticleContent.getContent(),
-                subArticleContent.isParagraph(),
-                subArticleContent.getCreatedBy(),
-                subArticleContent.getCreatedDate(),
-                subArticleContent.getModifiedBy(),
-                subArticleContent.getModifiedDate()
-        );
-    }
-    public static List<SubArticleContentResponse> of(List<SubArticleContent> subArticleContent) {
-        return subArticleContent.stream().map(SubArticleContentResponse::of).toList();
-    }
+
 }

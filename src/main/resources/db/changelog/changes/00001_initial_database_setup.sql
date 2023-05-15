@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS sub_article
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id, category_id, article_id)
+    PRIMARY KEY (id, article_id, parent_sub_article_id)
 );
 -- rollback DROP TABLE sub_article
 
@@ -84,6 +84,6 @@ CREATE TABLE IF NOT EXISTS sub_article_content
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id, category_id, article_id, sub_article_id)
+    PRIMARY KEY (id, sub_article_id)
 );
 -- rollback DROP TABLE sub_article_content

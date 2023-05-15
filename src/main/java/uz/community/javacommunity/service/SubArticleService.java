@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.SubArticle;
-import uz.community.javacommunity.controller.dto.SubArticleRequest;
-import uz.community.javacommunity.controller.dto.SubArticleResponse;
 import uz.community.javacommunity.controller.repository.SubArticleRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
@@ -16,33 +14,31 @@ import java.util.UUID;
 public class SubArticleService {
     private final SubArticleRepository repository;
     private final CommonSchemaValidator validator;
-    public SubArticleResponse create(SubArticleRequest dto) {
+    public SubArticle create(SubArticle subArticle) {
 
-        validator.validateSubArticleExist(dto.name());
+        validator.validateSubArticleExist(subArticle.getName());
 
-        validator.validateCategory(dto.categoryId());
+        UUID parentSubArticleId = subArticle.getSubArticleKey().getParentSubArticleId();
+        if (parentSubArticleId!=null) validator.validateSubArticle(parentSubArticleId);
+        validator.validateCategory(subArticle.getCategoryId());
 
-        validator.validateArticle(dto.articleId());
+        validator.validateArticle(subArticle.getSubArticleKey().getArticleId());
 
-        SubArticle savedSubArticle = repository.save(SubArticle.of(dto));
+        return repository.save(subArticle);
 
-        return SubArticleResponse.of(savedSubArticle);
     }
 
-    public void update(SubArticleRequest dto, UUID id) {
+    public void update(SubArticle subArticle) {
 
-        validator.validateCategory(dto.categoryId());
+        validator.validateCategory(subArticle.getCategoryId());
 
-        validator.validateArticle(dto.articleId());
+        validator.validateArticle(subArticle.getSubArticleKey().getArticleId());
 
-        if (dto.parentSubArticleId() != null) {
-            validator.validateSubArticle(dto.parentSubArticleId());
+        UUID parentSubArticleId = subArticle.getSubArticleKey().getParentSubArticleId();
+        if (parentSubArticleId != null) {
+            validator.validateSubArticle(parentSubArticleId);
         }
-
-        SubArticle subArticle = getById(id);
-
-        subArticle.update(dto, id);
-
+        exitsById(subArticle.getSubArticleKey().getId());
         repository.save(subArticle);
     }
 
@@ -55,5 +51,11 @@ public class SubArticleService {
     public SubArticle getById(UUID id) {
         return repository.findBySubArticleKeyId(id).orElseThrow(() ->
                 new RecordNotFoundException("Sub article not found by id: " + id));
+    }
+
+    public void exitsById(UUID id) {
+        if (!repository.existsBySubArticleKeyId(id)) {
+            throw new RecordNotFoundException("Sub article not found by id: " + id);
+        }
     }
 }

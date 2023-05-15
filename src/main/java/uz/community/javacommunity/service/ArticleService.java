@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
+import uz.community.javacommunity.controller.converter.SubArticleConverter;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.domain.SubArticle;
 import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final SubArticleRepository subArticleRepository;
+    private final SubArticleConverter subArticleConverter;
     private final CategoryService categoryService;
     private final JwtService jwtService;
     private final CommonSchemaValidator commonSchemaValidator;
@@ -80,7 +82,7 @@ public class ArticleService {
     private void getSubArticlesContentByArticle(ArticleResponse article) {
         List<SubArticle> subArticles = subArticleRepository.findAllBySubArticleKey_ArticleId(article.getArticleId());
         if (!subArticles.isEmpty()) {
-            List<SubArticleResponse> list = subArticles.stream().map(SubArticleResponse::of).toList();
+            List<SubArticleResponse> list = subArticles.stream().map(subArticleConverter::convertEntityToResponse).toList();
             list.forEach(this::getSubArticlesContentBySubArticle);
             article.setSubArticleResponseList(list);
         }
@@ -90,7 +92,7 @@ public class ArticleService {
     private void getSubArticlesContentBySubArticle(SubArticleResponse subArticleResponse) {
         List<SubArticle> subArticles = subArticleRepository.findAllByParentSubArticleId(subArticleResponse.getId());
         if (!subArticles.isEmpty()) {
-            List<SubArticleResponse> list = subArticles.stream().map(SubArticleResponse::of).toList();
+            List<SubArticleResponse> list = subArticles.stream().map(subArticleConverter::convertEntityToResponse).toList();
             list.forEach(this::getSubArticlesContentBySubArticle);
             subArticleResponse.setChildSubArticleList(list);
         }

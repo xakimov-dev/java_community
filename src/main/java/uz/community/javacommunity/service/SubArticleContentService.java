@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
-import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
 import uz.community.javacommunity.controller.repository.SubArticleContentRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
@@ -23,11 +22,10 @@ public class SubArticleContentService {
     private final CommonSchemaValidator validator;
 
     @SneakyThrows
-    public SubArticleContent create(SubArticleContentRequest request) {
-        validator.validateCategory(request.getCategoryId());
-        validator.validateArticle(request.getArticleId());
-        validator.validateSubArticle(request.getSubArticleId());
-        SubArticleContent subArticleContent = SubArticleContent.of(request);
+    public SubArticleContent create(SubArticleContent subArticleContent) {
+        validator.validateCategory(subArticleContent.getCategoryId());
+        validator.validateArticle(subArticleContent.getArticleId());
+        validator.validateSubArticle(subArticleContent.getSubArticleContentKey().getSubArticleId());
         return repository.save(subArticleContent);
     }
 
