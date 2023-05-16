@@ -20,7 +20,6 @@ import java.util.UUID;
 public class SubArticleContentService {
     private final SubArticleContentRepository repository;
     private final CommonSchemaValidator validator;
-
     @SneakyThrows
     public SubArticleContent create(SubArticleContent subArticleContent) {
         validator.validateCategory(subArticleContent.getCategoryId());
@@ -55,7 +54,7 @@ public class SubArticleContentService {
     public List<SubArticleContent> get(UUID id) {
         validator.validateUUID(id,"subArticle");
         List<SubArticleContent> subArticleContents =
-                repository.findAllBySubArticleContentKeySubArticleId(id);
+                repository.findAllBySubArticleId(id);
         if (subArticleContents.isEmpty()) {
             validator.validateSubArticle(id);
         }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @UtilityClass
 public class CategoryConverter {
-    public static CategoryResponse from(Category category) {
+    public CategoryResponse from(Category category) {
         return CategoryResponse
                 .builder()
                 .id(category.getId())
@@ -22,17 +22,17 @@ public class CategoryConverter {
                 .parentId(category.getParentId())
                 .build();
     }
-    public static List<CategoryResponse> from(List<Category> categoryList){
+    public List<CategoryResponse> from(List<Category> categoryList){
         return categoryList.stream().map(CategoryConverter::from).toList();
     }
-    public static Category convertToEntity(CategoryCreateRequest categoryCreateRequest){
+    public Category convertToEntity(CategoryCreateRequest categoryCreateRequest){
         return Category.builder()
                 .name(categoryCreateRequest.getName())
                 .parentId(categoryCreateRequest.getParentId())
                 .build();
     }
 
-    public static Category convertToEntity(CategoryUpdateRequest categoryUpdateRequest){
+    public Category convertToEntity(CategoryUpdateRequest categoryUpdateRequest){
         return Category.builder()
                 .name(categoryUpdateRequest.getName())
                 .parentId(categoryUpdateRequest.getParentId())

@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class JwtTokenRequest{
-    @NotBlank String username;
-    @NotBlank String password;
+public class UserUpdateRequest extends BaseUserRequest{
+    String username;
+    String password;
+    Set<String> roles;
+    String info;
 }

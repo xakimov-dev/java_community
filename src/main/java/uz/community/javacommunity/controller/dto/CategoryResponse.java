@@ -2,11 +2,10 @@ package uz.community.javacommunity.controller.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import uz.community.javacommunity.controller.domain.Category;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+
 @Getter
 @Setter
 @Builder

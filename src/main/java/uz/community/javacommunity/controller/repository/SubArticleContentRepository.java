@@ -7,7 +7,7 @@ import uz.community.javacommunity.controller.domain.SubArticleContent;
 import java.util.List;
 import java.util.UUID;
 
-public interface SubArticleContentRepository extends CassandraRepository<SubArticleContent, SubArticleContent.SubArticleContentKey> {
+public interface SubArticleContentRepository extends CassandraRepository<SubArticleContent,UUID> {
     @Query(allowFiltering = true)
-    List<SubArticleContent> findAllBySubArticleContentKeySubArticleId(UUID uuid);
+    List<SubArticleContent> findAllBySubArticleId(UUID uuid);
 }

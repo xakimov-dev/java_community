@@ -12,7 +12,6 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
     String username;
-    String password;
     Set<String> roles;
     String info;
     String imgUrl;

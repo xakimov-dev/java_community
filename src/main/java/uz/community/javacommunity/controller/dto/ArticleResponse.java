@@ -14,10 +14,10 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ArticleResponse {
-    private UUID id;
-    private String name;
-    private UUID categoryId;
-    private String createdBy;
-    private String createdDate;
-    private List<SubArticleResponse> subArticleResponseList;
+    UUID id;
+    String name;
+    UUID categoryId;
+    String createdBy;
+    String createdDate;
+    List<SubArticleResponse> subArticleResponseList;
 }

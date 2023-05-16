@@ -7,9 +7,10 @@ import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 
 import java.util.List;
+
 @UtilityClass
 public class ArticleConverter {
-    public static ArticleResponse from(Article article) {
+    public ArticleResponse from(Article article) {
         return ArticleResponse.builder()
                 .name(article.getName())
                 .id(article.getId())
@@ -19,18 +20,18 @@ public class ArticleConverter {
                 .build();
     }
 
-    public static List<ArticleResponse> from(List<Article> articles) {
+    public List<ArticleResponse> from(List<Article> articles) {
         return articles.stream().map(ArticleConverter::from).toList();
     }
 
-    public static Article convertToEntity(ArticleCreateRequest articleCreateRequest) {
+    public Article convertToEntity(ArticleCreateRequest articleCreateRequest) {
         return Article.builder()
                 .categoryId(articleCreateRequest.getCategoryId())
                 .name(articleCreateRequest.getName())
                 .build();
     }
 
-    public static Article convertToEntity(ArticleUpdateRequest articleUpdateRequest) {
+    public Article convertToEntity(ArticleUpdateRequest articleUpdateRequest) {
         return Article.builder()
                 .categoryId(articleUpdateRequest.getCategoryId())
                 .name(articleUpdateRequest.getName())

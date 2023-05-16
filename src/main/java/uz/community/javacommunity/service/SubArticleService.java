@@ -7,50 +7,47 @@ import uz.community.javacommunity.controller.domain.SubArticle;
 import uz.community.javacommunity.controller.repository.SubArticleRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SubArticleService {
     private final SubArticleRepository repository;
-    private final CommonSchemaValidator validator;
-    public SubArticle create(SubArticle subArticle) {
-
-        validator.validateSubArticleExist(subArticle.getName());
-
-        UUID parentSubArticleId = subArticle.getSubArticleKey().getParentSubArticleId();
-        if (parentSubArticleId!=null) validator.validateSubArticle(parentSubArticleId);
-        validator.validateCategory(subArticle.getCategoryId());
-
-        validator.validateArticle(subArticle.getSubArticleKey().getArticleId());
-
+    private final CommonSchemaValidator commonSchemaValidator;
+    public SubArticle create(SubArticle subArticle, String createdBy) {
+        commonSchemaValidator.validateSubArticleExist(subArticle.getName());
+        UUID parentSubArticleId = subArticle.getParentSubArticleId();
+        if (parentSubArticleId!=null) commonSchemaValidator.validateSubArticle(parentSubArticleId);
+        commonSchemaValidator.validateArticle(subArticle.getArticleId());
+        Instant now = Instant.now();
+        subArticle.setCreatedBy(createdBy);
+        subArticle.setCreatedDate(now);
+        subArticle.setModifiedBy(createdBy);
+        subArticle.setModifiedDate(now);
         return repository.save(subArticle);
-
     }
 
-    public void update(SubArticle subArticle) {
-
-        validator.validateCategory(subArticle.getCategoryId());
-
-        validator.validateArticle(subArticle.getSubArticleKey().getArticleId());
-
-        UUID parentSubArticleId = subArticle.getSubArticleKey().getParentSubArticleId();
+    public SubArticle update(SubArticle subArticle,String updatedBy,UUID id) {
+        commonSchemaValidator.validateArticle(subArticle.getArticleId());
+        UUID parentSubArticleId = subArticle.getParentSubArticleId();
         if (parentSubArticleId != null) {
-            validator.validateSubArticle(parentSubArticleId);
+            commonSchemaValidator.validateSubArticle(parentSubArticleId);
         }
-        exitsById(subArticle.getSubArticleKey().getId());
-        repository.save(subArticle);
+        SubArticle subArticleEntity = getById(id);
+        subArticleEntity.setModifiedBy(updatedBy);
+        subArticleEntity.setModifiedDate(Instant.now());
+        return repository.save(subArticleEntity);
     }
 
     public void delete(UUID subArticleId){
-        SubArticle subArticle = repository.findBySubArticleKeyId(subArticleId).orElseThrow(() -> {
-            throw new RecordNotFoundException(String.format("SubArticle with id %s cannot be found",subArticleId));});
+        SubArticle subArticle = getById(subArticleId);
         repository.delete(subArticle);
     }
 
     public SubArticle getById(UUID id) {
-        return repository.findBySubArticleKeyId(id).orElseThrow(() ->
-                new RecordNotFoundException("Sub article not found by id: " + id));
+        return repository.findById(id).orElseThrow(() ->
+                new RecordNotFoundException("SubArticle with id %s cannot be found",subArticleId));
     }
 
     public void exitsById(UUID id) {

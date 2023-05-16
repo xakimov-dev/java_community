@@ -10,7 +10,7 @@ import java.util.List;
 
 @UtilityClass
 public class SubArticleConverter {
-    public static SubArticle convertToEntity(SubArticleCreateRequest subArticleCreateRequest) {
+    public SubArticle convertToEntity(SubArticleCreateRequest subArticleCreateRequest) {
         return SubArticle.builder()
                 .name(subArticleCreateRequest.getName())
                 .articleId(subArticleCreateRequest.getArticleId())
@@ -18,7 +18,7 @@ public class SubArticleConverter {
                 .build();
     }
 
-    public static SubArticle convertToEntity(SubArticleUpdateRequest subArticleUpdateRequest) {
+    public SubArticle convertToEntity(SubArticleUpdateRequest subArticleUpdateRequest) {
         return SubArticle.builder()
                 .name(subArticleUpdateRequest.getName())
                 .articleId(subArticleUpdateRequest.getArticleId())
@@ -26,7 +26,7 @@ public class SubArticleConverter {
                 .build();
     }
 
-    public static SubArticleResponse from(SubArticle subArticle) {
+    public SubArticleResponse from(SubArticle subArticle) {
         return SubArticleResponse.builder()
                 .articleId(subArticle.getArticleId())
                 .id(subArticle.getId())
@@ -39,7 +39,7 @@ public class SubArticleConverter {
                 .build();
     }
 
-    public static List<SubArticleResponse> from(List<SubArticle> subArticles) {
+    public List<SubArticleResponse> from(List<SubArticle> subArticles) {
         return subArticles.stream().map(SubArticleConverter::from).toList();
     }
 }

@@ -23,27 +23,26 @@ import java.util.UUID;
 @EnableMethodSecurity
 public class SubArticleController {
     private final SubArticleService service;
-    private final SubArticleConverter subArticleConverter;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubArticleResponse create(
             @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
             Principal principle
     ) {
-        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleCreateRequest,principle.getName());
-        return subArticleConverter.convertEntityToResponse(service.create(subArticle));
+        SubArticle subArticle = SubArticleConverter.convertToEntity(subArticleCreateRequest);
+        return SubArticleConverter.from(service.create(subArticle,principle.getName()));
     }
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(
+    public SubArticleResponse update(
             @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
             @PathVariable UUID id,
             Principal principal
     ) {
-        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleCreateRequest, principal.getName(), id);
-        service.update(subArticle);
+        SubArticle subArticle =SubArticleConverter.convertToEntity(subArticleCreateRequest);
+        return SubArticleConverter.from(service.update(subArticle,principal.getName(),id));
     }
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id){

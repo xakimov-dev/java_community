@@ -2,45 +2,40 @@ package uz.community.javacommunity.controller.converter;
 
 
 import lombok.experimental.UtilityClass;
-import org.springframework.stereotype.Component;
 import uz.community.javacommunity.controller.domain.User;
-import uz.community.javacommunity.controller.dto.UserRequest;
+import uz.community.javacommunity.controller.dto.UserCreateRequest;
 import uz.community.javacommunity.controller.dto.UserResponse;
+import uz.community.javacommunity.controller.dto.UserUpdateRequest;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
+
 @UtilityClass
 public class UserConverter {
 
-    public User convertToEntity(UserRequest userRequest) {
+    public User convertToEntity(UserCreateRequest userCreateRequest) {
         return User.builder()
-                .age(userRequest.getAge())
-                .info(userRequest.getInfo())
-                .roles(userRequest.getRoles())
-                .imageUrl(userRequest.getImgUrl())
-                .username(userRequest.getUsername())
+                .age(userCreateRequest.getAge())
+                .info(userCreateRequest.getInfo())
+                .roles(userCreateRequest.getRoles())
+                .imageUrl(userCreateRequest.getImgUrl())
+                .username(userCreateRequest.getUsername())
                 .build();
     }
 
-    public User convertRequestToEntity(UserRequest userRequest) {
-        Instant now = Instant.now();
+    public User convertToEntity(UserUpdateRequest userUpdateRequest) {
         return User.builder()
-                .modifiedDate(now)
-                .createdDate(now)
-                .age(userRequest.getAge())
-                .info(userRequest.getInfo())
-                .roles(userRequest.getRoles())
-                .imageUrl(userRequest.getImgUrl())
-                .username(userRequest.username())
-                .password(userRequest.password())
+                .age(userUpdateRequest.getAge())
+                .info(userUpdateRequest.getInfo())
+                .roles(userUpdateRequest.getRoles())
+                .imageUrl(userUpdateRequest.getImgUrl())
+                .username(userUpdateRequest.getUsername())
                 .build();
     }
 
-    public UserResponse convertEntityToResponse(User user) {
+    public UserResponse from(User user) {
         return UserResponse.builder()
                 .username(user.getUsername())
-                .password(user.getPassword())
                 .age(user.getAge())
                 .imgUrl(user.getImageUrl())
                 .createdDate(user.getCreatedDate())
@@ -50,7 +45,7 @@ public class UserConverter {
                 .build();
     }
 
-    public List<UserResponse> convertEntitiesToResponse(List<User> users) {
-        return users.stream().map(this::convertEntityToResponse).toList();
+    public List<UserResponse> from(List<User> users) {
+        return users.stream().map(UserConverter::from).toList();
     }
 }

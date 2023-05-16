@@ -5,22 +5,20 @@ import org.springframework.data.cassandra.core.CassandraBatchOperations;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.AuthenticationException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.Login;
 import uz.community.javacommunity.controller.domain.User;
-import uz.community.javacommunity.controller.dto.UserRequest;
 import uz.community.javacommunity.controller.repository.LoginRepository;
 import uz.community.javacommunity.controller.repository.UserRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final CassandraTemplate cassandraTemplate;
     private final UserRepository userRepository;
     private final LoginRepository loginRepository;
@@ -29,14 +27,9 @@ public class UserService {
     private final CommonSchemaValidator commonSchemaValidator;
 
     public User create(User user, Login login) {
-        Optional<User> optionalUser = userRepository.findById(user.getUsername());
-        if (optionalUser.isPresent()){
-            throw new AlreadyExistsException("");
-        }
-
+        commonSchemaValidator.validateUsernameExist(user.getUsername());
         String hashedPassword = passwordEncoder.encode(login.getPassword());
         login.setPassword(hashedPassword);
-
         Instant now = Instant.now();
         user.setCreatedDate(now);
         user.setModifiedDate(now);
@@ -46,21 +39,17 @@ public class UserService {
         return user;
     }
 
-    public String login(String username, String password) {
-        Login login = loginRepository.findById(username).orElseThrow(AuthenticationException::new);
-        validatePassword(login, password);
-        User user = userRepository.findById(username).orElseThrow(()-> new RecordNotFoundException("User with username [%s] not found ".formatted(username)));
+    public String login(Login login) {
+        Login loginEntity = loginRepository.findById(login.getUsername())
+                .orElseThrow(AuthenticationException::new);
+        commonSchemaValidator.validatePassword(loginEntity, login.getPassword());
+        User user = userRepository.findById(login.getUsername()).orElseThrow(()->
+                new RecordNotFoundException(String.format("User with username %s not found ",login.getUsername())));
         return jwtService.generateToken(user);
     }
 
     public User findByUserName(String username) {
         return userRepository.findById(username)
                 .orElseThrow(() -> new RecordNotFoundException("Can not found user with username: " + username));
-    }
-
-    private void validatePassword(Login login, String password) {
-        if (!passwordEncoder.matches(password, login.getPassword())) {
-            throw new AuthenticationException();
-        }
     }
 }
