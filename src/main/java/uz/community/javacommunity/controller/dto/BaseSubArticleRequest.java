@@ -1,6 +1,5 @@
 package uz.community.javacommunity.controller.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,9 +8,9 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
-public class BaseCategoryRequest {
-    @NotBlank(message = "Category name must not blank")
+public class BaseSubArticleRequest {
+    UUID articleId;
+    UUID parentSubArticleId;
+    @NotBlank(message = "error.invalid.name.not_blank")
     String name;
-    UUID parentId;
 }

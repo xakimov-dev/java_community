@@ -17,7 +17,6 @@ import java.util.Set;
 public class User {
     @PrimaryKey
     private String username;
-    private String password;
     @Frozen
     private Set<String> roles;
     @Column("created_date")

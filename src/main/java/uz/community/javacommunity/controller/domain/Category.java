@@ -17,7 +17,9 @@ import java.util.UUID;
 public class Category {
 
     @PrimaryKey
-    CategoryKey categoryKey;
+    @CassandraType(type = CassandraType.Name.UUID)
+    UUID id;
+    String name;
     @Column("parent_id")
     UUID parentId;
     @Column("created_by")
@@ -30,26 +32,4 @@ public class Category {
     @Column("modified_date")
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
     Instant modifiedDate;
-
-    @Data
-    @Builder
-    @PrimaryKeyClass
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class CategoryKey {
-
-        @PrimaryKeyColumn(name = "id", ordinal = 0, type =
-                PrimaryKeyType.PARTITIONED)
-        @CassandraType(type = CassandraType.Name.UUID)
-        private UUID id;
-
-        @PrimaryKeyColumn(name = "name", ordinal = 1, type =
-                PrimaryKeyType.CLUSTERED)
-        @CassandraType(type = CassandraType.Name.TEXT)
-        private String name;
-
-        public static CategoryKey of(UUID id, String name){
-            return new CategoryKey(id, name);
-        }
-    }
 }

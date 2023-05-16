@@ -29,7 +29,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
         SubArticleResponse subArticle = testDataHelperSubArticle
                 .createSubArticle(category.getId(), article.getArticleId(),
                         null, "sub-article");
-        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+        SubArticleContentCreateRequest subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), article.getArticleId(),
                 subArticle.getId(), "test-text", true);
         RequestBuilder request = testDataHelperSubArticleContent
@@ -79,7 +79,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
         SubArticleResponse subArticle = testDataHelperSubArticle
                 .createSubArticle(category.getId(), article.getArticleId(),
                         null, "sub-article");
-        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+        SubArticleContentCreateRequest subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), article.getArticleId(),
                 subArticle.getId(), null, true);
         RequestBuilder request = testDataHelperSubArticleContent
@@ -104,7 +104,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        subArticleContent = new SubArticleContentRequest(
+        subArticleContent = new SubArticleContentCreateRequest(
                 null, article.getArticleId(),
                 subArticle.getId(), "test-text", true);
         request = testDataHelperSubArticleContent
@@ -118,7 +118,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        subArticleContent = new SubArticleContentRequest(
+        subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), null,
                 subArticle.getId(), "test-text", true);
         request = testDataHelperSubArticleContent
@@ -132,7 +132,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        subArticleContent = new SubArticleContentRequest(
+        subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), article.getArticleId(),
                 null, "test-text", true);
         request = testDataHelperSubArticleContent
@@ -157,7 +157,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .createArticle("article", category.getId());
         SubArticleResponse subArticle = testDataHelperSubArticle
                 .createSubArticle(category.getId(), article.getArticleId(), null, "sub-article");
-        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+        SubArticleContentCreateRequest subArticleContent = new SubArticleContentCreateRequest(
                 UUID.randomUUID(), article.getArticleId(),
                 subArticle.getId(), "test-text", true);
         RequestBuilder request = testDataHelperSubArticleContent
@@ -171,7 +171,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isNotFound());
 
         //GIVEN
-        subArticleContent = new SubArticleContentRequest(
+        subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), UUID.randomUUID(),
                 subArticle.getId(), "test-text", true);
         request = testDataHelperSubArticleContent
@@ -185,7 +185,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
                 .andExpect(status().isNotFound());
 
         //GIVEN
-        subArticleContent = new SubArticleContentRequest(
+        subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), article.getArticleId(),
                 UUID.randomUUID(), "test-text", true);
         request = testDataHelperSubArticleContent
@@ -204,7 +204,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
     @WithAuthentication(username = "owner", roles = "ROLE_USER")
     void shouldFailIfNotAdmin() throws Exception {
         //GIVEN
-        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+        SubArticleContentCreateRequest subArticleContent = new SubArticleContentCreateRequest(
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "test-text", true);
         RequestBuilder request = testDataHelperSubArticleContent
@@ -223,7 +223,7 @@ class CreateSubArticleContentTest extends CommonIntegrationTest {
     @WithAnonymousUser
     void shouldFailIfUnauthorized() throws Exception {
         //GIVEN
-        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+        SubArticleContentCreateRequest subArticleContent = new SubArticleContentCreateRequest(
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "test-text", true);
         RequestBuilder request = testDataHelperSubArticleContent

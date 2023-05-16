@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
-import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
+import uz.community.javacommunity.controller.dto.SubArticleContentCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleContentResponse;
 
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class TestDataHelperSubArticleContent {
     private final MockMvc mockMvc;
 
     @SneakyThrows
-    public RequestBuilder createSubArticleContentTextRequest(SubArticleContentRequest request) {
+    public RequestBuilder createSubArticleContentTextRequest(SubArticleContentCreateRequest request) {
         return post(BASE_PATH + "text")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(request));
@@ -56,7 +56,7 @@ public class TestDataHelperSubArticleContent {
     }
 
     @SneakyThrows
-    public SubArticleContentResponse createSubArticleContent(SubArticleContentRequest subArticle) {
+    public SubArticleContentResponse createSubArticleContent(SubArticleContentCreateRequest subArticle) {
         RequestBuilder request = createSubArticleContentTextRequest(subArticle);
         String subArticleContentImage = mockMvc.perform(request).andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();

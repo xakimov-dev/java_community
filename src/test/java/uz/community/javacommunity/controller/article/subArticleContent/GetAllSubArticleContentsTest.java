@@ -43,7 +43,7 @@ class GetAllSubArticleContentsTest extends CommonIntegrationTest {
         //GIVEN
         SubArticleContentImageUrl imageUrl = testDataHelperSubArticleContent
                 .subArticleContentImage(testDataHelperSubArticleContent.getImage());
-        SubArticleContentRequest subArticleContent = new SubArticleContentRequest(
+        SubArticleContentCreateRequest subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), article.getArticleId(),
                 subArticle.getId(), imageUrl.getImageUrl(), false);
         testDataHelperSubArticleContent
@@ -67,7 +67,7 @@ class GetAllSubArticleContentsTest extends CommonIntegrationTest {
                 .andExpect(jsonPath("$[0].isParagraph").value(false));
 
         //GIVEN
-        subArticleContent = new SubArticleContentRequest(
+        subArticleContent = new SubArticleContentCreateRequest(
                 category.getId(), article.getArticleId(),
                 subArticle.getId(), "test-text", true);
         testDataHelperSubArticleContent

@@ -64,10 +64,10 @@ public class ArticleService {
         Optional<Article> optionalArticle = articleRepository.findByArticleKey_Id(id);
         if (optionalArticle.isPresent()) {
             ArticleResponse articleResponse = ArticleConverter.from(optionalArticle.get());
-           getSubArticlesContentByArticle(articleResponse);
-           return articleResponse;
+            getSubArticlesContentByArticle(articleResponse);
+            return articleResponse;
         }
-        return  null;
+        return null;
     }
 
     private void getSubArticlesContentByArticle(ArticleResponse article) {
@@ -89,13 +89,14 @@ public class ArticleService {
         }
 
     }
+
     public List<Article> getAllByCategoryId(UUID categoryId) {
         return articleRepository.findAllByArticleKey_CategoryId(categoryId);
     }
 
     public void delete(UUID id) {
         Article articleByArticleKeyId = articleRepository.findArticleByArticleKeyId(id).orElseThrow(
-                ()->new RecordNotFoundException(String.format("Article not found for id %s",id)));
+                () -> new RecordNotFoundException(String.format("Article not found for id %s", id)));
         articleRepository.delete(articleByArticleKeyId);
     }
 

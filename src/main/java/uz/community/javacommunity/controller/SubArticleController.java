@@ -8,13 +8,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.community.javacommunity.controller.converter.SubArticleConverter;
 import uz.community.javacommunity.controller.domain.SubArticle;
-import uz.community.javacommunity.controller.dto.SubArticleRequest;
+import uz.community.javacommunity.controller.dto.SubArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
 
 import uz.community.javacommunity.service.SubArticleService;
 
 import java.security.Principal;
-import java.time.Instant;
 import java.util.UUID;
 
 
@@ -28,20 +27,20 @@ public class SubArticleController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubArticleResponse create(
-            @RequestBody @Validated SubArticleRequest subArticleRequest,
+            @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
             Principal principle
     ) {
-        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleRequest,principle.getName());
+        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleCreateRequest,principle.getName());
         return subArticleConverter.convertEntityToResponse(service.create(subArticle));
     }
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void update(
-            @RequestBody @Validated SubArticleRequest subArticleRequest,
+            @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
             @PathVariable UUID id,
             Principal principal
     ) {
-        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleRequest, principal.getName(), id);
+        SubArticle subArticle = subArticleConverter.convertRequestToEntity(subArticleCreateRequest, principal.getName(), id);
         service.update(subArticle);
     }
     @DeleteMapping("/delete/{id}")

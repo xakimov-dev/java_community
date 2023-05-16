@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.community.javacommunity.controller.converter.SubArticleContentConverter;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
 import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
-import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
+import uz.community.javacommunity.controller.dto.SubArticleContentCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleContentResponse;
 import uz.community.javacommunity.service.SubArticleContentService;
 
@@ -49,10 +49,10 @@ public class SubArticleContentController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new Sub Article Content")
     public SubArticleContentResponse create(
-            @RequestBody @Validated SubArticleContentRequest subArticleContentRequest,
+            @RequestBody @Validated SubArticleContentCreateRequest subArticleContentCreateRequest,
             Principal principal
     ) {
-        SubArticleContent subArticleContent = subArticleContentConverter.convertRequestToEntity(subArticleContentRequest, principal.getName());
+        SubArticleContent subArticleContent = subArticleContentConverter.convertRequestToEntity(subArticleContentCreateRequest, principal.getName());
         SubArticleContent response = service.create(subArticleContent);
         return subArticleContentConverter.convertEntityToResponse(response);
     }

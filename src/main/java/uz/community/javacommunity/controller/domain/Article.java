@@ -18,7 +18,9 @@ import static org.springframework.data.cassandra.core.cql.PrimaryKeyType.PARTITI
 @Table("article")
 public class Article {
     @PrimaryKey
-    ArticleKey articleKey;
+    UUID id;
+    @Column("category_id")
+    UUID categoryId;
     String name;
     @Column("created_by")
     String createdBy;
@@ -30,21 +32,5 @@ public class Article {
     @Column("modified_date")
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
     Instant modifiedDate;
-    @Data
-    @Builder
-    @PrimaryKeyClass
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class ArticleKey{
-        @PrimaryKeyColumn(name = "id", ordinal = 0, type = PARTITIONED)
-        UUID id;
-        @PrimaryKeyColumn(name = "category_id", ordinal = 1, type = CLUSTERED)
-        UUID categoryId;
-
-        public static ArticleKey of(UUID id, UUID categoryId){
-            return new ArticleKey(id, categoryId);
-        }
-    }
 }
 

@@ -9,12 +9,13 @@ import java.util.Set;
 
 @Getter
 @Setter
-public record UserRequest(
-        @NotBlank String username,
-        @NotBlank String password,
-        @NotEmpty Set<String> roles,
-        Integer age,
-        @NotBlank String info,
-        String imgUrl
-) {
+public class UserRequest{
+    @NotBlank
+    String username;
+    @NotEmpty
+    Set<String> roles;
+    Integer age;
+    @NotBlank
+    String info;
+    String imgUrl;
 }

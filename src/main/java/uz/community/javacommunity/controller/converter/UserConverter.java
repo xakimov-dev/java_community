@@ -1,6 +1,7 @@
 package uz.community.javacommunity.controller.converter;
 
 
+import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Component;
 import uz.community.javacommunity.controller.domain.User;
 import uz.community.javacommunity.controller.dto.UserRequest;
@@ -9,20 +10,18 @@ import uz.community.javacommunity.controller.dto.UserResponse;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-@Component
+@UtilityClass
 public class UserConverter {
 
-    public User convertUpdateRequestToEntity(UserRequest userRequest) {
-        Instant now = Instant.now();
+    public User convertToEntity(UserRequest userRequest) {
         return User.builder()
-                .modifiedDate(now)
                 .age(userRequest.getAge())
                 .info(userRequest.getInfo())
                 .roles(userRequest.getRoles())
                 .imageUrl(userRequest.getImgUrl())
-                .username(userRequest.username())
-                .password(userRequest.password())
-                .build();    }
+                .username(userRequest.getUsername())
+                .build();
+    }
 
     public User convertRequestToEntity(UserRequest userRequest) {
         Instant now = Instant.now();

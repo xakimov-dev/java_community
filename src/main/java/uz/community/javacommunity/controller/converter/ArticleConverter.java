@@ -1,37 +1,39 @@
 package uz.community.javacommunity.controller.converter;
 
+import lombok.experimental.UtilityClass;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
+import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 
 import java.util.List;
-import java.util.UUID;
-
+@UtilityClass
 public class ArticleConverter {
     public static ArticleResponse from(Article article) {
         return ArticleResponse.builder()
-                .articleId(article.getArticleKey().getId())
                 .name(article.getName())
-                .articleId(article.getArticleKey().getId())
-                .categoryId(article.getArticleKey().getCategoryId())
+                .id(article.getId())
+                .categoryId(article.getCategoryId())
                 .createdBy(article.getCreatedBy())
                 .createdDate(article.getCreatedDate().toString())
                 .build();
     }
-    public static List<ArticleResponse> fromList(List<Article> articles) {
+
+    public static List<ArticleResponse> from(List<Article> articles) {
         return articles.stream().map(ArticleConverter::from).toList();
     }
-    public static Article convertToEntity(ArticleCreateRequest articleCreateRequest){
+
+    public static Article convertToEntity(ArticleCreateRequest articleCreateRequest) {
         return Article.builder()
-                .articleKey(Article.ArticleKey.of(UUID.randomUUID(), articleCreateRequest.getCategoryId()))
+                .categoryId(articleCreateRequest.getCategoryId())
                 .name(articleCreateRequest.getName())
                 .build();
     }
 
-    public static Article convertToEntity(UUID id,ArticleCreateRequest articleCreateRequest){
+    public static Article convertToEntity(ArticleUpdateRequest articleUpdateRequest) {
         return Article.builder()
-                .articleKey(Article.ArticleKey.of(id, articleCreateRequest.getCategoryId()))
-                .name(articleCreateRequest.getName())
+                .categoryId(articleUpdateRequest.getCategoryId())
+                .name(articleUpdateRequest.getName())
                 .build();
     }
 }
