@@ -18,16 +18,4 @@ public class ArticleResponse {
     private String createdBy;
     private String createdDate;
     private List<SubArticleResponse> subArticleResponseList;
-    public static ArticleResponse from(Article article) {
-        return ArticleResponse.builder()
-                .name(article.getName())
-                .articleId(article.getArticleKey().getId())
-                .categoryId(article.getArticleKey().getCategoryId())
-                .createdBy(article.getCreatedBy())
-                .createdDate(article.getCreatedDate().toString())
-                .build();
-    }
-    public static List<ArticleResponse> fromList(List<Article> articles) {
-        return articles.stream().map(ArticleResponse::from).toList();
-    }
 }

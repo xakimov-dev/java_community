@@ -3,7 +3,6 @@ package uz.community.javacommunity.controller.domain;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.cassandra.core.mapping.*;
-import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -28,8 +28,8 @@ public class SubArticleContentResponse{
     public static SubArticleContentResponse of(SubArticleContent subArticleContent) {
         return new SubArticleContentResponse(
                 subArticleContent.getSubArticleContentKey().getId(),
-                subArticleContent.getSubArticleContentKey().getCategoryId(),
-                subArticleContent.getSubArticleContentKey().getArticleId(),
+                subArticleContent.getCategoryId(),
+                subArticleContent.getArticleId(),
                 subArticleContent.getSubArticleContentKey().getSubArticleId(),
                 subArticleContent.getContent(),
                 subArticleContent.isParagraph(),
