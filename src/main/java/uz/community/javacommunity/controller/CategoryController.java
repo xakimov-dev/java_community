@@ -53,7 +53,7 @@ public class CategoryController {
             @PathVariable UUID id,
             Principal principal
     ) {
-        return CategoryConverter.from(categoryService.update(id, CategoryConverter.convertToEntity(id,categoryUpdateRequest), principal.getName()));
+        return CategoryConverter.from(categoryService.update(CategoryConverter.convertToEntity(id,categoryUpdateRequest), principal.getName()));
     }
 
 }

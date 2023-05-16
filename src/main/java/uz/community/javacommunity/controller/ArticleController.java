@@ -8,8 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.community.javacommunity.controller.converter.ArticleConverter;
-import uz.community.javacommunity.controller.domain.Article;
-import uz.community.javacommunity.controller.dto.ArticleRequest;
+import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.service.ArticleService;
 
@@ -33,10 +32,10 @@ public class ArticleController {
     @Operation(summary = "Create an article.")
     @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse createArticle(
-            @RequestBody @Validated ArticleRequest request,
+            @RequestBody @Validated ArticleCreateRequest request,
             Principal principal
     ) {
-        return ArticleConverter.from(articleService.create(ArticleConverter.of(request), principal.getName()));
+        return ArticleConverter.from(articleService.create(ArticleConverter.convertToEntity(request), principal.getName()));
     }
 
     @PutMapping(value = "/{id}")
@@ -44,11 +43,11 @@ public class ArticleController {
     @Operation(summary = "Update article")
     @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse updateArticle(
-            @RequestBody @Validated ArticleRequest articleRequest,
+            @RequestBody @Validated ArticleCreateRequest articleCreateRequest,
             @PathVariable UUID id,
             Principal principal
     ) {
-        return ArticleConverter.from(articleService.update(id, ArticleConverter.of(articleRequest), principal.getName()));
+        return ArticleConverter.from(articleService.update(ArticleConverter.convertToEntity(id, articleCreateRequest), principal.getName()));
     }
 
     @GetMapping("/{categoryId}")

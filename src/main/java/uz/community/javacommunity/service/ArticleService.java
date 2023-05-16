@@ -31,7 +31,6 @@ public class ArticleService {
         throwIfArticleAlreadyExists(article.getName(), categoryId);
 
         Instant now = Instant.now();
-        article.setArticleKey(Article.ArticleKey.of(UUID.randomUUID(),categoryId));
         article.setCreatedBy(currentUser);
         article.setCreatedDate(now);
         article.setModifiedBy(currentUser);
@@ -49,12 +48,12 @@ public class ArticleService {
         }
     }
 
-    public Article update(UUID id, Article newArticle, String username) {
+    public Article update(Article newArticle, String username) {
+        UUID newArticleId = newArticle.getArticleKey().getId();
         UUID categoryId = newArticle.getArticleKey().getCategoryId();
         commonSchemaValidator.validateCategory(categoryId);
-        Article article = articleRepository.findArticleByArticleKeyId(id).orElseThrow(
-                () -> new RecordNotFoundException(String.format("Article not found for id %s", id)));
-        article.setArticleKey(Article.ArticleKey.of(id,categoryId));
+        Article article = articleRepository.findArticleByArticleKeyId(newArticleId).orElseThrow(
+                () -> new RecordNotFoundException(String.format("Article not found for id %s", newArticleId)));
         article.setModifiedBy(username);
         article.setModifiedDate(Instant.now());
 

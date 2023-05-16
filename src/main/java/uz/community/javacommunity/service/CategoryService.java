@@ -49,15 +49,16 @@ public class CategoryService {
         }
     }
 
-    public Category update(UUID id, Category newCategory, String updatedBy){
+    public Category update(Category newCategory, String updatedBy){
+        UUID newCategoryId = newCategory.getCategoryKey().getId();
         UUID parentId = newCategory.getParentId();
 
         if (parentId!= null) {
             commonSchemaValidator.validateCategory(parentId);
         }
 
-        Category category = categoryRepository.findByCategoryKeyId(id).orElseThrow(
-                () -> new RecordNotFoundException(String.format("Category not found for id %s", id)));
+        Category category = categoryRepository.findByCategoryKeyId(newCategoryId).orElseThrow(
+                () -> new RecordNotFoundException(String.format("Category not found for id %s", newCategoryId)));
 
         category.setModifiedDate(Instant.now());
         category.setModifiedBy(updatedBy);
