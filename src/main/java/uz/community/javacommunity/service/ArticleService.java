@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
+import uz.community.javacommunity.controller.converter.ArticleConverter;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.domain.SubArticle;
-import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
-import uz.community.javacommunity.controller.dto.ArticleUpdateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.controller.repository.SubArticleRepository;
@@ -24,24 +23,19 @@ import java.util.UUID;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final SubArticleRepository subArticleRepository;
-    private final CategoryService categoryService;
-    private final JwtService jwtService;
     private final CommonSchemaValidator commonSchemaValidator;
 
-    public Article create(ArticleCreateRequest articleCreateRequest, String currentUser) {
-        UUID categoryId = articleCreateRequest.getCategoryId();
+    public Article create(Article article, String currentUser) {
+        UUID categoryId = article.getArticleKey().getCategoryId();
         commonSchemaValidator.validateCategory(categoryId);
-        throwIfArticleAlreadyExists(articleCreateRequest.getName(), categoryId);
+        throwIfArticleAlreadyExists(article.getName(), categoryId);
 
         Instant now = Instant.now();
-        Article article = Article.builder()
-                .articleKey(Article.ArticleKey.of(UUID.randomUUID(), categoryId))
-                .name(articleCreateRequest.getName())
-                .createdBy(currentUser)
-                .modifiedBy(currentUser)
-                .createdDate(now)
-                .modifiedDate(now)
-                .build();
+        article.setCreatedBy(currentUser);
+        article.setCreatedDate(now);
+        article.setModifiedBy(currentUser);
+        article.setModifiedDate(now);
+
         return articleRepository.save(article);
     }
 
@@ -54,13 +48,12 @@ public class ArticleService {
         }
     }
 
-    public Article update(UUID id, ArticleUpdateRequest articleUpdateRequest, String username) {
-        UUID categoryId = articleUpdateRequest.getCategoryId();
+    public Article update(Article newArticle, String username) {
+        UUID newArticleId = newArticle.getArticleKey().getId();
+        UUID categoryId = newArticle.getArticleKey().getCategoryId();
         commonSchemaValidator.validateCategory(categoryId);
-        Article article = articleRepository.findArticleByArticleKeyId(id).orElseThrow(() -> new RecordNotFoundException(String.format("Article not found for id %s", id)));
-
-        article.setArticleKey(Article.ArticleKey.of(id, categoryId));
-        article.setName(articleUpdateRequest.getName());
+        Article article = articleRepository.findArticleByArticleKeyId(newArticleId).orElseThrow(
+                () -> new RecordNotFoundException(String.format("Article not found for id %s", newArticleId)));
         article.setModifiedBy(username);
         article.setModifiedDate(Instant.now());
 
@@ -70,7 +63,7 @@ public class ArticleService {
     public ArticleResponse getArticleById(UUID id) {
         Optional<Article> optionalArticle = articleRepository.findByArticleKey_Id(id);
         if (optionalArticle.isPresent()) {
-            ArticleResponse articleResponse = ArticleResponse.from(optionalArticle.get());
+            ArticleResponse articleResponse = ArticleConverter.from(optionalArticle.get());
            getSubArticlesContentByArticle(articleResponse);
            return articleResponse;
         }

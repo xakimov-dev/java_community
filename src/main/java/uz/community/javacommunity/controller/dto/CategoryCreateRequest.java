@@ -8,13 +8,9 @@ import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
-@Data
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryRequest {
 
-    @NotBlank(message = "Category name must not blank")
-    String name;
-
-    UUID parentId;
+public class CategoryCreateRequest extends BaseCategoryRequest{
+    CategoryCreateRequest(@NotBlank(message = "Category name must not blank") String name, UUID parentId) {
+        super(name, parentId);
+    }
 }

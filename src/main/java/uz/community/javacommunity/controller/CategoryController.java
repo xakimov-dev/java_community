@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import uz.community.javacommunity.controller.domain.Category;
+import uz.community.javacommunity.controller.converter.CategoryConverter;
 import uz.community.javacommunity.controller.dto.*;
 import uz.community.javacommunity.service.CategoryService;
 
@@ -28,16 +28,14 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse saveCategory(@RequestBody @Validated CategoryRequest categoryRequest, Principal principal) {
-        Category category = categoryService.saveCategory(categoryRequest, principal.getName());
-        return CategoryResponse.from(category);
+    public CategoryResponse saveCategory(@RequestBody @Validated CategoryCreateRequest categoryCreateRequest, Principal principal) {
+        return CategoryConverter.from(categoryService.saveCategory(CategoryConverter.convertToEntity(categoryCreateRequest), principal.getName()));
     }
     @GetMapping("/child/{id}")
     public List<CategoryResponse>getChildList(
             @PathVariable UUID id
             ){
-        List<Category> childListByParentId = categoryService.getChildListByParentId(id);
-        return  CategoryResponse.getChildList(childListByParentId);
+        return  CategoryConverter.getChildList(categoryService.getChildListByParentId(id));
     }
 
     @GetMapping()
@@ -55,9 +53,7 @@ public class CategoryController {
             @PathVariable UUID id,
             Principal principal
     ) {
-        String updatedBy = principal.getName();
-        Category category = categoryService.update(id, categoryUpdateRequest, updatedBy);
-        return CategoryResponse.from(category);
+        return CategoryConverter.from(categoryService.update(CategoryConverter.convertToEntity(id,categoryUpdateRequest), principal.getName()));
     }
 
 }

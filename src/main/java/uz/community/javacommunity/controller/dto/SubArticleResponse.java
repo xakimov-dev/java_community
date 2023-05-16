@@ -41,9 +41,9 @@ public class SubArticleResponse {
     public static SubArticleResponse of(SubArticle subArticle) {
         return new SubArticleResponse(
                 subArticle.getSubArticleKey().getId(),
-                subArticle.getSubArticleKey().getCategoryId(),
+                subArticle.getCategoryId(),
                 subArticle.getSubArticleKey().getArticleId(),
-                subArticle.getParentSubArticleId(),
+                subArticle.getSubArticleKey().getParentSubArticleId(),
                 subArticle.getName(),
                 subArticle.getCreatedBy(),
                 subArticle.getCreatedDate(),
