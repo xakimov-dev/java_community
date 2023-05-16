@@ -8,8 +8,6 @@ import uz.community.javacommunity.controller.converter.ArticleConverter;
 import uz.community.javacommunity.controller.converter.CategoryConverter;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.domain.Category;
-import uz.community.javacommunity.controller.dto.ArticleResponse;
-import uz.community.javacommunity.controller.dto.CategoryRequest;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
@@ -37,7 +35,6 @@ public class CategoryService {
         }
 
         Instant now = Instant.now();
-        category.setCategoryKey(Category.CategoryKey.of(UUID.randomUUID(),categoryName));
         category.setCreatedBy(createdBy);
         category.setCreatedDate(now);
         category.setModifiedBy(createdBy);
@@ -62,7 +59,6 @@ public class CategoryService {
         Category category = categoryRepository.findByCategoryKeyId(id).orElseThrow(
                 () -> new RecordNotFoundException(String.format("Category not found for id %s", id)));
 
-        category.setCategoryKey(Category.CategoryKey.of(id,newCategory.getCategoryKey().getName()));
         category.setModifiedDate(Instant.now());
         category.setModifiedBy(updatedBy);
 
