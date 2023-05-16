@@ -14,19 +14,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryResponse  {
-
     UUID id;
-
     String name;
-
     UUID parentId;
-
     String createdBy;
-
     Instant createdDate;
-
     String modifiedBy;
-
     Instant modifiedDate;
     List<ArticleResponse> articleResponseList;
     List<CategoryResponse> childCategoryResponseList;

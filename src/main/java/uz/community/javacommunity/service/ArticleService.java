@@ -5,15 +5,11 @@ import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.converter.ArticleConverter;
-import uz.community.javacommunity.controller.converter.SubArticleContentConverter;
-import uz.community.javacommunity.controller.converter.SubArticleConverter;
 import uz.community.javacommunity.controller.domain.Article;
 import uz.community.javacommunity.controller.domain.SubArticle;
-import uz.community.javacommunity.controller.domain.SubArticleContent;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
 import uz.community.javacommunity.controller.repository.ArticleRepository;
-import uz.community.javacommunity.controller.repository.SubArticleContentRepository;
 import uz.community.javacommunity.controller.repository.SubArticleRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
@@ -27,15 +23,19 @@ import java.util.UUID;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final SubArticleRepository subArticleRepository;
-    private final SubArticleContentRepository subArticleContentRepository;
-    private final SubArticleConverter subArticleConverter;
-    private final SubArticleContentConverter subArticleContentConverter;
-    private final ArticleConverter articleConverter;
     private final CommonSchemaValidator commonSchemaValidator;
 
-    public Article create(Article article) {
-        commonSchemaValidator.validateCategory(article.getArticleKey().getCategoryId());
-        throwIfArticleAlreadyExists(article.getName(), article.getArticleKey().getCategoryId());
+    public Article create(Article article, String currentUser) {
+        UUID categoryId = article.getArticleKey().getCategoryId();
+        commonSchemaValidator.validateCategory(categoryId);
+        throwIfArticleAlreadyExists(article.getName(), categoryId);
+
+        Instant now = Instant.now();
+        article.setCreatedBy(currentUser);
+        article.setCreatedDate(now);
+        article.setModifiedBy(currentUser);
+        article.setModifiedDate(now);
+
         return articleRepository.save(article);
     }
 
@@ -48,42 +48,44 @@ public class ArticleService {
         }
     }
 
-    public Article update(Article article) {
-        commonSchemaValidator.validateCategory(article.getArticleKey().getCategoryId());
-        commonSchemaValidator.validateArticle(article.getArticleKey().getId());
+    public Article update(Article newArticle, String username) {
+        UUID newArticleId = newArticle.getArticleKey().getId();
+        UUID categoryId = newArticle.getArticleKey().getCategoryId();
+        commonSchemaValidator.validateCategory(categoryId);
+        Article article = articleRepository.findArticleByArticleKeyId(newArticleId).orElseThrow(
+                () -> new RecordNotFoundException(String.format("Article not found for id %s", newArticleId)));
+        article.setModifiedBy(username);
+        article.setModifiedDate(Instant.now());
+
         return articleRepository.save(article);
     }
 
     public ArticleResponse getArticleById(UUID id) {
         Optional<Article> optionalArticle = articleRepository.findByArticleKey_Id(id);
         if (optionalArticle.isPresent()) {
-            ArticleResponse articleResponse = articleConverter.convertEntityToResponse(optionalArticle.get());
+            ArticleResponse articleResponse = ArticleConverter.from(optionalArticle.get());
            getSubArticlesContentByArticle(articleResponse);
            return articleResponse;
         }
         return  null;
     }
 
-    private void getSubArticlesContentByArticle(ArticleResponse articleResponse) {
-        List<SubArticle> subArticles = subArticleRepository.findAllBySubArticleKey_ArticleId(articleResponse.getId());
+    private void getSubArticlesContentByArticle(ArticleResponse article) {
+        List<SubArticle> subArticles = subArticleRepository.findAllBySubArticleKey_ArticleId(article.getArticleId());
         if (!subArticles.isEmpty()) {
-            List<SubArticleResponse> subArticleResponses = subArticles.stream().map(subArticleConverter::convertEntityToResponse).toList();
-            subArticleResponses.forEach(this::getSubArticlesContentBySubArticle);
-            articleResponse.setSubArticleResponseList(subArticleResponses);
+            List<SubArticleResponse> list = subArticles.stream().map(SubArticleResponse::of).toList();
+            list.forEach(this::getSubArticlesContentBySubArticle);
+            article.setSubArticleResponseList(list);
         }
     }
 
 
     private void getSubArticlesContentBySubArticle(SubArticleResponse subArticleResponse) {
-        List<SubArticleContent> subArticleContents = subArticleContentRepository.findAllBySubArticleContentKeySubArticleId(subArticleResponse.getId());
-        if (subArticleContents.isEmpty()) {
-            subArticleResponse.setSubArticleContentResponses(subArticleContentConverter.convertEntitiesToResponse(subArticleContents));
-        }
-        List<SubArticle> subArticles = subArticleRepository.findAllBySubArticleKeyParentSubArticleId(subArticleResponse.getId());
+        List<SubArticle> subArticles = subArticleRepository.findAllByParentSubArticleId(subArticleResponse.getId());
         if (!subArticles.isEmpty()) {
-            List<SubArticleResponse> subArticleResponses = subArticles.stream().map(subArticleConverter::convertEntityToResponse).toList();
-            subArticleResponses.forEach(this::getSubArticlesContentBySubArticle);
-            subArticleResponse.setChildSubArticleList(subArticleResponses);
+            List<SubArticleResponse> list = subArticles.stream().map(SubArticleResponse::of).toList();
+            list.forEach(this::getSubArticlesContentBySubArticle);
+            subArticleResponse.setChildSubArticleList(list);
         }
 
     }
@@ -92,7 +94,7 @@ public class ArticleService {
     }
 
     public void delete(UUID id) {
-        Article articleByArticleKeyId = articleRepository.findByArticleKey_Id(id).orElseThrow(
+        Article articleByArticleKeyId = articleRepository.findArticleByArticleKeyId(id).orElseThrow(
                 ()->new RecordNotFoundException(String.format("Article not found for id %s",id)));
         articleRepository.delete(articleByArticleKeyId);
     }

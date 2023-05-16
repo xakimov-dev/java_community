@@ -3,6 +3,7 @@ package uz.community.javacommunity.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
+import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.converter.ArticleConverter;
 import uz.community.javacommunity.controller.converter.CategoryConverter;
 import uz.community.javacommunity.controller.domain.Article;
@@ -12,6 +13,7 @@ import uz.community.javacommunity.controller.repository.ArticleRepository;
 import uz.community.javacommunity.controller.repository.CategoryRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
@@ -21,15 +23,23 @@ public class CategoryService {
     private final CommonSchemaValidator commonSchemaValidator;
     private final CategoryRepository categoryRepository;
     private final ArticleRepository articleRepository;
-    private final CategoryConverter categoryConverter;
-    private final ArticleConverter articleConverter;
 
-    public Category saveCategory(Category category) {
-        throwIfCategoryExist(category.getCategoryKey().getName());
+    public Category saveCategory(Category category, String createdBy) {
+
+        String categoryName = category.getCategoryKey().getName();
         UUID parentId = category.getParentId();
+        throwIfCategoryExist(categoryName);
+
         if (parentId != null) {
             commonSchemaValidator.validateCategory(parentId);
         }
+
+        Instant now = Instant.now();
+        category.setCreatedBy(createdBy);
+        category.setCreatedDate(now);
+        category.setModifiedBy(createdBy);
+        category.setModifiedDate(now);
+
         return categoryRepository.save(category);
     }
 
@@ -39,37 +49,56 @@ public class CategoryService {
         }
     }
 
-    public Category update(Category category){
-        if (category.getParentId()!= null) {
-            commonSchemaValidator.validateCategory(category.getParentId());
+    public Category update(Category newCategory, String updatedBy){
+        UUID newCategoryId = newCategory.getCategoryKey().getId();
+        UUID parentId = newCategory.getParentId();
+
+        if (parentId!= null) {
+            commonSchemaValidator.validateCategory(parentId);
         }
-        commonSchemaValidator.validateCategory(category.getCategoryKey().getId());
+
+        Category category = categoryRepository.findByCategoryKeyId(newCategoryId).orElseThrow(
+                () -> new RecordNotFoundException(String.format("Category not found for id %s", newCategoryId)));
+
+        category.setModifiedDate(Instant.now());
+        category.setModifiedBy(updatedBy);
+
         return categoryRepository.save(category);
     }
 
     public List<Category> getChildListByParentId(UUID id) {
-        commonSchemaValidator.validateCategory(id);
         return categoryRepository.getCategoryByParentId(id);
     }
 
+    public void throwIfCategoryCannotBeFound(UUID categoryId) {
+        Optional<Category> category = categoryRepository.findByCategoryKeyId(categoryId);
+        if (category.isEmpty()) {
+            throw new RecordNotFoundException("Category with id : '" +
+                    categoryId + "' cannot be found!");
+        }
+    }
+
     public List<CategoryResponse> listCategoriesWithChildArticlesAndCategories() {
-        List<Category> categories = categoryRepository.findAllBy();
-        List<CategoryResponse> categoryResponses = categoryConverter.convertEntitiesToResponse(categories);
-        categoryResponses.forEach(this::getContentOfCategory);
-        return categoryResponses;
+        List<CategoryResponse> allParentIdIsNull = getAllParentIdIsNull(categoryRepository.findAllBy());
+        allParentIdIsNull.forEach(this::getContentOfCategory);
+        return allParentIdIsNull;
     }
     public void getContentOfCategory(CategoryResponse categoryResponse){
-        List<Article> articles = articleRepository.findAllByArticleKey_CategoryId(categoryResponse.getId());
-        if (!articles.isEmpty()) {
-            categoryResponse.setArticleResponseList(articleConverter.convertEntitiesToResponse(articles));
+        List<Article> allByArticleKeyCategoryId = articleRepository.findAllByArticleKey_CategoryId(categoryResponse.getId());
+        if (!allByArticleKeyCategoryId.isEmpty()) {
+            categoryResponse.setArticleResponseList(allByArticleKeyCategoryId.stream().map(ArticleConverter::from).toList());
         }
-        List<Category> categories = categoryRepository.findAllByParentId(categoryResponse.getId());
-        if (!categories.isEmpty()) {
-            List<CategoryResponse> categoryResponses = categoryConverter.convertEntitiesToResponse(categories);
-            categoryResponses.forEach(this::getContentOfCategory);
-            categoryResponse.setChildCategoryResponseList(categoryResponses);
+        List<Category> allByParentId = categoryRepository.findAllByParentId(categoryResponse.getId());
+        if (!allByParentId.isEmpty()) {
+            List<CategoryResponse> list = allByParentId.stream().map(CategoryConverter::from).toList();
+            list.forEach(this::getContentOfCategory);
+            categoryResponse.setChildCategoryResponseList(list);
         }
     }
 
-
+    private  List<CategoryResponse> getAllParentIdIsNull(List<Category> categoryAll) {
+        return categoryAll.stream().filter(category -> category.getParentId() == null)
+                .map(CategoryConverter::from)
+                .toList();
+    }
 }

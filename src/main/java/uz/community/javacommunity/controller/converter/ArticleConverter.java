@@ -1,53 +1,37 @@
 package uz.community.javacommunity.controller.converter;
 
-import org.springframework.stereotype.Component;
 import uz.community.javacommunity.controller.domain.Article;
-import uz.community.javacommunity.controller.dto.ArticleRequest;
+import uz.community.javacommunity.controller.dto.ArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-@Component
-public class ArticleConverter implements Converter<Article, ArticleRequest, ArticleResponse> {
-    @Override
-    public Article convertRequestToEntity(ArticleRequest articleRequest, String name, UUID id) {
-        Instant now = Instant.now();
-        return Article.builder()
-                .name(articleRequest.getName())
-                .articleKey(Article.ArticleKey.of(id, articleRequest.getCategoryId()))
-                .modifiedBy(name)
-                .modifiedDate(now)
-                .build();
-    }
 
-    @Override
-    public Article convertRequestToEntity(ArticleRequest articleRequest, String name) {
-        Instant now = Instant.now();
-        return Article.builder()
-                .name(articleRequest.getName())
-                .articleKey(Article.ArticleKey.of(UUID.randomUUID(), articleRequest.getCategoryId()))
-                .modifiedBy(name)
-                .createdBy(name)
-                .createdDate(now)
-                .modifiedDate(now)
-                .build();
-    }
-
-    @Override
-    public ArticleResponse convertEntityToResponse(Article article) {
+public class ArticleConverter {
+    public static ArticleResponse from(Article article) {
         return ArticleResponse.builder()
+                .articleId(article.getArticleKey().getId())
                 .name(article.getName())
-                .id(article.getArticleKey().getId())
+                .articleId(article.getArticleKey().getId())
                 .categoryId(article.getArticleKey().getCategoryId())
                 .createdBy(article.getCreatedBy())
                 .createdDate(article.getCreatedDate().toString())
                 .build();
     }
+    public static List<ArticleResponse> fromList(List<Article> articles) {
+        return articles.stream().map(ArticleConverter::from).toList();
+    }
+    public static Article convertToEntity(ArticleCreateRequest articleCreateRequest){
+        return Article.builder()
+                .articleKey(Article.ArticleKey.of(UUID.randomUUID(), articleCreateRequest.getCategoryId()))
+                .name(articleCreateRequest.getName())
+                .build();
+    }
 
-    @Override
-    public List<ArticleResponse> convertEntitiesToResponse(List<Article> articles) {
-        return articles.stream().map(this::convertEntityToResponse).collect(Collectors.toList());
+    public static Article convertToEntity(UUID id,ArticleCreateRequest articleCreateRequest){
+        return Article.builder()
+                .articleKey(Article.ArticleKey.of(id, articleCreateRequest.getCategoryId()))
+                .name(articleCreateRequest.getName())
+                .build();
     }
 }

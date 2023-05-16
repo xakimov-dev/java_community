@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import uz.community.javacommunity.controller.converter.CategoryConverter;
-import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.*;
 import uz.community.javacommunity.service.CategoryService;
 
@@ -26,23 +25,17 @@ import static org.springframework.http.HttpStatus.OK;
 @EnableMethodSecurity
 public class CategoryController {
     private final CategoryService categoryService;
-    private final CategoryConverter categoryConverter;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse saveCategory(
-            @RequestBody @Validated CategoryRequest categoryRequest,
-            Principal principal
-    ) {
-        Category category = categoryConverter.convertRequestToEntity(categoryRequest, principal.getName());
-        return categoryConverter.convertEntityToResponse(categoryService.saveCategory(category));
+    public CategoryResponse saveCategory(@RequestBody @Validated CategoryCreateRequest categoryCreateRequest, Principal principal) {
+        return CategoryConverter.from(categoryService.saveCategory(CategoryConverter.convertToEntity(categoryCreateRequest), principal.getName()));
     }
     @GetMapping("/child/{id}")
     public List<CategoryResponse>getChildList(
             @PathVariable UUID id
             ){
-        List<Category> childCategories = categoryService.getChildListByParentId(id);
-        return  categoryConverter.convertEntitiesToResponse(childCategories);
+        return  CategoryConverter.getChildList(categoryService.getChildListByParentId(id));
     }
 
     @GetMapping()
@@ -56,13 +49,11 @@ public class CategoryController {
     @Operation(summary = "Update category")
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse update(
-            @RequestBody @Validated CategoryRequest categoryRequest,
+            @RequestBody @Validated CategoryUpdateRequest categoryUpdateRequest,
             @PathVariable UUID id,
             Principal principal
     ) {
-        Category category = categoryConverter.convertRequestToEntity(categoryRequest, principal.getName(), id);
-        return categoryConverter.convertEntityToResponse(categoryService.update(category));
-
+        return CategoryConverter.from(categoryService.update(CategoryConverter.convertToEntity(id,categoryUpdateRequest), principal.getName()));
     }
 
 }
