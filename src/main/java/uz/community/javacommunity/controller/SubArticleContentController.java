@@ -59,4 +59,23 @@ public class SubArticleContentController {
         List<SubArticleContent> subArticleContents = service.getContents(id);
         return SubArticleContentConverter.from(subArticleContents);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "delete SubArticleContent by Id")
+    @PreAuthorize(value = "hasRole('ADMIN')")
+    public void delete(
+            @PathVariable UUID subArticleContentId
+    ){
+        service.delete(subArticleContentId);
+    }
+    @DeleteMapping("/bySubArticleId/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "delete SubArticleContents by SubArticleId")
+    @PreAuthorize(value = "hasRole('ADMIN')")
+    public void deleteBySubArticleId(
+            @PathVariable UUID subArticleId
+    ){
+        service.deleteBySubArticleId(subArticleId);
+    }
 }

@@ -20,6 +20,7 @@ public class CommonSchemaValidator {
     private final SubArticleRepository subArticleRepository;
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SubArticleContentRepository subArticleContentRepository;
 
     public void validateCategory(UUID id) {
         validateUUID(id, "category");
@@ -39,6 +40,13 @@ public class CommonSchemaValidator {
         validateUUID(id, "subArticle");
         if (!subArticleRepository.existsById(id)) {
             throw new RecordNotFoundException(String.format("sub article not found for id %s", id));
+        }
+    }
+
+    public void validateSubArticleContent(UUID id) {
+        validateUUID(id, "subArticleContent");
+        if (!subArticleContentRepository.existsById(id)) {
+            throw new RecordNotFoundException(String.format("sub article content not found for id %s", id));
         }
     }
 

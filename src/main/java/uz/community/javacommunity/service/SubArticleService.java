@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.SubArticle;
+import uz.community.javacommunity.controller.repository.SubArticleContentRepository;
 import uz.community.javacommunity.controller.repository.SubArticleRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,6 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubArticleService {
     private final SubArticleRepository repository;
+    private final SubArticleContentService subArticleContentService;
     private final CommonSchemaValidator commonSchemaValidator;
 
     public SubArticle create(SubArticle subArticle, String createdBy) {
@@ -57,8 +60,19 @@ public class SubArticleService {
     }
 
     public void delete(UUID subArticleId) {
-        SubArticle subArticle = getById(subArticleId);
-        repository.delete(subArticle);
+        commonSchemaValidator.validateSubArticle(subArticleId);
+        subArticleContentService.deleteBySubArticleId(subArticleId);
+        List<SubArticle> subArticles = repository.findAllByParentSubArticleId(subArticleId);
+        if (!subArticles.isEmpty()){
+            subArticles.stream().forEach(subArticle -> delete(subArticle.getId()));
+        }
+        repository.deleteById(subArticleId);
+    }
+
+    public void deleteBYArticleId(UUID articleId) {
+        commonSchemaValidator.validateArticle(articleId);
+        List<SubArticle> subArticles = repository.findAllByArticleId(articleId);
+        subArticles.forEach(subArticle -> delete(subArticle.getId()));
     }
 
     public SubArticle getById(UUID id) {

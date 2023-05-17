@@ -25,4 +25,8 @@ public interface SubArticleRepository extends CassandraRepository<SubArticle, UU
 
     @Query(allowFiltering = true)
     List<SubArticle> findAllByParentSubArticleId(UUID parentSubArticleId);
+
+    @Query(allowFiltering = true)
+    void deleteAllByArticleId(UUID uuid);
+
 }

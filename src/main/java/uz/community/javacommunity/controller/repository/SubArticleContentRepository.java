@@ -10,4 +10,7 @@ import java.util.UUID;
 public interface SubArticleContentRepository extends CassandraRepository<SubArticleContent,UUID> {
     @Query(allowFiltering = true)
     List<SubArticleContent> findAllBySubArticleId(UUID uuid);
+    @Query(allowFiltering = true)
+    void deleteAllBySubArticleId(UUID uuid);
+
 }

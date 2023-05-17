@@ -1,5 +1,6 @@
 package uz.community.javacommunity.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,8 +45,17 @@ public class SubArticleController {
     }
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "delete entire SubArticle by Id")
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id){
         service.delete(id);
+    }
+
+    @DeleteMapping("/byArticleId/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "delete entire SubArticle by ArticleId")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteBYArticleId(@PathVariable UUID id){
+        service.deleteBYArticleId(id);
     }
 }

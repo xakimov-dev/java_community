@@ -29,6 +29,7 @@ public class ArticleService {
     private final SubArticleRepository subArticleRepository;
     private final CommonSchemaValidator commonSchemaValidator;
     private final SubArticleContentRepository subArticleContentRepository;
+    private final SubArticleService subArticleService;
 
     public Article create(Article article, String currentUser) {
         UUID categoryId = article.getCategoryId();
@@ -98,9 +99,9 @@ public class ArticleService {
     }
 
     public void delete(UUID id) {
-        Article article = articleRepository.findById(id).orElseThrow(
-                () -> new RecordNotFoundException(String.format("Article not found for id %s", id)));
-        articleRepository.delete(article);
+        commonSchemaValidator.validateArticle(id);
+        subArticleService.deleteBYArticleId(id);
+        articleRepository.deleteById(id);
     }
 
     private void throwIfArticleAlreadyExists(String name, UUID categoryId) {
@@ -112,6 +113,13 @@ public class ArticleService {
     private void throwIfArticleAlreadyExists(String name, UUID categoryId, UUID id) {
         if (articleRepository.existsByNameAndCategoryIdAndIdNot(name, categoryId, id)) {
             throw new AlreadyExistsException(String.format("article with name %s already exist in this category", name));
+        }
+    }
+
+    public void deleteByCategoryId(UUID id) {
+        List<Article> articles = articleRepository.findAllByCategoryId(id);
+        if (!articles.isEmpty()) {
+            articles.stream().forEach(article -> delete(article.getId()));
         }
     }
 }
