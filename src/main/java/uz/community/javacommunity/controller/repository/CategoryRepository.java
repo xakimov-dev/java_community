@@ -14,7 +14,7 @@ public interface CategoryRepository extends CassandraRepository<Category, UUID> 
     boolean existsByName(String name);
 
     @Query(allowFiltering = true)
-    boolean existsByNameAndParentIdAAndIdNot(String name, UUID parentId, UUID id);
+    boolean existsByNameAndParentIdAndIdNot(String name, UUID parentId, UUID id);
 
     @Query(allowFiltering = true)
     List<Category> findAllByParentId(UUID id);

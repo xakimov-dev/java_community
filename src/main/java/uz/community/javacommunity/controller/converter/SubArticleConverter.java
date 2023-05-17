@@ -14,7 +14,7 @@ public class SubArticleConverter {
         return SubArticle.builder()
                 .name(subArticleCreateRequest.getName())
                 .articleId(subArticleCreateRequest.getArticleId())
-                .parentSubArticleId(subArticleCreateRequest.getArticleId())
+                .parentSubArticleId(subArticleCreateRequest.getParentSubArticleId())
                 .build();
     }
 
@@ -22,7 +22,7 @@ public class SubArticleConverter {
         return SubArticle.builder()
                 .name(subArticleUpdateRequest.getName())
                 .articleId(subArticleUpdateRequest.getArticleId())
-                .parentSubArticleId(subArticleUpdateRequest.getArticleId())
+                .parentSubArticleId(subArticleUpdateRequest.getParentSubArticleId())
                 .build();
     }
 

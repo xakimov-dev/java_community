@@ -5,12 +5,12 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
-import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
 import uz.community.javacommunity.controller.repository.SubArticleContentRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,21 +19,44 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubArticleContentService {
     private final SubArticleContentRepository repository;
-    private final CommonSchemaValidator validator;
-    @SneakyThrows
-    public SubArticleContent create(SubArticleContent subArticleContent) {
-        validator.validateCategory(subArticleContent.getCategoryId());
-        validator.validateArticle(subArticleContent.getArticleId());
-        validator.validateSubArticle(subArticleContent.getSubArticleContentKey().getSubArticleId());
+    private final CommonSchemaValidator commonSchemaValidator;
+
+    public SubArticleContent create(SubArticleContent subArticleContent, String createdBy) {
+        commonSchemaValidator.validateSubArticle(subArticleContent.getSubArticleId());
+        Instant now = Instant.now();
+        subArticleContent.setId(UUID.randomUUID());
+        subArticleContent.setCreatedBy(createdBy);
+        subArticleContent.setCreatedDate(now);
+        subArticleContent.setModifiedBy(createdBy);
+        subArticleContent.setModifiedDate(now);
+        subArticleContent.setParagraph(true);
+        return repository.save(subArticleContent);
+    }
+
+    public SubArticleContent create(UUID id, MultipartFile photo, String createdBy) {
+        commonSchemaValidator.validateSubArticle(id);
+        String image = addImage(photo);
+        Instant now = Instant.now();
+        SubArticleContent subArticleContent = SubArticleContent
+                .builder()
+                .id(UUID.randomUUID())
+                .content(image)
+                .subArticleId(id)
+                .createdDate(now)
+                .createdBy(createdBy)
+                .modifiedDate(now)
+                .modifiedBy(createdBy)
+                .isParagraph(false)
+                .build();
         return repository.save(subArticleContent);
     }
 
     @SneakyThrows
-    public String addImage(MultipartFile photo)  {
-        if (Objects.isNull(photo)|| photo.isEmpty()) {
+    private String addImage(MultipartFile photo) {
+        if (Objects.isNull(photo) || photo.isEmpty()) {
             throw new IllegalArgumentException("Image property cannot be null or empty value ");
         }
-        String imageUrl = String.format("src/main/resources/images/%s.jpg",UUID.randomUUID());
+        String imageUrl = String.format("src/main/resources/images/%s.jpg", UUID.randomUUID());
         File file = new File(imageUrl);
         file.getParentFile().mkdirs();
         file.createNewFile();
@@ -44,20 +67,14 @@ public class SubArticleContentService {
         return imageUrl;
     }
 
-    public void deleteImage(SubArticleContentImageUrl subArticleContentImageUrl) {
-        if(Objects.nonNull(subArticleContentImageUrl)) {
-            File photo = new File(subArticleContentImageUrl.getImageUrl());
-            photo.delete();
-        }
-    }
-
-    public List<SubArticleContent> get(UUID id) {
-        validator.validateUUID(id,"subArticle");
+    public List<SubArticleContent> getContents(UUID id) {
+        commonSchemaValidator.validateUUID(id, "subArticle");
         List<SubArticleContent> subArticleContents =
                 repository.findAllBySubArticleId(id);
         if (subArticleContents.isEmpty()) {
-            validator.validateSubArticle(id);
+            commonSchemaValidator.validateSubArticle(id);
         }
         return subArticleContents;
     }
+
 }

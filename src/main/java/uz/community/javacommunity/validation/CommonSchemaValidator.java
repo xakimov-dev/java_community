@@ -18,7 +18,6 @@ public class CommonSchemaValidator {
     private final CategoryRepository categoryRepository;
     private final ArticleRepository articleRepository;
     private final SubArticleRepository subArticleRepository;
-    private final UserRepository userRepository;
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -36,16 +35,24 @@ public class CommonSchemaValidator {
         }
     }
 
-    public void validateSubArticleExist(String name) {
-        if (subArticleRepository.existsByName(name)) {
-            throw new AlreadyExistsException(String.format("sub article with name %s already exists", name));
-        }
-    }
-
     public void validateSubArticle(UUID id) {
         validateUUID(id, "subArticle");
         if (!subArticleRepository.existsById(id)) {
             throw new RecordNotFoundException(String.format("sub article not found for id %s", id));
+        }
+    }
+
+    public void validateSubArticleExistByParentId(String name, UUID parentId, UUID id) {
+        boolean exists = subArticleRepository.existsByNameAndParentSubArticleId(name, parentId);
+        if (exists && (id == null || subArticleRepository.existsByNameAndParentSubArticleIdAndIdNot(name, parentId, id))) {
+            throw new AlreadyExistsException(String.format("Sub article with name %s already exists in", name));
+        }
+    }
+
+    public void validateSubArticleExistByArticleId(String name, UUID articleId, UUID id) {
+        boolean exists = subArticleRepository.existsByNameAndArticleId(name, articleId);
+        if (exists && (id == null || subArticleRepository.existsByNameAndArticleIdAndIdNot(name, articleId, id))) {
+            throw new AlreadyExistsException(String.format("Sub article with name %s already exists in this Article", name));
         }
     }
 
@@ -74,7 +81,7 @@ public class CommonSchemaValidator {
     }
 
     public void validateCategoryExistByNameAndParentID(String name, UUID parentId, UUID categoryId) {
-        if (categoryRepository.existsByNameAndParentIdAAndIdNot(name, parentId, categoryId)) {
+        if (categoryRepository.existsByNameAndParentIdAndIdNot(name, parentId, categoryId)) {
             throw new AlreadyExistsException(String.format("Category already exist for name %s", name));
         }
     }

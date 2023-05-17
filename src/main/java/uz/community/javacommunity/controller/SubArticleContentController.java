@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.community.javacommunity.controller.converter.SubArticleContentConverter;
 import uz.community.javacommunity.controller.domain.SubArticleContent;
-import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
 import uz.community.javacommunity.controller.dto.SubArticleContentCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleContentResponse;
 import uz.community.javacommunity.service.SubArticleContentService;
@@ -27,43 +26,37 @@ import java.util.UUID;
 @PreAuthorize("hasRole('ADMIN')")
 public class SubArticleContentController {
     private final SubArticleContentService service;
-    private final SubArticleContentConverter subArticleContentConverter;
 
-    @PostMapping(value = "/image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create an image (NOTE : can be used for any purpose to save image)")
-    public SubArticleContentImageUrl addImage(
-            @RequestParam(value = "photo") MultipartFile photo) {
-        return SubArticleContentImageUrl.of(service.addImage(photo));
+    @Operation(summary = "Create with sub article content with image")
+    public SubArticleContentResponse addImage(
+            @PathVariable(value = "id") UUID id,
+            @RequestParam(value = "photo") MultipartFile photo,
+            Principal principal){
+        SubArticleContent savedContent = service.create(id,photo, principal.getName());
+        return SubArticleContentConverter.from(savedContent);
     }
 
-    @DeleteMapping(value = "/image")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Delete an unsubbited image (NOTE : can be used for any purpose to delete an image)")
-    public void deleteImage(
-            @RequestBody SubArticleContentImageUrl subArticleContentImageUrl) {
-        service.deleteImage(subArticleContentImageUrl);
-    }
-
-    @PostMapping(value = "/text")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new Sub Article Content")
     public SubArticleContentResponse create(
             @RequestBody @Validated SubArticleContentCreateRequest subArticleContentCreateRequest,
-            Principal principal
-    ) {
-        SubArticleContent subArticleContent = subArticleContentConverter.convertRequestToEntity(subArticleContentCreateRequest, principal.getName());
-        SubArticleContent response = service.create(subArticleContent);
-        return subArticleContentConverter.convertEntityToResponse(response);
+            Principal principal) {
+        SubArticleContent subArticleContent =
+                SubArticleContentConverter.convertToEntity(subArticleContentCreateRequest);
+        SubArticleContent savedContent = service.create(subArticleContent,principal.getName());
+        return SubArticleContentConverter.from(savedContent);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get an article.")
+    @Operation(summary = "Get content(s) of a sub article.")
     @PreAuthorize(value = "permitAll()")
-    public List<SubArticleContentResponse> getSubArticle(
+    public List<SubArticleContentResponse> getSubArticleContents(
             @PathVariable UUID id){
-        List<SubArticleContent> subArticleContents = service.get(id);
-        return subArticleContentConverter.convertEntitiesToResponse(subArticleContents);
+        List<SubArticleContent> subArticleContents = service.getContents(id);
+        return SubArticleContentConverter.from(subArticleContents);
     }
 }
