@@ -12,9 +12,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BaseArticleRequest {
-    @NotBlank
-    String name;
-    @NotNull
-    UUID categoryId;
+public class BaseSubArticleContentRequest {
+    @NotNull(message = "error.invalid.sub_article_id.not_null")
+    UUID subArticleId;
+    @NotBlank(message = "Content cannot not be blank")
+    String content;
+    boolean isParagraph;
 }

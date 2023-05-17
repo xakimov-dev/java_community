@@ -6,11 +6,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import uz.community.javacommunity.controller.dto.SubArticleRequest;
+import uz.community.javacommunity.controller.converter.SubArticleConverter;
+import uz.community.javacommunity.controller.domain.SubArticle;
+import uz.community.javacommunity.controller.dto.SubArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
 
 import uz.community.javacommunity.service.SubArticleService;
 
+import java.security.Principal;
 import java.util.UUID;
 
 
@@ -22,15 +25,24 @@ public class SubArticleController {
     private final SubArticleService service;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public SubArticleResponse create(@RequestBody @Validated SubArticleRequest dto) {
-        return service.create(dto);
+    public SubArticleResponse create(
+            @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
+            Principal principle
+    ) {
+        SubArticle subArticle = SubArticleConverter.convertToEntity(subArticleCreateRequest);
+        return SubArticleConverter.from(service.create(subArticle,principle.getName()));
     }
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody @Validated SubArticleRequest dto, @PathVariable UUID id) {
-        service.update(dto, id);
+    public SubArticleResponse update(
+            @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
+            @PathVariable UUID id,
+            Principal principal
+    ) {
+        SubArticle subArticle =SubArticleConverter.convertToEntity(subArticleCreateRequest);
+        return SubArticleConverter.from(service.update(subArticle,principal.getName(),id));
     }
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id){

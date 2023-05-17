@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS user
     age         int,
     info        text,
     image_url    text,
+    created_date  timestamp,
+    modified_date  timestamp,
     PRIMARY KEY (username)
 );
 -- rollback DROP TABLE user
@@ -34,7 +36,7 @@ CREATE TABLE IF NOT EXISTS category
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id, name)
+    PRIMARY KEY (id)
 );
 -- rollback DROP TABLE category
 
@@ -49,7 +51,7 @@ CREATE TABLE IF NOT EXISTS article
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id, category_id)
+    PRIMARY KEY (id)
 );
 -- rollback DROP TABLE article
 
@@ -58,7 +60,6 @@ CREATE TABLE IF NOT EXISTS article
 CREATE TABLE IF NOT EXISTS sub_article
 (
     id uuid,
-    category_id uuid,
     article_id uuid,
     parent_sub_article_id uuid,
     name text,
@@ -66,7 +67,7 @@ CREATE TABLE IF NOT EXISTS sub_article
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id, category_id, article_id)
+    PRIMARY KEY (id)
 );
 -- rollback DROP TABLE sub_article
 
@@ -75,8 +76,6 @@ CREATE TABLE IF NOT EXISTS sub_article
 CREATE TABLE IF NOT EXISTS sub_article_content
 (
     id uuid,
-    category_id uuid,
-    article_id uuid,
     sub_article_id uuid,
     content text,
     is_paragraph boolean,
@@ -84,6 +83,6 @@ CREATE TABLE IF NOT EXISTS sub_article_content
     created_date  timestamp,
     modified_by   text,
     modified_date timestamp,
-    PRIMARY KEY (id, category_id, article_id, sub_article_id)
+    PRIMARY KEY (id)
 );
 -- rollback DROP TABLE sub_article_content

@@ -1,9 +1,10 @@
 package uz.community.javacommunity.controller.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import uz.community.javacommunity.controller.domain.Article;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,11 +12,12 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ArticleResponse {
-    private String name;
-    private UUID categoryId;
-    private UUID articleId;
-    private String createdBy;
-    private String createdDate;
-    private List<SubArticleResponse> subArticleResponseList;
+    UUID id;
+    String name;
+    UUID categoryId;
+    String createdBy;
+    String createdDate;
+    List<SubArticleResponse> subArticleResponseList;
 }

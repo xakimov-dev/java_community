@@ -9,13 +9,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import uz.community.javacommunity.controller.converter.CategoryConverter;
+import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.dto.*;
 import uz.community.javacommunity.service.CategoryService;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -35,7 +35,7 @@ public class CategoryController {
     public List<CategoryResponse>getChildList(
             @PathVariable UUID id
             ){
-        return  CategoryConverter.getChildList(categoryService.getChildListByParentId(id));
+        return  CategoryConverter.from(categoryService.getChildListByParentId(id));
     }
 
     @GetMapping()
@@ -53,7 +53,7 @@ public class CategoryController {
             @PathVariable UUID id,
             Principal principal
     ) {
-        return CategoryConverter.from(categoryService.update(CategoryConverter.convertToEntity(id,categoryUpdateRequest), principal.getName()));
+        Category category = CategoryConverter.convertToEntity(categoryUpdateRequest);
+        return CategoryConverter.from(categoryService.update(category, principal.getName(),id));
     }
-
 }

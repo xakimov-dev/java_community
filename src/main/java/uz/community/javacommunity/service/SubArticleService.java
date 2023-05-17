@@ -4,56 +4,66 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.domain.SubArticle;
-import uz.community.javacommunity.controller.dto.SubArticleRequest;
-import uz.community.javacommunity.controller.dto.SubArticleResponse;
 import uz.community.javacommunity.controller.repository.SubArticleRepository;
 import uz.community.javacommunity.validation.CommonSchemaValidator;
 
+import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SubArticleService {
     private final SubArticleRepository repository;
-    private final CommonSchemaValidator validator;
-    public SubArticleResponse create(SubArticleRequest dto) {
+    private final CommonSchemaValidator commonSchemaValidator;
 
-        validator.validateSubArticleExist(dto.name());
-
-        validator.validateCategory(dto.categoryId());
-
-        validator.validateArticle(dto.articleId());
-
-        SubArticle savedSubArticle = repository.save(SubArticle.of(dto));
-
-        return SubArticleResponse.of(savedSubArticle);
-    }
-
-    public void update(SubArticleRequest dto, UUID id) {
-
-        validator.validateCategory(dto.categoryId());
-
-        validator.validateArticle(dto.articleId());
-
-        if (dto.parentSubArticleId() != null) {
-            validator.validateSubArticle(dto.parentSubArticleId());
+    public SubArticle create(SubArticle subArticle, String createdBy) {
+        UUID parentSubArticleId = subArticle.getParentSubArticleId();
+        if (Objects.nonNull(parentSubArticleId)) {
+            commonSchemaValidator.validateSubArticle(parentSubArticleId);
+            commonSchemaValidator.validateSubArticleExistByParentId(
+                    subArticle.getName(),parentSubArticleId,null);
+        } else {
+            commonSchemaValidator.validateSubArticleExistByArticleId(
+                    subArticle.getName(),subArticle.getArticleId(),null);
         }
-
-        SubArticle subArticle = getById(id);
-
-        subArticle.update(dto, id);
-
-        repository.save(subArticle);
+        Instant now = Instant.now();
+        subArticle.setId(UUID.randomUUID());
+        subArticle.setCreatedBy(createdBy);
+        subArticle.setCreatedDate(now);
+        subArticle.setModifiedBy(createdBy);
+        subArticle.setModifiedDate(now);
+        return repository.save(subArticle);
     }
 
-    public void delete(UUID subArticleId){
-        SubArticle subArticle = repository.findBySubArticleKeyId(subArticleId).orElseThrow(() -> {
-            throw new RecordNotFoundException(String.format("SubArticle with id %s cannot be found",subArticleId));});
+    public SubArticle update(SubArticle subArticle, String updatedBy, UUID id) {
+        UUID parentSubArticleId = subArticle.getParentSubArticleId();
+        if (Objects.nonNull(parentSubArticleId)) {
+            commonSchemaValidator.validateSubArticle(parentSubArticleId);
+            commonSchemaValidator.validateSubArticleExistByParentId(
+                    subArticle.getName(),parentSubArticleId,id);
+        } else {
+            commonSchemaValidator.validateSubArticleExistByArticleId(
+                    subArticle.getName(),subArticle.getArticleId(),id);
+        }
+        SubArticle subArticleEntity = getById(id);
+        subArticleEntity.setName(subArticle.getName());
+        subArticleEntity.setArticleId(subArticle.getArticleId());
+        subArticleEntity.setParentSubArticleId(parentSubArticleId);
+        subArticleEntity.setArticleId(subArticle.getArticleId());
+        subArticleEntity.setModifiedBy(updatedBy);
+        subArticleEntity.setModifiedDate(Instant.now());
+        return repository.save(subArticleEntity);
+    }
+
+    public void delete(UUID subArticleId) {
+        SubArticle subArticle = getById(subArticleId);
         repository.delete(subArticle);
     }
 
     public SubArticle getById(UUID id) {
-        return repository.findBySubArticleKeyId(id).orElseThrow(() ->
-                new RecordNotFoundException("Sub article not found by id: " + id));
+        commonSchemaValidator.validateUUID(id, "subArticleId");
+        return repository.findById(id).orElseThrow(() ->
+                new RecordNotFoundException(String.format("SubArticle with id %s cannot be found", id)));
     }
 }

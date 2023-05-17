@@ -2,15 +2,13 @@ package uz.community.javacommunity.controller.domain;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.cassandra.core.mapping.*;
-import org.springframework.security.core.context.SecurityContextHolder;
-import uz.community.javacommunity.controller.dto.SubArticleContentRequest;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.time.Instant;
 import java.util.UUID;
-
-import static org.springframework.data.cassandra.core.cql.PrimaryKeyType.CLUSTERED;
-import static org.springframework.data.cassandra.core.cql.PrimaryKeyType.PARTITIONED;
 
 @Data
 @Builder
@@ -20,7 +18,11 @@ import static org.springframework.data.cassandra.core.cql.PrimaryKeyType.PARTITI
 @Table("sub_article_content")
 public class SubArticleContent {
     @PrimaryKey
-    SubArticleContentKey subArticleContentKey;
+    @CassandraType(type = CassandraType.Name.UUID)
+    UUID id;
+    @Column("sub_article_id")
+    @CassandraType(type = CassandraType.Name.UUID)
+    UUID subArticleId;
     String content;
     @Column("is_paragraph")
     boolean isParagraph;
@@ -34,26 +36,4 @@ public class SubArticleContent {
     @Column("modified_date")
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
     Instant modifiedDate;
-    @Column("category_id")
-    UUID categoryId;
-    @Column("article_id")
-    UUID articleId;
-
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @PrimaryKeyClass
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class SubArticleContentKey {
-        @PrimaryKeyColumn(name = "id", ordinal = 0, type = PARTITIONED)
-        UUID id;
-        @PrimaryKeyColumn(name = "sub_article_id", ordinal = 3, type = CLUSTERED)
-        UUID subArticleId;
-
-        public static SubArticleContentKey of(UUID id, UUID subArticleId) {
-            return new SubArticleContentKey(id, subArticleId);
-        }
-    }
-
 }

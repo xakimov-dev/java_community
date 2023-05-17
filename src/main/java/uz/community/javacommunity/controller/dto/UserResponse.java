@@ -1,27 +1,21 @@
 package uz.community.javacommunity.controller.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import uz.community.javacommunity.controller.domain.User;
 
+import java.time.Instant;
 import java.util.Set;
-
+@Getter
+@Setter
 @Builder
-@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
-    private String username;
-    private String password;
-    private Set<String> roles;
-    private String info;
-    private int age;
-
-    public static UserResponse from(User user, String password) {
-        return UserResponse.builder()
-                .username(user.getUsername())
-                .password(password)
-                .roles(user.getRoles())
-                .info(user.getInfo())
-                .age(user.getAge())
-                .build();
-    }
+    String username;
+    Set<String> roles;
+    String info;
+    String imgUrl;
+    Integer age;
+    Instant createdDate;
+    Instant modifiedDate;
 }
