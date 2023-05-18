@@ -79,6 +79,8 @@ public class ArticleController {
     public void deleteArticle(
             @PathVariable("id") UUID id
     ) {
+
+
         articleService.delete(id);
     }
 
