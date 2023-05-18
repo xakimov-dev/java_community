@@ -13,7 +13,7 @@ public interface ArticleRepository extends CassandraRepository<Article, UUID> {
     @Query(allowFiltering = true)
     List<Article> findAllByCategoryId(UUID id);
     @Query(allowFiltering = true)
-    boolean existsByNameAndCategoryId(String name, UUID categoryId);
+    List<Article> findAllByName(String name);
     @Query(allowFiltering = true)
-    boolean existsByNameAndCategoryIdAndIdNot(String name, UUID categoryId, UUID id);
+    List<Article> findAllByNameAndCategoryId(String name, UUID categoryId);
 }

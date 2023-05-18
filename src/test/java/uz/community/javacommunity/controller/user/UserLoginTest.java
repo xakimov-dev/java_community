@@ -1,30 +1,25 @@
 package uz.community.javacommunity.controller.user;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
-import uz.community.javacommunity.controller.domain.User;
-import uz.community.javacommunity.controller.repository.UserRepository;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Log in a user ( POST /user/login )")
 class UserLoginTest extends CommonIntegrationTest {
-
-    @Autowired
-    private UserRepository userRepository;
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
 
     @Test
-    @DisplayName("Should successfully log in a user")
+    @DisplayName("Should log in a user with 200 status")
     void shouldLoginSuccessfully() throws Exception {
         //GIVEN
-        String username = "test_username";
-        String password = "password";
-        testDataHelperUser.createUser(username, "password");
-        RequestBuilder request = testDataHelperUser.loginRequest(username, password);
+        testDataHelperUser.createUser(USERNAME, PASSWORD);
+        RequestBuilder request = testDataHelperUser.loginRequest(USERNAME, PASSWORD);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -34,13 +29,11 @@ class UserLoginTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should return 401 code if password is not correct")
+    @DisplayName("Should return 401 status if password is not correct")
     void shouldFailIfIncorrectPassword() throws Exception {
         //GIVEN
-
-        String username = "test_username";
-        testDataHelperUser.createUser(username, "password");
-        RequestBuilder request = testDataHelperUser.loginRequest(username, "invalid_password");
+        testDataHelperUser.createUser(USERNAME, PASSWORD);
+        RequestBuilder request = testDataHelperUser.loginRequest(USERNAME, "invalid_password");
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -49,10 +42,10 @@ class UserLoginTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should return 400 if login or password are empty")
+    @DisplayName("Should return 400 status if login or password are empty")
     void shouldFailIfEmptyRequiredField() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperUser.loginRequest("", "password");
+        RequestBuilder request = testDataHelperUser.loginRequest("", PASSWORD);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -60,7 +53,7 @@ class UserLoginTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        request = testDataHelperUser.loginRequest("username", "");
+        request = testDataHelperUser.loginRequest(USERNAME, "");
         //WHEN
         resultActions = mockMvc.perform(request);
         //THEN
@@ -69,10 +62,10 @@ class UserLoginTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should return 401 if user can not be found by username")
+    @DisplayName("Should return 401 status if user can not be found by username")
     void shouldFailIfUserNotFound() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperUser.loginRequest("username", "password");
+        RequestBuilder request = testDataHelperUser.loginRequest(USERNAME, PASSWORD);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -81,12 +74,10 @@ class UserLoginTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should return 401 if login can not be found by username")
+    @DisplayName("Should return 401 status if login can not be found by username")
     void shouldFailIfLoginNotFound() throws Exception {
-        User user = User.builder().username("username").build();
-        userRepository.save(user);
         //GIVEN
-        RequestBuilder request = testDataHelperUser.loginRequest("username", "password");
+        RequestBuilder request = testDataHelperUser.loginRequest(USERNAME, PASSWORD);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN

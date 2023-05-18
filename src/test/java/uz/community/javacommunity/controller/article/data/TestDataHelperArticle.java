@@ -1,6 +1,7 @@
 package uz.community.javacommunity.controller.article.data;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -20,53 +21,49 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Profile("functionalTest")
 @RequiredArgsConstructor
 public class TestDataHelperArticle {
-    private static final String BASE_PATH = "/article/{categoryId}";
-    private static final String GET_ALL_ARTICLES_BY_CATEGORY_ID_PATH = "/article/{categoryId}";
+    private static final String BASE_PATH = "/article/";
     private final JsonConverter jsonConverter;
     private final MockMvc mockMvc;
-    public RequestBuilder getArticlesByCategoryIdRequest(UUID categoryId){
-        return get(GET_ALL_ARTICLES_BY_CATEGORY_ID_PATH, categoryId)
+
+    public RequestBuilder getArticlesRequest(UUID categoryId) {
+        return get(BASE_PATH + categoryId)
                 .contentType(MediaType.APPLICATION_JSON);
     }
+
     public RequestBuilder createArticleRequest(String name, UUID categoryId) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("name",name);
-        payload.put("categoryId",categoryId);
+
+        Map<String, Object> createArticle = new HashMap<>();
+        createArticle.put("name", name);
+        createArticle.put("categoryId", categoryId);
 
         return post(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonConverter.convertToString(payload));
+                .content(jsonConverter.convertToString(createArticle));
     }
 
-    public RequestBuilder updateArticleRequest(UUID id, UUID categoryId, String name){
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", id);
-        payload.put("categoryId", categoryId);
-        payload.put("name", name);
+    public RequestBuilder updateArticleRequest(UUID id, UUID categoryId, String name) {
 
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("id", id);
+        updateRequest.put("categoryId", categoryId);
+        updateRequest.put("name", name);
 
-        return put("/article/{id}", id)
+        return put(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonConverter.convertToString(payload));
+                .content(jsonConverter.convertToString(updateRequest));
     }
 
-    public RequestBuilder deleteArticleRequest(UUID id){
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", id);
-
-        return delete("/article/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonConverter.convertToString(payload));
+    public RequestBuilder deleteArticleRequest(UUID id) {
+        return delete(BASE_PATH + id);
     }
 
+    @SneakyThrows
+    public ArticleResponse createArticle(String name, UUID categoryId){
 
-    public ArticleResponse createArticle(
-            String name,
-            UUID categoryId
-    ) throws Exception {
         RequestBuilder request = createArticleRequest(name, categoryId);
         String contentAsString = mockMvc.perform(request).andExpect(status()
                 .isCreated()).andReturn().getResponse().getContentAsString();
+
         return jsonConverter.convertFromString(contentAsString, ArticleResponse.class);
     }
 

@@ -9,85 +9,117 @@ import uz.community.javacommunity.CommonIntegrationTest;
 import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author :Xojiakbar Abiyorov
- */
-
 @DisplayName("Create a new category ( POST /category )")
 class CreateCategoryTest extends CommonIntegrationTest {
-
-
     @Test
-    @DisplayName(value = "Should create a parent category")
+    @DisplayName(value = "Should create a parent category with 201 status")
     @WithAuthentication(username = "owner")
     void shouldCreateParentCategory() throws Exception {
-
-        RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("test",null );
-
-        ResultActions resultActions = mockMvc.perform(categoryRequest);
-        resultActions.toString();
-
+        //GIVEN
+        RequestBuilder request = testDataHelperCategory
+                .createCategoryRequest("category", null);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
         resultActions
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("test"))
+                .andExpect(jsonPath("$.name").value("category"))
                 .andExpect(jsonPath("$.createdBy").value("owner"))
                 .andExpect(jsonPath("$.parentId").doesNotExist());
     }
 
     @Test
-    @DisplayName(value = "Should create a child category")
-    @WithAuthentication(username = "owner1")
-    void shouldCreateChildCategory() throws Exception {
-
-        CategoryResponse categoryResponse = testDataHelperCategory.createCategory("test", null);
-
-        RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("test1", categoryResponse.getId());
-
-        ResultActions perform = mockMvc.perform(categoryRequest);
-
+    @DisplayName(value = "Should create a sub category with 201 status")
+    @WithAuthentication(username = "owner")
+    void shouldCreateSubCategory() throws Exception {
+        //GIVEN
+        CategoryResponse category = testDataHelperCategory
+                .createCategory("category", null);
+        RequestBuilder request = testDataHelperCategory
+                .createCategoryRequest("sub-category", category.getId());
+        //WHEN
+        ResultActions perform = mockMvc.perform(request);
+        //THEN
         perform.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.createdBy").value("owner1"))
-                .andExpect(jsonPath("$.name").value("test1"))
-                .andExpect(jsonPath("$.parentId").value(categoryResponse.getId().toString()))
+                .andExpect(jsonPath("$.createdBy").value("owner"))
+                .andExpect(jsonPath("$.name").value("sub-category"))
+                .andExpect(jsonPath("$.parentId").value(category.getId().toString()))
                 .andExpect(jsonPath("$.createdDate").exists())
                 .andExpect(jsonPath("$.modifiedDate").exists())
-                .andExpect(jsonPath("$.modifiedBy").value("owner1"));
-
-
+                .andExpect(jsonPath("$.modifiedBy").value("owner"));
     }
 
+    @Test
+    @DisplayName(value = "Should fail with 409 status if category already exists")
+    @WithAuthentication(username = "owner")
+    void shouldFailIfCategoryExists() throws Exception {
+        //GIVEN
+        CategoryResponse category = testDataHelperCategory.createCategory("category", null);
+        testDataHelperCategory.createCategory("category2", null);
+        RequestBuilder request = testDataHelperCategory
+                .createCategoryRequest("category2", null);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isConflict());
 
+        //GIVEN
+        testDataHelperCategory.createCategory("category1", category.getId());
+        request = testDataHelperCategory.createCategoryRequest(
+                "category1", category.getId());
+        //WHEN
+        mockMvc.perform(request);
+        resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isConflict());
+    }
 
     @Test
-    @DisplayName(value = "Should get unauthorized ")
+    @DisplayName(value = "Should fail with 404 status if parent category cannot be found")
+    @WithAuthentication(username = "owner")
+    void shouldFailIfParentCategoryIdNotFound() throws Exception {
+        //GIVEN
+        RequestBuilder request = testDataHelperCategory
+                .createCategoryRequest("category", UUID.randomUUID());
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName(value = "Should fail with 401 status if user is not authorized")
     @WithAnonymousUser
     void shouldThrowAuthenticationException() throws Exception {
-
-        RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("test",null);
-
-        ResultActions resultActions = mockMvc.perform(categoryRequest);
-
+        //GIVEN
+        RequestBuilder request = testDataHelperCategory
+                .createCategoryRequest("test", null);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
         resultActions
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName(value = "Should get 4xx status if fields Blank ")
-    @WithAuthentication
+    @DisplayName(value = "Should get 400 status if fields Blank ")
+    @WithAuthentication(username = "owner")
     void shouldThrowFieldValidationException() throws Exception {
-
-        RequestBuilder categoryRequest = testDataHelperCategory
-                .createCategoryRequest("",null);
-
-        ResultActions resultActions = mockMvc.perform(categoryRequest);
-
+        //GIVEN
+        RequestBuilder request = testDataHelperCategory
+                .createCategoryRequest("", null);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
         resultActions
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isBadRequest());
     }
 }

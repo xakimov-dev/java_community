@@ -1,4 +1,4 @@
-package uz.community.javacommunity.controller.article.data;
+package uz.community.javacommunity.controller.subArticleContent.data;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -9,14 +9,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uz.community.javacommunity.common.JsonConverter;
-import uz.community.javacommunity.controller.dto.SubArticleContentImageUrl;
 import uz.community.javacommunity.controller.dto.SubArticleContentCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleContentResponse;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,46 +30,46 @@ public class TestDataHelperSubArticleContent {
 
     @SneakyThrows
     public RequestBuilder createSubArticleContentTextRequest(SubArticleContentCreateRequest request) {
-        return post(BASE_PATH + "text")
+
+        return post(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(request));
     }
 
-    @SneakyThrows
-    public RequestBuilder createSubArticleContentImageRequest(MockMultipartFile photo) {
-        MockMultipartHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .multipart(BASE_PATH + "image");
-        return Objects.nonNull(photo)?request.file(photo):request;
+    public RequestBuilder createSubArticleContentImageRequest(UUID subArticleId, MockMultipartFile photo) {
+
+        return MockMvcRequestBuilders
+                .multipart(BASE_PATH + subArticleId)
+                .file(photo);
     }
 
     public RequestBuilder getSubArticleContentRequest(UUID id) {
         return get(BASE_PATH + id);
     }
 
-    public RequestBuilder deleteSubArticleImageRequest(SubArticleContentImageUrl imageUrl) {
-        return delete(BASE_PATH + "image")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonConverter.convertToString(imageUrl));
-    }
-
     @SneakyThrows
     public SubArticleContentResponse createSubArticleContent(SubArticleContentCreateRequest subArticle) {
+
         RequestBuilder request = createSubArticleContentTextRequest(subArticle);
-        String subArticleContentImage = mockMvc.perform(request).andExpect(status().isCreated())
+        String subArticleContent = mockMvc.perform(request).andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return jsonConverter.convertFromString(subArticleContentImage, SubArticleContentResponse.class);
+
+        return jsonConverter.convertFromString(subArticleContent, SubArticleContentResponse.class);
     }
 
     @SneakyThrows
-    public SubArticleContentImageUrl subArticleContentImage(MockMultipartFile photo) {
-        RequestBuilder request = createSubArticleContentImageRequest(photo);
-        String imageUrl = mockMvc.perform(request).andExpect(status()
+    public SubArticleContentResponse createSubArticleContent(UUID subArticleId, MockMultipartFile photo) {
+
+        RequestBuilder request = createSubArticleContentImageRequest(subArticleId, photo);
+        String subArticleContent = mockMvc.perform(request).andExpect(status()
                 .isCreated()).andReturn().getResponse().getContentAsString();
-        return jsonConverter.convertFromString(imageUrl, SubArticleContentImageUrl.class);
+
+        return jsonConverter.convertFromString(subArticleContent, SubArticleContentResponse.class);
     }
 
     @SneakyThrows
     public MockMultipartFile getImage() {
+
         ClassPathResource imageResource = new ClassPathResource("images/test.jpg");
         return new MockMultipartFile("photo",
                 imageResource.getFilename(),

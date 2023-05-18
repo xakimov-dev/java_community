@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,5 +20,7 @@ public class ArticleResponse {
     UUID categoryId;
     String createdBy;
     String createdDate;
+    String modifiedBy;
+    Instant modifiedDate;
     List<SubArticleResponse> subArticleResponseList;
 }

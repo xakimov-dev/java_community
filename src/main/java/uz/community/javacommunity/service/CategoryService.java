@@ -23,13 +23,9 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ArticleRepository articleRepository;
 
-    public Category saveCategory(Category category, String createdBy) {
-        String categoryName = category.getName();
-        UUID parentId = category.getParentId();
-        commonSchemaValidator.validateCategoryExist(categoryName);
-        if (parentId != null) {
-            commonSchemaValidator.validateCategory(parentId);
-        }
+    public Category create(Category category, String createdBy) {
+        commonSchemaValidator.validateCategoryExistByNameAndParentID(
+                category.getId(), category.getName(), category.getParentId());
         Instant now = Instant.now();
         category.setId(UUID.randomUUID());
         category.setCreatedBy(createdBy);
@@ -39,42 +35,43 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Category update(Category newCategory, String updatedBy, UUID categoryId) {
-        UUID parentId = newCategory.getParentId();
-        if (parentId != null) {
-            commonSchemaValidator.validateCategory(parentId);
-        }
-        Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new RecordNotFoundException(String.format("Category not found for id %s", categoryId)));
-        commonSchemaValidator.validateCategoryExistByNameAndParentID(newCategory.getName(), parentId, categoryId);
-        category.setName(newCategory.getName());
-        category.setParentId(parentId);
-        category.setModifiedDate(Instant.now());
-        category.setModifiedBy(updatedBy);
-        return categoryRepository.save(category);
+    public Category update(Category category, String updatedBy) {
+        Category categoryEntity = getById(category.getId());
+        commonSchemaValidator.validateCategoryExistByNameAndParentID(
+                category.getId(), category.getName(), category.getParentId());
+        categoryEntity.setName(category.getName());
+        categoryEntity.setParentId(category.getParentId());
+        categoryEntity.setModifiedDate(Instant.now());
+        categoryEntity.setModifiedBy(updatedBy);
+        return categoryRepository.save(categoryEntity);
     }
 
-    public List<Category> getChildListByParentId(UUID id) {
-        commonSchemaValidator.validateCategory(id);
-        return categoryRepository.findAllByParentId(id);
+    public List<Category> getSubCategories(UUID parentCategoryId) {
+        commonSchemaValidator.validateCategory(parentCategoryId);
+        return categoryRepository.findAllByParentId(parentCategoryId);
     }
 
-    public List<CategoryResponse> listCategoriesWithChildArticlesAndCategories() {
-        List<CategoryResponse> categoryResponses = CategoryConverter.from(categoryRepository.findAllByParentId(null));
-        categoryResponses.forEach(this::getContentOfCategory);
+    public List<CategoryResponse> getCategoriesWithMembers() {
+        List<CategoryResponse> categoryResponses = CategoryConverter.from(categoryRepository.findAllByParentIdNull());
+        categoryResponses.forEach(this::getCategoryContent);
         return categoryResponses;
     }
 
-    public void getContentOfCategory(CategoryResponse categoryResponse) {
+    public void getCategoryContent(CategoryResponse categoryResponse) {
         List<Article> articles = articleRepository.findAllByCategoryId(categoryResponse.getId());
         if (!articles.isEmpty()) {
-            categoryResponse.setArticleResponseList(articles.stream().map(ArticleConverter::from).toList());
+            categoryResponse.setArticles(articles.stream().map(ArticleConverter::from).toList());
         }
         List<Category> categories = categoryRepository.findAllByParentId(categoryResponse.getId());
         if (!categories.isEmpty()) {
             List<CategoryResponse> categoryResponses = categories.stream().map(CategoryConverter::from).toList();
-            categoryResponses.forEach(this::getContentOfCategory);
-            categoryResponse.setChildCategoryResponseList(categoryResponses);
+            categoryResponses.forEach(this::getCategoryContent);
+            categoryResponse.setSubCategories(categoryResponses);
         }
+    }
+
+    private Category getById(UUID id) {
+        return categoryRepository.findById(id).orElseThrow(
+                () -> new RecordNotFoundException(String.format("Category not found for id %s", id)));
     }
 }

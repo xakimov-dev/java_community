@@ -17,6 +17,8 @@ public class ArticleConverter {
                 .categoryId(article.getCategoryId())
                 .createdBy(article.getCreatedBy())
                 .createdDate(article.getCreatedDate().toString())
+                .modifiedBy(article.getModifiedBy())
+                .modifiedDate(article.getModifiedDate())
                 .build();
     }
 
@@ -33,6 +35,7 @@ public class ArticleConverter {
 
     public Article convertToEntity(ArticleUpdateRequest articleUpdateRequest) {
         return Article.builder()
+                .id(articleUpdateRequest.getId())
                 .categoryId(articleUpdateRequest.getCategoryId())
                 .name(articleUpdateRequest.getName())
                 .build();

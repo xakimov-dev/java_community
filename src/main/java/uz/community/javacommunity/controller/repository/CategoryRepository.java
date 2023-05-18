@@ -11,11 +11,11 @@ import java.util.UUID;
 @Repository
 public interface CategoryRepository extends CassandraRepository<Category, UUID> {
     @Query(allowFiltering = true)
-    boolean existsByName(String name);
-
+    List<Category> findAllByName(String name);
     @Query(allowFiltering = true)
-    boolean existsByNameAndParentIdAndIdNot(String name, UUID parentId, UUID id);
-
+    List<Category> findAllByNameAndParentId(String name, UUID parentId);
     @Query(allowFiltering = true)
     List<Category> findAllByParentId(UUID id);
+    @Query("SELECT * FROM category WHERE parent_id = 'null' ALLOW FILTERING")
+    List<Category> findAllByParentIdNull();
 }
