@@ -46,6 +46,12 @@ public class CommonSchemaValidator {
             throwIfNotFound("id", id);
         }
     }
+    public void validateSubArticleContent(UUID id) {
+        validateUUID(id, "subArticleContent");
+        if (!subArticleContentRepository.existsById(id)) {
+            throwIfNotFound("id", id);
+        }
+    }
 
     public void validateSubArticleExist(UUID id, String name, UUID articleId, UUID parentId) {
         List<SubArticle> subArticles;
@@ -124,4 +130,6 @@ public class CommonSchemaValidator {
     public void throwIfNotFound(String property, Object value) {
         throw new RecordNotFoundException(String.format("Record cannot be found for %s - %s", property, value));
     }
+
+
 }
