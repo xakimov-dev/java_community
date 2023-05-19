@@ -23,37 +23,47 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/category")
 @RequiredArgsConstructor
 @EnableMethodSecurity
+@PreAuthorize("hasRole('ADMIN')")
 public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse saveCategory(@RequestBody @Validated CategoryCreateRequest categoryCreateRequest, Principal principal) {
-        return CategoryConverter.from(categoryService.saveCategory(CategoryConverter.convertToEntity(categoryCreateRequest), principal.getName()));
+    public CategoryResponse saveCategory(
+            @RequestBody @Validated CategoryCreateRequest categoryCreateRequest,
+            Principal principal)
+    {
+        Category category = CategoryConverter.convertToEntity(categoryCreateRequest);
+        Category savedCategory = categoryService.create(category, principal.getName());
+        return CategoryConverter.from(savedCategory);
     }
-    @GetMapping("/child/{id}")
-    public List<CategoryResponse>getChildList(
-            @PathVariable UUID id
-            ){
-        return  CategoryConverter.from(categoryService.getChildListByParentId(id));
+
+    @GetMapping("/sub/{id}")
+    @PreAuthorize("permitAll()")
+    public List<CategoryResponse> getSubCategories(@PathVariable UUID id)
+    {
+        List<Category> subCategories = categoryService.getSubCategories(id);
+        return CategoryConverter.from(subCategories);
     }
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<CategoryResponse> getAllCategory(){
-        return categoryService.listCategoriesWithChildArticlesAndCategories();
+    @PreAuthorize("permitAll()")
+    public List<CategoryResponse> getAllCategories()
+    {
+        return categoryService.getCategoriesWithMembers();
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping
     @ResponseStatus(OK)
     @Operation(summary = "Update category")
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse update(
             @RequestBody @Validated CategoryUpdateRequest categoryUpdateRequest,
-            @PathVariable UUID id,
-            Principal principal
-    ) {
+            Principal principal)
+    {
         Category category = CategoryConverter.convertToEntity(categoryUpdateRequest);
-        return CategoryConverter.from(categoryService.update(category, principal.getName(),id));
+        Category updatedCategory = categoryService.update(category, principal.getName());
+        return CategoryConverter.from(updatedCategory);
     }
 }

@@ -44,7 +44,7 @@ public class JwtService {
 
     public String getUsernameFromToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        if(Objects.isNull(token))
+        if (Objects.isNull(token))
             return null;
         Jws<Claims> claimsJws = decode(token.substring(7));
         return claimsJws.getBody().getSubject();

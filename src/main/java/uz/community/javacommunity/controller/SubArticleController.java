@@ -11,41 +11,55 @@ import uz.community.javacommunity.controller.domain.SubArticle;
 import uz.community.javacommunity.controller.dto.SubArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
 
+import uz.community.javacommunity.controller.dto.SubArticleUpdateRequest;
 import uz.community.javacommunity.service.SubArticleService;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
-
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/article/sub")
 @EnableMethodSecurity
+@PreAuthorize("hasRole('ADMIN')")
 public class SubArticleController {
     private final SubArticleService service;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SubArticleResponse create(
             @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
-            Principal principle
-    ) {
+            Principal principle)
+    {
         SubArticle subArticle = SubArticleConverter.convertToEntity(subArticleCreateRequest);
-        return SubArticleConverter.from(service.create(subArticle,principle.getName()));
+        SubArticle savedSubArticle = service.create(subArticle, principle.getName());
+        return SubArticleConverter.from(savedSubArticle);
     }
-    @PutMapping("/{id}")
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public SubArticleResponse update(
-            @RequestBody @Validated SubArticleCreateRequest subArticleCreateRequest,
-            @PathVariable UUID id,
-            Principal principal
-    ) {
-        SubArticle subArticle =SubArticleConverter.convertToEntity(subArticleCreateRequest);
-        return SubArticleConverter.from(service.update(subArticle,principal.getName(),id));
+            @RequestBody @Validated SubArticleUpdateRequest subArticleUpdateRequest,
+            Principal principal)
+    {
+        SubArticle subArticle =SubArticleConverter.convertToEntity(subArticleUpdateRequest);
+        SubArticle updatedSubArticle = service.update(subArticle, principal.getName());
+        return SubArticleConverter.from(updatedSubArticle);
     }
+
+    @GetMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("permitAll()")
+    public List<SubArticleResponse> get(@PathVariable UUID id)
+    {
+        List<SubArticle> subArticles = service.getAllByArticleId(id);
+        return SubArticleConverter.from(subArticles);
+    }
+
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
-    public void delete(@PathVariable UUID id){
+    public void delete(@PathVariable UUID id)
+    {
         service.delete(id);
     }
 }

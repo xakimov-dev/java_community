@@ -18,7 +18,6 @@ import java.time.Instant;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final CassandraTemplate cassandraTemplate;
     private final UserRepository userRepository;
     private final LoginRepository loginRepository;
@@ -43,8 +42,7 @@ public class UserService {
         Login loginEntity = loginRepository.findById(login.getUsername())
                 .orElseThrow(AuthenticationException::new);
         commonSchemaValidator.validatePassword(loginEntity, login.getPassword());
-        User user = userRepository.findById(login.getUsername()).orElseThrow(()->
-                new RecordNotFoundException(String.format("User with username %s not found ",login.getUsername())));
+        User user = findByUserName(login.getUsername());
         return jwtService.generateToken(user);
     }
 

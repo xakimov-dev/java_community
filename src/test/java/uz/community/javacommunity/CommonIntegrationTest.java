@@ -22,8 +22,8 @@ import org.testcontainers.lifecycle.Startables;
 import uz.community.javacommunity.common.JsonConverter;
 import uz.community.javacommunity.common.controller.handler.pojo.FieldErrorResponse;
 import uz.community.javacommunity.controller.article.data.TestDataHelperArticle;
-import uz.community.javacommunity.controller.article.data.TestDataHelperSubArticle;
-import uz.community.javacommunity.controller.article.data.TestDataHelperSubArticleContent;
+import uz.community.javacommunity.controller.subArticle.data.TestDataHelperSubArticle;
+import uz.community.javacommunity.controller.subArticleContent.data.TestDataHelperSubArticleContent;
 import uz.community.javacommunity.controller.category.data.TestDataHelperCategory;
 import uz.community.javacommunity.controller.user.data.TestDataHelperUser;
 
@@ -37,7 +37,6 @@ import java.util.List;
 @ActiveProfiles("functionalTest")
 @AutoConfigureMockMvc
 public abstract class CommonIntegrationTest {
-
     @Autowired
     protected TestDataHelperUser testDataHelperUser;
     @Autowired
@@ -51,7 +50,6 @@ public abstract class CommonIntegrationTest {
     private static final String IMAGE_NAME = "cassandra:3.11.2";
     private static final String KEYSPACE_NAME = "java_community";
     private static final CassandraContainer<?> cassandra;
-
     @Autowired
     protected ObjectMapper objectMapper;
 

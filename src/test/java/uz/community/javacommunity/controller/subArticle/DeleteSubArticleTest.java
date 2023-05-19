@@ -1,33 +1,37 @@
-package uz.community.javacommunity.controller.article.subArticle;
+package uz.community.javacommunity.controller.subArticle;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
 import uz.community.javacommunity.WithAuthentication;
 import uz.community.javacommunity.controller.dto.ArticleResponse;
 import uz.community.javacommunity.controller.dto.CategoryResponse;
+import uz.community.javacommunity.controller.dto.SubArticleCreateRequest;
 import uz.community.javacommunity.controller.dto.SubArticleResponse;
 
 import java.util.*;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Delete subArticle ( DELETE /subArticle )")
+@DisplayName("Delete subArticle ( DELETE /article/sub/{id} )")
 class DeleteSubArticleTest extends CommonIntegrationTest {
     @Test
-    @DisplayName(value = "Should delete a SubArticle")
+    @DisplayName(value = "Should delete a SubArticle with 204 status")
     @WithAuthentication(username = "owner")
     void shouldDeleteSubArticle() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
         ArticleResponse article = testDataHelperArticle.createArticle("article", category.getId());
-        SubArticleResponse subArticle = testDataHelperSubArticle.createSubArticle(category.getId(),
-                article.getArticleId(), null, "sub_article");
+
+        SubArticleCreateRequest subArticleCreateRequest = new SubArticleCreateRequest();
+        subArticleCreateRequest.setArticleId(article.getId());
+        subArticleCreateRequest.setParentSubArticleId(null);
+        subArticleCreateRequest.setName("sub-article");
+        SubArticleResponse subArticle = testDataHelperSubArticle.createSubArticle(subArticleCreateRequest);
+
         RequestBuilder request = testDataHelperSubArticle.deleteSubArticleRequest(subArticle.getId());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
@@ -37,7 +41,7 @@ class DeleteSubArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should fail if the SubArticle cannot be found")
+    @DisplayName(value = "Should fail with 404 status if the SubArticle cannot be found")
     @WithAuthentication(username = "owner")
     void shouldFailCategoryNotFound() throws Exception {
         //GIVEN
@@ -50,8 +54,8 @@ class DeleteSubArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should fail if user does not have authority")
-    @WithMockUser(username = "owner", roles = "USER")
+    @DisplayName(value = "Should fail with 403 status if user does not have authority")
+    @WithAuthentication(username = "owner", roles = "ROlE_USER")
     void shouldFailUserIsNotAdmin() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperSubArticle.deleteSubArticleRequest(UUID.randomUUID());
@@ -63,10 +67,9 @@ class DeleteSubArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should fail with 401 error code if not authorized")
-    @SneakyThrows
+    @DisplayName(value = "Should fail with 401 status if not authorized")
     @WithAnonymousUser
-    void shouldFailIfUnauthorized() {
+    void shouldFailIfUnauthorized() throws Exception {
         //GIVEN
         RequestBuilder request = testDataHelperSubArticle.deleteSubArticleRequest(UUID.randomUUID());
         //WHEN

@@ -16,10 +16,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Get current user ( GET /user/current )")
 class  GetCurrentUserTest extends CommonIntegrationTest {
 
-    private static final String USERNAME = "test_username";
+    private static final String USERNAME = "username";
 
     @Test
-    @DisplayName("Should return current user")
+    @DisplayName("Should return current user with 200 status")
     @WithAuthentication(username = USERNAME)
     void shouldReturnCurrentUser() throws Exception {
         //GIVEN
@@ -28,10 +28,9 @@ class  GetCurrentUserTest extends CommonIntegrationTest {
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
-
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userName").value(user.getUsername()))
+                .andExpect(jsonPath("$.username").value(user.getUsername()))
                 .andExpect(jsonPath("$.age").value(user.getAge()))
                 .andExpect(jsonPath("$.roles").isArray())
                 .andExpect(jsonPath("$.roles", IsCollectionWithSize.hasSize(1)))
@@ -40,7 +39,7 @@ class  GetCurrentUserTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should fail with 401 error code if not authorized")
+    @DisplayName("Should fail with 401 status code if not authorized")
     @WithAnonymousUser
     void shouldFailIfUnauthorized() throws Exception {
         //GIVEN
@@ -53,7 +52,7 @@ class  GetCurrentUserTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should fail with 404 error code if user does not exist")
+    @DisplayName("Should fail with 404 status code if user does not exist")
     @WithAuthentication(username = USERNAME)
     void shouldFailIfUserNotFound() throws Exception {
         //GIVEN

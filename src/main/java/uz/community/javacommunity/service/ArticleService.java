@@ -2,7 +2,6 @@ package uz.community.javacommunity.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
 import uz.community.javacommunity.controller.converter.ArticleConverter;
 import uz.community.javacommunity.controller.converter.SubArticleContentConverter;
@@ -31,9 +30,8 @@ public class ArticleService {
     private final SubArticleContentRepository subArticleContentRepository;
 
     public Article create(Article article, String currentUser) {
-        UUID categoryId = article.getCategoryId();
-        commonSchemaValidator.validateCategory(categoryId);
-        throwIfArticleAlreadyExists(article.getName(), categoryId);
+        commonSchemaValidator.validateArticleExistByNameAndParentID(
+                article.getId(), article.getName(), article.getCategoryId());
         Instant now = Instant.now();
         article.setId(UUID.randomUUID());
         article.setModifiedBy(currentUser);
@@ -43,17 +41,15 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public Article update(Article newArticle, String username, UUID id) {
-        UUID categoryId = newArticle.getCategoryId();
-        commonSchemaValidator.validateCategory(categoryId);
-        Article article = articleRepository.findById(id).orElseThrow(
-                () -> new RecordNotFoundException(String.format("Article not found for id %s", id)));
-        throwIfArticleAlreadyExists(newArticle.getName(), categoryId, id);
-        article.setName(newArticle.getName());
-        article.setCategoryId(categoryId);
-        article.setModifiedBy(username);
-        article.setModifiedDate(Instant.now());
-        return articleRepository.save(article);
+    public Article update(Article article, String username) {
+        Article articleEntity = getById(article.getId());
+        commonSchemaValidator.validateArticleExistByNameAndParentID(
+                article.getId(), article.getName(), article.getCategoryId());
+        articleEntity.setName(article.getName());
+        articleEntity.setCategoryId(article.getCategoryId());
+        articleEntity.setModifiedBy(username);
+        articleEntity.setModifiedDate(Instant.now());
+        return articleRepository.save(articleEntity);
     }
 
     public ArticleResponse getArticleById(UUID id) {
@@ -75,25 +71,8 @@ public class ArticleService {
         }
     }
 
-
-    private void getSubArticlesContentBySubArticle(SubArticleResponse subArticleResponse) {
-
-        List<SubArticleContent> subArticleContents = subArticleContentRepository.findAllBySubArticleId(subArticleResponse.getId());
-
-        if (!subArticleContents.isEmpty()) {
-            subArticleResponse.setSubArticleContentResponses(SubArticleContentConverter.from(subArticleContents));
-        }
-
-        List<SubArticle> subArticles = subArticleRepository.findAllByParentSubArticleId(subArticleResponse.getId());
-        if (!subArticles.isEmpty()) {
-            List<SubArticleResponse> list = subArticles.stream().map(SubArticleConverter::from).toList();
-            list.forEach(this::getSubArticlesContentBySubArticle);
-            subArticleResponse.setChildSubArticleList(list);
-        }
-
-    }
-
     public List<Article> getAllByCategoryId(UUID categoryId) {
+        commonSchemaValidator.validateCategory(categoryId);
         return articleRepository.findAllByCategoryId(categoryId);
     }
 
@@ -103,15 +82,21 @@ public class ArticleService {
         articleRepository.delete(article);
     }
 
-    private void throwIfArticleAlreadyExists(String name, UUID categoryId) {
-        if (articleRepository.existsByNameAndCategoryId(name, categoryId)) {
-            throw new AlreadyExistsException(String.format("article with name %s already exist in this category", name));
+    private void getSubArticlesContentBySubArticle(SubArticleResponse subArticle) {
+        List<SubArticleContent> subArticleContents = subArticleContentRepository.findAllBySubArticleId(subArticle.getId());
+        if (!subArticleContents.isEmpty()) {
+            subArticle.setSubArticleContentResponses(SubArticleContentConverter.from(subArticleContents));
+        }
+        List<SubArticle> subArticles = subArticleRepository.findAllByParentSubArticleId(subArticle.getId());
+        if (!subArticles.isEmpty()) {
+            List<SubArticleResponse> list = subArticles.stream().map(SubArticleConverter::from).toList();
+            list.forEach(this::getSubArticlesContentBySubArticle);
+            subArticle.setChildSubArticleList(list);
         }
     }
 
-    private void throwIfArticleAlreadyExists(String name, UUID categoryId, UUID id) {
-        if (articleRepository.existsByNameAndCategoryIdAndIdNot(name, categoryId, id)) {
-            throw new AlreadyExistsException(String.format("article with name %s already exist in this category", name));
-        }
+    private Article getById(UUID id) {
+        return articleRepository.findById(id).orElseThrow(
+                () -> new RecordNotFoundException(String.format("Article not found for id %s", id)));
     }
 }

@@ -1,7 +1,8 @@
-package uz.community.javacommunity.controller.article.subArticleContent;
+package uz.community.javacommunity.controller.subArticleContent;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.community.javacommunity.CommonIntegrationTest;
@@ -21,13 +22,14 @@ class GetAllSubArticleContentsTest extends CommonIntegrationTest {
     @WithAuthentication(username = "owner")
     void shouldGetAllSubArticleContents() throws Exception {
         //GIVEN
-        CategoryResponse category = testDataHelperCategory
-                .createCategory("category", null);
-        ArticleResponse article = testDataHelperArticle
-                .createArticle("article", category.getId());
-        SubArticleResponse subArticle = testDataHelperSubArticle
-                .createSubArticle(category.getId(), article.getArticleId(),
-                        null, "sub-article");
+        CategoryResponse category = testDataHelperCategory.createCategory("category", null);
+        ArticleResponse article = testDataHelperArticle.createArticle("article", category.getId());
+
+        SubArticleCreateRequest subArticleCreateRequest = new SubArticleCreateRequest();
+        subArticleCreateRequest.setArticleId(article.getId());
+        subArticleCreateRequest.setParentSubArticleId(null);
+        subArticleCreateRequest.setName("parent-sub-article");
+        SubArticleResponse subArticle = testDataHelperSubArticle.createSubArticle(subArticleCreateRequest);
         RequestBuilder request = testDataHelperSubArticleContent.getSubArticleContentRequest(subArticle.getId());
 
         //WHEN
@@ -40,40 +42,31 @@ class GetAllSubArticleContentsTest extends CommonIntegrationTest {
                 .andExpect(jsonPath("$").isEmpty())
                 .andExpect(jsonPath("$", hasSize(0)));
 
-        //GIVEN
-        SubArticleContentImageUrl imageUrl = testDataHelperSubArticleContent
-                .subArticleContentImage(testDataHelperSubArticleContent.getImage());
-        SubArticleContentCreateRequest subArticleContent = new SubArticleContentCreateRequest(
-                category.getId(), article.getArticleId(),
-                subArticle.getId(), imageUrl.getImageUrl(), false);
-        testDataHelperSubArticleContent
-                .createSubArticleContent(subArticleContent);
-        request = testDataHelperSubArticleContent
-                .getSubArticleContentRequest(subArticle.getId());
 
+        //GIVEN
+        MockMultipartFile image = testDataHelperSubArticleContent.getImage();
+        testDataHelperSubArticleContent.createSubArticleContent(subArticle.getId(), image);
+        request = testDataHelperSubArticleContent.getSubArticleContentRequest(subArticle.getId());
         //WHEN
         resultActions = mockMvc.perform(request);
-
         //THEN
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].categoryId").value(category.getId().toString()))
-                .andExpect(jsonPath("$[0].articleId").value(article.getArticleId().toString()))
                 .andExpect(jsonPath("$[0].subArticleId").value(subArticle.getId().toString()))
-                .andExpect(jsonPath("$[0].content").value(imageUrl.getImageUrl()))
-                .andExpect(jsonPath("$[0].isParagraph").value(false));
+                .andExpect(jsonPath("$[0].content").exists())
+                .andExpect(jsonPath("$[0].paragraph").value(false));
 
         //GIVEN
-        subArticleContent = new SubArticleContentCreateRequest(
-                category.getId(), article.getArticleId(),
-                subArticle.getId(), "test-text", true);
+        SubArticleContentCreateRequest createRequest = new SubArticleContentCreateRequest();
+        createRequest.setSubArticleId(subArticle.getId());
+        createRequest.setContent("test-text");
         testDataHelperSubArticleContent
-                .createSubArticleContent(subArticleContent);
+                .createSubArticleContent(createRequest);
         testDataHelperSubArticleContent
-                .createSubArticleContent(subArticleContent);
+                .createSubArticleContent(createRequest);
         request = testDataHelperSubArticleContent
                 .getSubArticleContentRequest(subArticle.getId());
 
