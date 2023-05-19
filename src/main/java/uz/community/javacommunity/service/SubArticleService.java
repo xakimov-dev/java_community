@@ -21,15 +21,9 @@ public class SubArticleService {
     private final CommonSchemaValidator commonSchemaValidator;
 
     public SubArticle create(SubArticle subArticle, String createdBy) {
-        UUID parentSubArticleId = subArticle.getParentSubArticleId();
-        if (Objects.nonNull(parentSubArticleId)) {
-            commonSchemaValidator.validateSubArticle(parentSubArticleId);
-            commonSchemaValidator.validateSubArticleExistByParentId(
-                    subArticle.getName(),parentSubArticleId,null);
-        } else {
-            commonSchemaValidator.validateSubArticleExistByArticleId(
-                    subArticle.getName(),subArticle.getArticleId(),null);
-        }
+        throwIfInvalidFormat(subArticle);
+        commonSchemaValidator.validateSubArticleExist(subArticle.getId(), subArticle.getName(),
+                subArticle.getArticleId(), subArticle.getParentSubArticleId());
         Instant now = Instant.now();
         subArticle.setId(UUID.randomUUID());
         subArticle.setCreatedBy(createdBy);
@@ -39,20 +33,14 @@ public class SubArticleService {
         return repository.save(subArticle);
     }
 
-    public SubArticle update(SubArticle subArticle, String updatedBy, UUID id) {
-        UUID parentSubArticleId = subArticle.getParentSubArticleId();
-        if (Objects.nonNull(parentSubArticleId)) {
-            commonSchemaValidator.validateSubArticle(parentSubArticleId);
-            commonSchemaValidator.validateSubArticleExistByParentId(
-                    subArticle.getName(),parentSubArticleId,id);
-        } else {
-            commonSchemaValidator.validateSubArticleExistByArticleId(
-                    subArticle.getName(),subArticle.getArticleId(),id);
-        }
-        SubArticle subArticleEntity = getById(id);
+    public SubArticle update(SubArticle subArticle, String updatedBy) {
+        throwIfInvalidFormat(subArticle);
+        SubArticle subArticleEntity = getById(subArticle.getId());
+        commonSchemaValidator.validateSubArticleExist(subArticle.getId(), subArticle.getName(),
+                subArticle.getArticleId(), subArticle.getParentSubArticleId());
         subArticleEntity.setName(subArticle.getName());
         subArticleEntity.setArticleId(subArticle.getArticleId());
-        subArticleEntity.setParentSubArticleId(parentSubArticleId);
+        subArticleEntity.setParentSubArticleId(subArticle.getParentSubArticleId());
         subArticleEntity.setArticleId(subArticle.getArticleId());
         subArticleEntity.setModifiedBy(updatedBy);
         subArticleEntity.setModifiedDate(Instant.now());
@@ -75,9 +63,22 @@ public class SubArticleService {
         subArticles.forEach(subArticle -> delete(subArticle.getId()));
     }
 
+    public List<SubArticle> getAllByArticleId(UUID id) {
+        commonSchemaValidator.validateArticle(id);
+        return repository.findAllByArticleId(id);
+    }
+
     public SubArticle getById(UUID id) {
         commonSchemaValidator.validateUUID(id, "subArticleId");
         return repository.findById(id).orElseThrow(() ->
                 new RecordNotFoundException(String.format("SubArticle with id %s cannot be found", id)));
+    }
+
+    private void throwIfInvalidFormat(SubArticle subArticle) {
+        UUID articleId = subArticle.getArticleId();
+        UUID parentSubArticleId = subArticle.getParentSubArticleId();
+        if ((articleId == null) == (parentSubArticleId == null)) {
+            throw new IllegalArgumentException("Parent SubArticleId or ArticleId must be null");
+        }
     }
 }

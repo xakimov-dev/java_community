@@ -17,32 +17,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Create a new article ( POST /article )")
 class CreateArticleTest extends CommonIntegrationTest {
     @Test
-    @DisplayName(value = "Should be success, create a new Article")
+    @DisplayName(value = "Should be success with 201 status, create a new Article")
     @WithAuthentication(username = "owner")
     void shouldCreateArticle() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
-        UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", categoryId);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest(
+                "article", category.getId());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("java"))
-                .andExpect(jsonPath("$.categoryId").value(categoryId.toString()))
-                .andExpect(jsonPath("$.articleId").exists())
+                .andExpect(jsonPath("$.name").value("article"))
+                .andExpect(jsonPath("$.categoryId").value(category.getId().toString()))
+                .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.createdDate").exists());
     }
 
     @Test
-    @DisplayName(value = "Should fail if the article already exists")
+    @DisplayName(value = "Should fail with 409 status if the article already exists")
     @WithAuthentication(username = "owner")
     void shouldFailArticleExists() throws Exception {
         //GIVEN
         CategoryResponse category = testDataHelperCategory.createCategory("category", null);
-        UUID categoryId = category.getId();
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", categoryId);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest(
+                "article", category.getId());
         //WHEN
         mockMvc.perform(request);
         ResultActions resultActions = mockMvc.perform(request);
@@ -52,12 +52,12 @@ class CreateArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should fail if the category cannot be found")
+    @DisplayName(value = "Should fail with 404 status if the category cannot be found")
     @WithAuthentication(username = "owner")
     void shouldFailCategoryNotFound() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
-                UUID.randomUUID());
+        RequestBuilder request = testDataHelperArticle.createArticleRequest(
+                "article", UUID.randomUUID());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -66,12 +66,12 @@ class CreateArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should fail if required fields are empty")
+    @DisplayName(value = "Should fail with 400 status if required fields are empty")
     @WithAuthentication(username = "owner")
     void shouldFailIfEmptyRequiredField() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java",
-                null);
+        RequestBuilder request = testDataHelperArticle.createArticleRequest(
+                "article", null);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -79,31 +79,37 @@ class CreateArticleTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        RequestBuilder request2 = testDataHelperArticle.createArticleRequest("",
-                UUID.fromString("56587e05-8911-4009-885a-98e2c7d51c87"));
+        request = testDataHelperArticle.createArticleRequest("", UUID.randomUUID());
         //WHEN
-        ResultActions resultActions2 = mockMvc.perform(request2);
+        resultActions = mockMvc.perform(request);
         //THEN
-        resultActions2
+        resultActions
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        RequestBuilder request3 = testDataHelperArticle.createArticleRequest("",
-                null);
+        request = testDataHelperArticle.createArticleRequest(null, UUID.randomUUID());
         //WHEN
-        ResultActions resultActions3 = mockMvc.perform(request3);
+        resultActions = mockMvc.perform(request);
         //THEN
-        resultActions3
+        resultActions
+                .andExpect(status().isBadRequest());
+
+        //GIVEN
+        request = testDataHelperArticle.createArticleRequest("", null);
+        //WHEN
+        resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName(value = "Should fail if user does not have authority")
-    @WithAuthentication(username = "owner", roles = "USER")
+    @DisplayName(value = "Should fail with 403 status if user does not have authority")
+    @WithAuthentication(username = "owner", roles = "ROLE_USER")
     void shouldFailUserIsNotAdmin() throws Exception {
         //GIVEN
-        CategoryResponse category = testDataHelperCategory.createCategory("category", null);
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", category.getId());
+        RequestBuilder request = testDataHelperArticle.createArticleRequest(
+                "article", UUID.randomUUID());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -112,11 +118,12 @@ class CreateArticleTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName(value = "Should fail with 401 error code if not authorized")
+    @DisplayName(value = "Should fail with 401 status code if not authorized")
     @WithAnonymousUser
     void shouldFailIfUnauthorized() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperArticle.createArticleRequest("java", UUID.randomUUID());
+        RequestBuilder request = testDataHelperArticle.createArticleRequest(
+                "article", UUID.randomUUID());
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN

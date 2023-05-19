@@ -6,9 +6,13 @@ import org.springframework.stereotype.Component;
 import uz.community.javacommunity.common.exception.AlreadyExistsException;
 import uz.community.javacommunity.common.exception.AuthenticationException;
 import uz.community.javacommunity.common.exception.RecordNotFoundException;
+import uz.community.javacommunity.controller.domain.Article;
+import uz.community.javacommunity.controller.domain.Category;
 import uz.community.javacommunity.controller.domain.Login;
+import uz.community.javacommunity.controller.domain.SubArticle;
 import uz.community.javacommunity.controller.repository.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -25,48 +29,45 @@ public class CommonSchemaValidator {
     public void validateCategory(UUID id) {
         validateUUID(id, "category");
         if (!categoryRepository.existsById(id)) {
-            throw new RecordNotFoundException(String.format("category not found for id %s", id));
+            throwIfNotFound("id", id);
         }
     }
 
     public void validateArticle(UUID id) {
         validateUUID(id, "article");
         if (!articleRepository.existsById(id)) {
-            throw new RecordNotFoundException(String.format("article not found for id %s", id));
+            throwIfNotFound("id", id);
         }
     }
 
     public void validateSubArticle(UUID id) {
         validateUUID(id, "subArticle");
         if (!subArticleRepository.existsById(id)) {
-            throw new RecordNotFoundException(String.format("sub article not found for id %s", id));
+            throwIfNotFound("id", id);
         }
     }
 
-    public void validateSubArticleContent(UUID id) {
-        validateUUID(id, "subArticleContent");
-        if (!subArticleContentRepository.existsById(id)) {
-            throw new RecordNotFoundException(String.format("sub article content not found for id %s", id));
+    public void validateSubArticleExist(UUID id, String name, UUID articleId, UUID parentId) {
+        List<SubArticle> subArticles;
+        if (Objects.nonNull(articleId)) {
+            validateArticle(articleId);
+            subArticles = subArticleRepository.findAllByNameAndArticleId(name, articleId);
+        } else {
+            validateSubArticle(parentId);
+            subArticles = subArticleRepository.findAllByNameAndParentSubArticleId(name, parentId);
         }
-    }
-
-    public void validateSubArticleExistByParentId(String name, UUID parentId, UUID id) {
-        boolean exists = subArticleRepository.existsByNameAndParentSubArticleId(name, parentId);
-        if (exists && (id == null || subArticleRepository.existsByNameAndParentSubArticleIdAndIdNot(name, parentId, id))) {
-            throw new AlreadyExistsException(String.format("Sub article with name %s already exists in", name));
+        if (Objects.nonNull(id)) {
+            subArticles.stream().filter((subArticle) ->
+                    subArticle.getId().equals(id)).findFirst().ifPresent(subArticles::remove);
         }
-    }
-
-    public void validateSubArticleExistByArticleId(String name, UUID articleId, UUID id) {
-        boolean exists = subArticleRepository.existsByNameAndArticleId(name, articleId);
-        if (exists && (id == null || subArticleRepository.existsByNameAndArticleIdAndIdNot(name, articleId, id))) {
-            throw new AlreadyExistsException(String.format("Sub article with name %s already exists in this Article", name));
+        if (subArticles.size() > 0) {
+            throwIfExist("name", name);
         }
     }
 
     public void validateUsernameExist(String username) {
         if (loginRepository.existsById(username)) {
-            throw new AlreadyExistsException(String.format("user with username %s already exists", username));
+            throwIfExist("username", username);
         }
     }
 
@@ -82,15 +83,45 @@ public class CommonSchemaValidator {
         }
     }
 
-    public void validateCategoryExist(String name) {
-        if (categoryRepository.existsByName(name)) {
-            throw new AlreadyExistsException(String.format("Category already exist for name %s", name));
+    public void validateCategoryExistByNameAndParentID(UUID id, String name, UUID parentId) {
+        List<Category> categoryList;
+        if (Objects.isNull(parentId)) {
+            categoryList = categoryRepository.findAllByName(name);
+        } else {
+            validateCategory(parentId);
+            categoryList = categoryRepository.findAllByNameAndParentId(name, parentId);
+        }
+        if (Objects.nonNull(id)) {
+            categoryList.stream().filter((category) ->
+                    category.getId().equals(id)).findFirst().ifPresent(categoryList::remove);
+        }
+        if (categoryList.size() > 0) {
+            throwIfExist("name", name);
         }
     }
 
-    public void validateCategoryExistByNameAndParentID(String name, UUID parentId, UUID categoryId) {
-        if (categoryRepository.existsByNameAndParentIdAndIdNot(name, parentId, categoryId)) {
-            throw new AlreadyExistsException(String.format("Category already exist for name %s", name));
+    public void validateArticleExistByNameAndParentID(UUID id, String name, UUID categoryId) {
+        List<Article> articles;
+        if (Objects.isNull(categoryId)) {
+            articles = articleRepository.findAllByName(name);
+        } else {
+            validateCategory(categoryId);
+            articles = articleRepository.findAllByNameAndCategoryId(name, categoryId);
         }
+        if (Objects.nonNull(id)) {
+            articles.stream().filter((article) ->
+                    article.getId().equals(id)).findFirst().ifPresent(articles::remove);
+        }
+        if (articles.size() > 0) {
+            throwIfExist("name", name);
+        }
+    }
+
+    public void throwIfExist(String property, Object value) {
+        throw new AlreadyExistsException(String.format("Record already exist for %s - %s", property, value));
+    }
+
+    public void throwIfNotFound(String property, Object value) {
+        throw new RecordNotFoundException(String.format("Record cannot be found for %s - %s", property, value));
     }
 }

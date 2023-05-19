@@ -27,14 +27,15 @@ import java.util.UUID;
 public class SubArticleContentController {
     private final SubArticleContentService service;
 
-    @PostMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create with sub article content with image")
     public SubArticleContentResponse addImage(
             @PathVariable(value = "id") UUID id,
             @RequestParam(value = "photo") MultipartFile photo,
-            Principal principal){
-        SubArticleContent savedContent = service.create(id,photo, principal.getName());
+            Principal principal)
+    {
+        SubArticleContent savedContent = service.create(id, photo, principal.getName());
         return SubArticleContentConverter.from(savedContent);
     }
 
@@ -43,10 +44,11 @@ public class SubArticleContentController {
     @Operation(summary = "Create a new Sub Article Content")
     public SubArticleContentResponse create(
             @RequestBody @Validated SubArticleContentCreateRequest subArticleContentCreateRequest,
-            Principal principal) {
+            Principal principal)
+    {
         SubArticleContent subArticleContent =
                 SubArticleContentConverter.convertToEntity(subArticleContentCreateRequest);
-        SubArticleContent savedContent = service.create(subArticleContent,principal.getName());
+        SubArticleContent savedContent = service.create(subArticleContent, principal.getName());
         return SubArticleContentConverter.from(savedContent);
     }
 
@@ -55,7 +57,8 @@ public class SubArticleContentController {
     @Operation(summary = "Get content(s) of a sub article.")
     @PreAuthorize(value = "permitAll()")
     public List<SubArticleContentResponse> getSubArticleContents(
-            @PathVariable UUID id){
+            @PathVariable UUID id)
+    {
         List<SubArticleContent> subArticleContents = service.getContents(id);
         return SubArticleContentConverter.from(subArticleContents);
     }

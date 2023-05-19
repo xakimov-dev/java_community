@@ -2,7 +2,7 @@ package uz.community.javacommunity.controller.converter;
 
 import lombok.experimental.UtilityClass;
 import uz.community.javacommunity.controller.domain.Login;
-import uz.community.javacommunity.controller.dto.JwtTokenRequest;
+import uz.community.javacommunity.controller.dto.UserLoginRequest;
 import uz.community.javacommunity.controller.dto.JwtTokenResponse;
 import uz.community.javacommunity.controller.dto.UserCreateRequest;
 
@@ -16,11 +16,11 @@ public class LoginConverter {
                 .build();
     }
 
-    public Login convertToEntity(JwtTokenRequest jwtTokenRequest) {
+    public Login convertToEntity(UserLoginRequest userLoginRequest) {
         return Login
                 .builder()
-                .username(jwtTokenRequest.getUsername())
-                .password(jwtTokenRequest.getPassword())
+                .username(userLoginRequest.getUsername())
+                .password(userLoginRequest.getPassword())
                 .build();
     }
 

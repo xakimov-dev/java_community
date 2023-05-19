@@ -20,6 +20,6 @@ public class CategoryResponse  {
     Instant createdDate;
     String modifiedBy;
     Instant modifiedDate;
-    List<ArticleResponse> articleResponseList;
-    List<CategoryResponse> childCategoryResponseList;
+    List<ArticleResponse> articles;
+    List<CategoryResponse> subCategories;
 }

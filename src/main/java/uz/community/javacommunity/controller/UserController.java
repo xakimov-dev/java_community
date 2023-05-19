@@ -26,15 +26,17 @@ public class UserController {
 
     @PostMapping(value = "/login")
     @Operation(summary = "Authenticate a person")
-    public JwtTokenResponse userLogin(@RequestBody @Validated JwtTokenRequest jwtTokenRequest) {
-        Login login = LoginConverter.convertToEntity(jwtTokenRequest);
+    public JwtTokenResponse userLogin(@RequestBody @Validated UserLoginRequest userLoginRequest)
+    {
+        Login login = LoginConverter.convertToEntity(userLoginRequest);
         String token = userService.login(login);
         return LoginConverter.from(token);
     }
 
     @GetMapping("/current")
     @Operation(summary = "Get current user info")
-    UserResponse currentUser(Principal principal) {
+    UserResponse currentUser(Principal principal)
+    {
         User user = userService.findByUserName(principal.getName());
         return UserConverter.from(user);
     }
@@ -42,9 +44,11 @@ public class UserController {
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create a user. Should be used only by BE team")
-    public UserResponse createUser(@RequestBody @Validated UserCreateRequest userCreateRequest) {
+    public UserResponse createUser(@RequestBody @Validated UserCreateRequest userCreateRequest)
+    {
         User user = UserConverter.convertToEntity(userCreateRequest);
         Login login = LoginConverter.convertToEntity(userCreateRequest);
-        return UserConverter.from(userService.create(user,login));
+        User savedUser = userService.create(user, login);
+        return UserConverter.from(savedUser);
     }
 }

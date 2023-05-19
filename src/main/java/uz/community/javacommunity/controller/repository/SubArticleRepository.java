@@ -9,16 +9,10 @@ import java.util.UUID;
 
 public interface SubArticleRepository extends CassandraRepository<SubArticle, UUID> {
     @Query(allowFiltering = true)
-    boolean existsByNameAndArticleId(String name, UUID articleId);
+    List<SubArticle> findAllByNameAndArticleId(String name, UUID articleId);
 
     @Query(allowFiltering = true)
-    boolean existsByNameAndArticleIdAndIdNot(String name, UUID articleId, UUID id);
-
-    @Query(allowFiltering = true)
-    boolean existsByNameAndParentSubArticleId(String name, UUID parentId);
-
-    @Query(allowFiltering = true)
-    boolean existsByNameAndParentSubArticleIdAndIdNot(String name, UUID parentId, UUID id);
+    List<SubArticle> findAllByNameAndParentSubArticleId(String name, UUID parentId);
 
     @Query(allowFiltering = true)
     List<SubArticle> findAllByArticleId(UUID articleId);

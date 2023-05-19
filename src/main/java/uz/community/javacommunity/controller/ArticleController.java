@@ -3,7 +3,6 @@ package uz.community.javacommunity.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
@@ -19,49 +18,49 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "article")
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/article/")
 @RequiredArgsConstructor
 @EnableMethodSecurity
+@PreAuthorize("hasRole('ADMIN')")
 public class ArticleController {
     private final ArticleService articleService;
 
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an article.")
-    @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse createArticle(
             @RequestBody @Validated ArticleCreateRequest articleCreateRequest,
-            Principal principal
-    ) {
+            Principal principal)
+    {
         Article article = ArticleConverter.convertToEntity(articleCreateRequest);
-        return ArticleConverter.from(articleService.create(article, principal.getName()));
+        Article savedArticle = articleService.create(article, principal.getName());
+        return ArticleConverter.from(savedArticle);
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping
     @ResponseStatus(OK)
     @Operation(summary = "Update article")
-    @PreAuthorize("hasRole('ADMIN')")
     public ArticleResponse updateArticle(
             @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
-            @PathVariable UUID id,
-            Principal principal
-    ) {
+            Principal principal)
+    {
         Article article = ArticleConverter.convertToEntity(articleUpdateRequest);
-        return ArticleConverter.from(articleService.update(article, principal.getName(), id));
+        Article updatedArticle = articleService.update(article, principal.getName());
+        return ArticleConverter.from(updatedArticle);
     }
 
-    @GetMapping("/{categoryId}")
+    @GetMapping("{categoryId}")
     @Operation(summary = "get articles by categoryId")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("permitAll()")
     public List<ArticleResponse> getAllByCategoryId(
-            @PathVariable UUID categoryId
-    ){
-        return ArticleConverter.from(articleService.getAllByCategoryId(categoryId));
+            @PathVariable UUID categoryId)
+    {
+        List<Article> articleList = articleService.getAllByCategoryId(categoryId);
+        return ArticleConverter.from(articleList);
     }
     @GetMapping("/{articleId}")
     @Operation(summary = "get entire article by id")
@@ -72,15 +71,12 @@ public class ArticleController {
         return articleService.getArticleById(articleId);
     }
 
-    @DeleteMapping(value = "/{id}")
-    @ResponseStatus(OK)
+    @DeleteMapping(value = "{id}")
+    @ResponseStatus(NO_CONTENT)
     @Operation(summary = "Delete article")
-    @PreAuthorize("hasRole('ADMIN')")
     public void deleteArticle(
-            @PathVariable("id") UUID id
-    ) {
-
-
+            @PathVariable("id") UUID id)
+    {
         articleService.delete(id);
     }
 

@@ -12,23 +12,22 @@ import java.util.Set;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @DisplayName("Create a new user ( POST /user )")
 class CreateUserTest extends CommonIntegrationTest {
 
     @Test
-    @DisplayName("Should create a user")
+    @DisplayName("Should create a user with 201 status")
     void shouldCreateUser() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperUser.createUserRequest("test_name", "test_password", "test_tenant_id",
-                10, Set.of("role1"));
+        RequestBuilder request = testDataHelperUser.createUserRequest(
+                "test_name", "test_password",
+                "test_tenant_id", 10, Set.of("role1"));
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("test_name"))
-                .andExpect(jsonPath("$.password").value("test_password"))
                 .andExpect(jsonPath("$.info").value("test_tenant_id"))
                 .andExpect(jsonPath("$.age").value(10))
                 .andExpect(jsonPath("$.roles").isArray())
@@ -36,24 +35,26 @@ class CreateUserTest extends CommonIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should fail if the user already exists")
+    @DisplayName("Should fail with 409 status if the user already exists")
     void shouldFailIfUserExists() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperUser.createUserRequest("test_name", "test_password", "test_tenant_id",
+        RequestBuilder request = testDataHelperUser.createUserRequest(
+                "test_name", "test_password", "test_tenant_id",
                 10, Set.of("role1"));
         //WHEN
         mockMvc.perform(request);
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
     }
 
     @Test
-    @DisplayName("Should return 400 if one or more of required fields are empty")
+    @DisplayName("Should fail with 400 status if required fields are empty")
     void shouldFailIfEmptyRequiredField() throws Exception {
         //GIVEN
-        RequestBuilder request = testDataHelperUser.createUserRequest("", "test_password", "test_tenant_id",
+        RequestBuilder request = testDataHelperUser.createUserRequest(
+                "", "test_password", "test_tenant_id",
                 10, Set.of("role1"));
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
@@ -62,7 +63,8 @@ class CreateUserTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        request = testDataHelperUser.createUserRequest("username", "", "test_tenant_id",
+        request = testDataHelperUser.createUserRequest(
+                "username", "", "test_tenant_id",
                 10, Set.of("role1"));
         //WHEN
         resultActions = mockMvc.perform(request);
@@ -71,7 +73,8 @@ class CreateUserTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        request = testDataHelperUser.createUserRequest("username_1", "password", "",
+        request = testDataHelperUser.createUserRequest(
+                "username_1", "password", "",
                 10, Set.of("role1"));
         //WHEN
         resultActions = mockMvc.perform(request);
@@ -80,7 +83,8 @@ class CreateUserTest extends CommonIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         //GIVEN
-        request = testDataHelperUser.createUserRequest("username_2", "password", "test_tenant_id",
+        request = testDataHelperUser.createUserRequest(
+                "username_2", "password", "test_tenant_id",
                 10, Set.of());
         //WHEN
         resultActions = mockMvc.perform(request);
