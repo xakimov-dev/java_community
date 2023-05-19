@@ -62,6 +62,14 @@ public class ArticleController {
         List<Article> articleList = articleService.getAllByCategoryId(categoryId);
         return ArticleConverter.from(articleList);
     }
+    @GetMapping("/{articleId}")
+    @Operation(summary = "get entire article by id")
+    @PreAuthorize("permitAll()")
+    public ArticleResponse getArticleById(
+            @PathVariable UUID articleId
+    ){
+        return articleService.getArticleById(articleId);
+    }
 
     @DeleteMapping(value = "{id}")
     @ResponseStatus(NO_CONTENT)
@@ -70,6 +78,16 @@ public class ArticleController {
             @PathVariable("id") UUID id)
     {
         articleService.delete(id);
+    }
+
+    @DeleteMapping(value = "/byCategoryId/{id}")
+    @ResponseStatus(OK)
+    @Operation(summary = "Delete articles by Category Id")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteArticleByCategoryId(
+            @PathVariable("id") UUID id
+    ) {
+        articleService.deleteByCategoryId(id);
     }
 
 }

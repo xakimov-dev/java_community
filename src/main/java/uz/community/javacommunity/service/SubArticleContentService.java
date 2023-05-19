@@ -77,4 +77,13 @@ public class SubArticleContentService {
         return subArticleContents;
     }
 
+    public void delete(UUID subArticleContentId) {
+        commonSchemaValidator.validateSubArticleContent(subArticleContentId);
+        repository.deleteById(subArticleContentId);
+    }
+
+    public void deleteBySubArticleId(UUID subArticleId) {
+        commonSchemaValidator.validateSubArticle(subArticleId);
+        repository.deleteAllBySubArticleId(subArticleId);
+    }
 }

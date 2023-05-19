@@ -22,6 +22,7 @@ public class CategoryService {
     private final CommonSchemaValidator commonSchemaValidator;
     private final CategoryRepository categoryRepository;
     private final ArticleRepository articleRepository;
+    private final ArticleService articleService;
 
     public Category create(Category category, String createdBy) {
         commonSchemaValidator.validateCategoryExistByNameAndParentID(
@@ -73,5 +74,15 @@ public class CategoryService {
     private Category getById(UUID id) {
         return categoryRepository.findById(id).orElseThrow(
                 () -> new RecordNotFoundException(String.format("Category not found for id %s", id)));
+    }
+
+    public void delete(UUID id) {
+        commonSchemaValidator.validateCategory(id);
+        articleService.deleteByCategoryId(id);
+        List<Category> categories = categoryRepository.findAllByParentId(id);
+        if (!categories.isEmpty()) {
+            categories.forEach(category -> delete(category.getId()));
+        }
+        categoryRepository.deleteById(id);
     }
 }
