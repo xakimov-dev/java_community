@@ -24,6 +24,7 @@ public class CommonSchemaValidator {
     private final SubArticleRepository subArticleRepository;
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SubArticleContentRepository subArticleContentRepository;
 
     public void validateCategory(UUID id) {
         validateUUID(id, "category");
@@ -42,6 +43,12 @@ public class CommonSchemaValidator {
     public void validateSubArticle(UUID id) {
         validateUUID(id, "subArticle");
         if (!subArticleRepository.existsById(id)) {
+            throwIfNotFound("id", id);
+        }
+    }
+    public void validateSubArticleContent(UUID id) {
+        validateUUID(id, "subArticleContent");
+        if (!subArticleContentRepository.existsById(id)) {
             throwIfNotFound("id", id);
         }
     }
@@ -135,4 +142,6 @@ public class CommonSchemaValidator {
     public void throwIfNotFound(String property, Object value) {
         throw new RecordNotFoundException(String.format("Record cannot be found for %s - %s", property, value));
     }
+
+
 }

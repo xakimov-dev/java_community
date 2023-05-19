@@ -17,6 +17,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -66,5 +67,15 @@ public class CategoryController {
         Category category = CategoryConverter.convertToEntity(categoryUpdateRequest);
         Category updatedCategory = categoryService.update(id,category, principal.getName());
         return CategoryConverter.from(updatedCategory);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(NO_CONTENT)
+    @Operation(summary = "delete Category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void delete(
+            @PathVariable UUID id
+    ){
+        categoryService.delete(id);
     }
 }
