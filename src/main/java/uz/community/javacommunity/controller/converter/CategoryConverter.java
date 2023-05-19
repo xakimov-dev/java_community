@@ -35,7 +35,6 @@ public class CategoryConverter {
     public Category convertToEntity(CategoryUpdateRequest categoryUpdateRequest){
         return Category.builder()
                 .name(categoryUpdateRequest.getName())
-                .id(categoryUpdateRequest.getId())
                 .parentId(categoryUpdateRequest.getParentId())
                 .build();
     }

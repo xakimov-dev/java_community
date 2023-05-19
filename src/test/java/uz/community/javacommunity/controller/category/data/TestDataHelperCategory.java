@@ -48,10 +48,9 @@ public class TestDataHelperCategory {
 
         Map<String, Object> updateRequest = new HashMap<>();
         updateRequest.put("parentId", parentId);
-        updateRequest.put("id", id);
         updateRequest.put("name", categoryName);
 
-        return put(BASE_PATH)
+        return put(BASE_PATH+'/'+id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(updateRequest));
     }

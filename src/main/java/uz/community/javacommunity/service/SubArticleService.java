@@ -30,10 +30,10 @@ public class SubArticleService {
         return repository.save(subArticle);
     }
 
-    public SubArticle update(SubArticle subArticle, String updatedBy) {
+    public SubArticle update(UUID id,SubArticle subArticle, String updatedBy) {
         throwIfInvalidFormat(subArticle);
-        SubArticle subArticleEntity = getById(subArticle.getId());
-        commonSchemaValidator.validateSubArticleExist(subArticle.getId(), subArticle.getName(),
+        SubArticle subArticleEntity = getById(id);
+        commonSchemaValidator.validateSubArticleExist(id, subArticle.getName(),
                 subArticle.getArticleId(), subArticle.getParentSubArticleId());
         subArticleEntity.setName(subArticle.getName());
         subArticleEntity.setArticleId(subArticle.getArticleId());

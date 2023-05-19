@@ -41,10 +41,10 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public Article update(Article article, String username) {
-        Article articleEntity = getById(article.getId());
+    public Article update(UUID id,Article article, String username) {
+        Article articleEntity = getById(id);
         commonSchemaValidator.validateArticleExistByNameAndParentID(
-                article.getId(), article.getName(), article.getCategoryId());
+                id, article.getName(), article.getCategoryId());
         articleEntity.setName(article.getName());
         articleEntity.setCategoryId(article.getCategoryId());
         articleEntity.setModifiedBy(username);

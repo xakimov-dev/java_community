@@ -33,9 +33,9 @@ public class TestDataHelperSubArticle {
                 .content(jsonConverter.convertToString(createRequest));
     }
 
-    public RequestBuilder updateSubArticleRequest(SubArticleUpdateRequest updateRequest) {
+    public RequestBuilder updateSubArticleRequest(UUID id, SubArticleUpdateRequest updateRequest) {
 
-        return put(BASE_PATH)
+        return put(BASE_PATH + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(updateRequest));
     }

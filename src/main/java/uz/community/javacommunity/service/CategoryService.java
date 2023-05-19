@@ -35,10 +35,10 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Category update(Category category, String updatedBy) {
-        Category categoryEntity = getById(category.getId());
+    public Category update(UUID id,Category category, String updatedBy) {
+        Category categoryEntity = getById(id);
         commonSchemaValidator.validateCategoryExistByNameAndParentID(
-                category.getId(), category.getName(), category.getParentId());
+                id, category.getName(), category.getParentId());
         categoryEntity.setName(category.getName());
         categoryEntity.setParentId(category.getParentId());
         categoryEntity.setModifiedDate(Instant.now());

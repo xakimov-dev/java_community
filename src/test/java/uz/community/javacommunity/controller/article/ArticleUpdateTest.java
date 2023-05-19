@@ -52,15 +52,6 @@ class ArticleUpdateTest extends CommonIntegrationTest {
 
         //GIVEN
         request = testDataHelperArticle.updateArticleRequest(
-                null, category.getId(), "article");
-        //WHEN
-        resultActions = mockMvc.perform(request);
-        //THEN
-        resultActions
-                .andExpect(status().isBadRequest());
-
-        //GIVEN
-        request = testDataHelperArticle.updateArticleRequest(
                 UUID.randomUUID(), UUID.randomUUID(), "article");
         //WHEN
         resultActions = mockMvc.perform(request);

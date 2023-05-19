@@ -35,7 +35,6 @@ public class ArticleConverter {
 
     public Article convertToEntity(ArticleUpdateRequest articleUpdateRequest) {
         return Article.builder()
-                .id(articleUpdateRequest.getId())
                 .categoryId(articleUpdateRequest.getCategoryId())
                 .name(articleUpdateRequest.getName())
                 .build();

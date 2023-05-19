@@ -54,16 +54,17 @@ public class CategoryController {
         return categoryService.getCategoriesWithMembers();
     }
 
-    @PutMapping
+    @PutMapping("{id}")
     @ResponseStatus(OK)
     @Operation(summary = "Update category")
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse update(
+            @PathVariable UUID id,
             @RequestBody @Validated CategoryUpdateRequest categoryUpdateRequest,
             Principal principal)
     {
         Category category = CategoryConverter.convertToEntity(categoryUpdateRequest);
-        Category updatedCategory = categoryService.update(category, principal.getName());
+        Category updatedCategory = categoryService.update(id,category, principal.getName());
         return CategoryConverter.from(updatedCategory);
     }
 }

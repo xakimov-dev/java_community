@@ -38,17 +38,16 @@ class UpdateSubArticleTest extends CommonIntegrationTest {
         SubArticleResponse subArticle2 = testDataHelperSubArticle.createSubArticle(subArticleCreateRequest);
 
         SubArticleUpdateRequest subArticleUpdateRequest = new SubArticleUpdateRequest();
-        subArticleUpdateRequest.setId(subArticle1.getId());
         subArticleUpdateRequest.setParentSubArticleId(null);
         subArticleUpdateRequest.setArticleId(article2.getId());
         subArticleUpdateRequest.setName("category2-article2-subArticle1");
-        RequestBuilder request1 = testDataHelperSubArticle.updateSubArticleRequest(subArticleUpdateRequest);
+        RequestBuilder request1 = testDataHelperSubArticle.updateSubArticleRequest(
+                subArticle1.getId(),subArticleUpdateRequest);
 
-        subArticleUpdateRequest.setId(subArticle2.getId());
         subArticleUpdateRequest.setParentSubArticleId(null);
         subArticleUpdateRequest.setArticleId(article1.getId());
         subArticleUpdateRequest.setName("category1-article1-subArticle2");
-        RequestBuilder request2 = testDataHelperSubArticle.updateSubArticleRequest(subArticleUpdateRequest);
+        RequestBuilder request2 = testDataHelperSubArticle.updateSubArticleRequest(subArticle2.getId(),subArticleUpdateRequest);
 
         //WHEN
         ResultActions resultActions1 = mockMvc.perform(request1);
@@ -72,23 +71,33 @@ class UpdateSubArticleTest extends CommonIntegrationTest {
     void shouldFailIfRequiredPropertyIsNotFoundOrInvalid() throws Exception {
         //GIVEN
         SubArticleUpdateRequest subArticleUpdateRequest = new SubArticleUpdateRequest();
-        subArticleUpdateRequest.setId(UUID.randomUUID());
         subArticleUpdateRequest.setParentSubArticleId(UUID.randomUUID());
         subArticleUpdateRequest.setArticleId(null);
         subArticleUpdateRequest.setName("sub-article");
 
-        RequestBuilder request = testDataHelperSubArticle.updateSubArticleRequest(subArticleUpdateRequest);
+        RequestBuilder request = testDataHelperSubArticle.updateSubArticleRequest(
+                UUID.randomUUID(),subArticleUpdateRequest);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
         resultActions.andExpect(status().isNotFound());
 
-        subArticleUpdateRequest.setId(null);
+        //GIVEN
+        CategoryResponse category = testDataHelperCategory.createCategory("category", null);
+        ArticleResponse article = testDataHelperArticle.createArticle("article", category.getId());
+
+        SubArticleCreateRequest subArticleCreateRequest = new SubArticleCreateRequest();
+        subArticleCreateRequest.setParentSubArticleId(null);
+        subArticleCreateRequest.setArticleId(article.getId());
+        subArticleCreateRequest.setName("sub-article");
+
+        SubArticleResponse subArticle = testDataHelperSubArticle.createSubArticle(subArticleCreateRequest);
+
         subArticleUpdateRequest.setParentSubArticleId(null);
         subArticleUpdateRequest.setArticleId(null);
         subArticleUpdateRequest.setName("");
 
-        request = testDataHelperSubArticle.updateSubArticleRequest(subArticleUpdateRequest);
+        request = testDataHelperSubArticle.updateSubArticleRequest(subArticle.getId(),subArticleUpdateRequest);
         //WHEN
         resultActions = mockMvc.perform(request);
         //THEN
@@ -101,12 +110,12 @@ class UpdateSubArticleTest extends CommonIntegrationTest {
     void shouldFailIfUserIsNotAdmin() throws Exception {
         //GIVEN
         SubArticleUpdateRequest subArticleUpdateRequest = new SubArticleUpdateRequest();
-        subArticleUpdateRequest.setId(UUID.randomUUID());
         subArticleUpdateRequest.setParentSubArticleId(UUID.randomUUID());
         subArticleUpdateRequest.setArticleId(UUID.randomUUID());
         subArticleUpdateRequest.setName("sub-article");
 
-        RequestBuilder request = testDataHelperSubArticle.updateSubArticleRequest(subArticleUpdateRequest);
+        RequestBuilder request = testDataHelperSubArticle.updateSubArticleRequest(
+                UUID.randomUUID(),subArticleUpdateRequest);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN
@@ -119,12 +128,12 @@ class UpdateSubArticleTest extends CommonIntegrationTest {
     void shouldFailIfUnauthorized() throws Exception {
         //GIVEN
         SubArticleUpdateRequest subArticleUpdateRequest = new SubArticleUpdateRequest();
-        subArticleUpdateRequest.setId(UUID.randomUUID());
         subArticleUpdateRequest.setParentSubArticleId(UUID.randomUUID());
         subArticleUpdateRequest.setArticleId(UUID.randomUUID());
         subArticleUpdateRequest.setName("sub-article");
 
-        RequestBuilder request = testDataHelperSubArticle.updateSubArticleRequest(subArticleUpdateRequest);
+        RequestBuilder request = testDataHelperSubArticle.updateSubArticleRequest(
+                UUID.randomUUID(),subArticleUpdateRequest);
         //WHEN
         ResultActions resultActions = mockMvc.perform(request);
         //THEN

@@ -44,11 +44,10 @@ public class TestDataHelperArticle {
     public RequestBuilder updateArticleRequest(UUID id, UUID categoryId, String name) {
 
         Map<String, Object> updateRequest = new HashMap<>();
-        updateRequest.put("id", id);
         updateRequest.put("categoryId", categoryId);
         updateRequest.put("name", name);
 
-        return put(BASE_PATH)
+        return put(BASE_PATH+id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonConverter.convertToString(updateRequest));
     }

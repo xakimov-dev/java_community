@@ -20,7 +20,6 @@ public class SubArticleConverter {
 
     public SubArticle convertToEntity(SubArticleUpdateRequest subArticleUpdateRequest) {
         return SubArticle.builder()
-                .id(subArticleUpdateRequest.getId())
                 .name(subArticleUpdateRequest.getName())
                 .articleId(subArticleUpdateRequest.getArticleId())
                 .parentSubArticleId(subArticleUpdateRequest.getParentSubArticleId())

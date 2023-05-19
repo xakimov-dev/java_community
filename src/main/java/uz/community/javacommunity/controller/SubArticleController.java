@@ -35,14 +35,15 @@ public class SubArticleController {
         SubArticle savedSubArticle = service.create(subArticle, principle.getName());
         return SubArticleConverter.from(savedSubArticle);
     }
-    @PutMapping
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public SubArticleResponse update(
+            @PathVariable UUID id,
             @RequestBody @Validated SubArticleUpdateRequest subArticleUpdateRequest,
             Principal principal)
     {
         SubArticle subArticle =SubArticleConverter.convertToEntity(subArticleUpdateRequest);
-        SubArticle updatedSubArticle = service.update(subArticle, principal.getName());
+        SubArticle updatedSubArticle = service.update(id,subArticle, principal.getName());
         return SubArticleConverter.from(updatedSubArticle);
     }
 

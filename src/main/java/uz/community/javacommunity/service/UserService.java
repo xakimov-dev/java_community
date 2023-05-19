@@ -26,7 +26,7 @@ public class UserService {
     private final CommonSchemaValidator commonSchemaValidator;
 
     public User create(User user, Login login) {
-        commonSchemaValidator.validateUsernameExist(user.getUsername());
+        commonSchemaValidator.validateUsernameAndPassword(login);
         String hashedPassword = passwordEncoder.encode(login.getPassword());
         login.setPassword(hashedPassword);
         Instant now = Instant.now();

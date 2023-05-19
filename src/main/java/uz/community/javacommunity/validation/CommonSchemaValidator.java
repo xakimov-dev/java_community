@@ -116,6 +116,18 @@ public class CommonSchemaValidator {
         }
     }
 
+    public void validateUsernameAndPassword(Login login) {
+        String username = login.getUsername();
+        String password = login.getPassword();
+        validateUsernameExist(username);
+        if (!username.matches(".{4,}")) {
+            throw new IllegalArgumentException("Username should be at least 4 characters");
+        }
+        if (!password.matches(".{8,}")){
+            throw new IllegalArgumentException("Password should be at least 8 characters");
+        }
+    }
+
     public void throwIfExist(String property, Object value) {
         throw new AlreadyExistsException(String.format("Record already exist for %s - %s", property, value));
     }

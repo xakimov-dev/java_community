@@ -92,5 +92,29 @@ class CreateUserTest extends CommonIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("Should fail with 400 status if username or password is invalid")
+    void shouldFailIfInvalidUsernameOrPassword() throws Exception{
+        //GIVEN
+        RequestBuilder request = testDataHelperUser.createUserRequest(
+                "you", "test_password",
+                "test_tenant_id", 10, Set.of("role1"));
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+
+        //GIVEN
+        request = testDataHelperUser.createUserRequest(
+                "test_username", "test",
+                "test_tenant_id", 10, Set.of("role1"));
+        //WHEN
+        resultActions = mockMvc.perform(request);
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+    }
 }
 

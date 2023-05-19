@@ -41,15 +41,16 @@ public class ArticleController {
         return ArticleConverter.from(savedArticle);
     }
 
-    @PutMapping
+    @PutMapping("{id}")
     @ResponseStatus(OK)
     @Operation(summary = "Update article")
     public ArticleResponse updateArticle(
+            @PathVariable UUID id,
             @RequestBody @Validated ArticleUpdateRequest articleUpdateRequest,
             Principal principal)
     {
         Article article = ArticleConverter.convertToEntity(articleUpdateRequest);
-        Article updatedArticle = articleService.update(article, principal.getName());
+        Article updatedArticle = articleService.update(id,article, principal.getName());
         return ArticleConverter.from(updatedArticle);
     }
 
